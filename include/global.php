@@ -521,6 +521,7 @@ mehr nutzen kannst. Bitte antworte nicht auf diese E-Mail!";
         mail("\"" . $userinfo->username . "\" <" . $userinfo->email . ">", "Account gelöscht auf ".$GLOBALS["SITENAME"], $mailbody);
     } 
 	
+	$sql = array();
 	$sql[] = ['DELETE FROM `users` WHERE `id`= :id'];
 	$sql[] = ['DELETE FROM `bitbucket` WHERE `user`= :id'];
 	$sql[] = ['DELETE FROM `nowait` WHERE `user_id`= :id'];
