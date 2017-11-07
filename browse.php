@@ -39,7 +39,10 @@ hit_count();
 
 $cats = genrelist();
 
-$searchstr = unesc($_GET["search"]);
+if(isset($_GET['search']))
+	$searchstr = intval($_GET['search']);
+else
+	$searchstr = "";
 $cleansearchstr = searchfield($searchstr);
 if (empty($cleansearchstr))
     unset($cleansearchstr);
@@ -48,89 +51,100 @@ $addparam = "";
 $wherea = array("`activated`='yes'");
 $wherecatina = array();
 
-
-if ($_GET["incldead"] == 1) {
-    $addparam .= "incldead=1&amp;";
-    if (!isset($CURUSER) || get_user_class < UC_ADMINISTRATOR)
-        $wherea[] = "banned != 'yes'";
-} elseif ($_GET["incldead"] == 2) {
-    $addparam .= "incldead=2&amp;";
-    $wherea[] = "visible = 'no'";
-} else
-    $wherea[] = "visible = 'yes'";
-
-$category = intval($_GET["cat"]);
-
-$all = $_GET["all"];
+if(isset($_GET["incldead"])){
+	if ($_GET["incldead"] == 1) {
+		$addparam .= "incldead=1&amp;";
+		if (!isset($CURUSER) || get_user_class < UC_ADMINISTRATOR)
+			$wherea[] = "banned != 'yes'";
+	} elseif ($_GET["incldead"] == 2) {
+		$addparam .= "incldead=2&amp;";
+		$wherea[] = "visible = 'no'";
+	} else
+		$wherea[] = "visible = 'yes'";
+}
+if(isset($_GET['cat']))
+	$category = intval($_GET['cat']);
+else
+	$category = 0;
+	
+if(isset($_GET['all']))
+	$all = intval($_GET['all']);
+else
+	$all = 0;
 
 if (!$all) {
     if (!$_GET && $CURUSER["notifs"]) {
         $all = true;
         foreach ($cats as $cat) {
-            $all &= $cat[id];
-            if (strpos($CURUSER["notifs"], "[cat" . $cat[id] . "]") !== false) {
-                $wherecatina[] = $cat[id];
-                $addparam .= "c$cat[id]=1&amp;";
+            $all &= $cat['id'];
+            if (strpos($CURUSER["notifs"], "[cat" . $cat['id'] . "]") !== false) {
+                $wherecatina[] = $cat['id'];
+                $addparam .= "c" . $cat['id'] . "&amp;";
             } 
         } 
     } elseif ($category) {
         if (!is_valid_id($category))
-            stderr("Error", "Invalid category ID $category.");
+            stderr("Error", "Invalid category ID " . $category . ".");
         $wherecatina[] = $category;
-        $addparam .= "cat=$category&amp;";
+        $addparam .= "cat=" . $category . "&amp;";
     } else {
         $all = true;
         foreach ($cats as $cat) {
-            $all &= $_GET["c$cat[id]"];
-            if ($_GET["c$cat[id]"]) {
-                $wherecatina[] = $cat[id];
-                $addparam .= "c$cat[id]=1&amp;";
-            } 
+			if(isset($_GET["c" . $cat['id']])){
+				$all &= $_GET["c" . $cat['id']];
+				if ($_GET["c" . $cat['id']]) {
+					$wherecatina[] = $cat['id'];
+					$addparam .= "c" . $cat['id'] . "=1&amp;";
+				}
+			}
         } 
     } 
 } 
 
 $orderby = "ORDER BY ";
 
-if ($_GET["orderby"] != "")
-    $addparam .= "orderby=" . urlencode($_GET["orderby"]) . "&amp;";
+if(isset($_GET["orderby"])){
+	if ($_GET["orderby"] != "")
+		$addparam .= "orderby=" . urlencode($_GET["orderby"]) . "&amp;";
 
-switch ($_GET["orderby"]) {
-    case "name":
-        $orderby .= "torrents.name";
-        break;
-    case "type":
-        $orderby .= "categories.name";
-        break;
-    case "files":
-        $orderby .= "torrents.numfiles";
-        break;
-    case "comments":
-        $orderby .= "torrents.comments";
-        break;
-    case "added":
-        $orderby .= "torrents.added";
-        break;
-    case "size":
-        $orderby .= "torrents.size";
-        break;
-    case "snatched":
-        $orderby .= "torrents.times_completed";
-        break;
-    case "seeds":
-        $orderby .= "torrents.seeders";
-        break;
-    case "leeches":
-        $orderby .= "torrents.leechers";
-        break;
-    case "uppedby":
-        $orderby .= "users.username";
-        break;
-    default:
-        $_GET["orderby"] = "added";
-        $orderby .= "torrents.added";
-        break;
-} 
+	switch ($_GET["orderby"]) {
+		case "name":
+			$orderby .= "torrents.name";
+			break;
+		case "type":
+			$orderby .= "categories.name";
+			break;
+		case "files":
+			$orderby .= "torrents.numfiles";
+			break;
+		case "comments":
+			$orderby .= "torrents.comments";
+			break;
+		case "added":
+			$orderby .= "torrents.added";
+			break;
+		case "size":
+			$orderby .= "torrents.size";
+			break;
+		case "snatched":
+			$orderby .= "torrents.times_completed";
+			break;
+		case "seeds":
+			$orderby .= "torrents.seeders";
+			break;
+		case "leeches":
+			$orderby .= "torrents.leechers";
+			break;
+		case "uppedby":
+			$orderby .= "users.username";
+			break;
+		default:
+			$_GET["orderby"] = "added";
+			$orderby .= "torrents.added";
+			break;
+	} 
+}else
+	$_GET["orderby"] = "added";
 
 $orderby_sel = array("name" => "Torrent-Name",
     "type" => "Kategorie",
@@ -144,32 +158,38 @@ $orderby_sel = array("name" => "Torrent-Name",
     "uppedby" => "Uploader"
     );
 
-switch ($_GET["sort"]) {
-    case "asc":
-        $orderby .= " ASC";
-        $addparam .= "sort=asc&amp;";
-        break;
+if(!isset($_GET["sort"])){
+	$_GET["sort"] = "desc";
+	switch ($_GET["sort"]) {
+		case "asc":
+			$orderby .= " ASC";
+			$addparam .= "sort=asc&amp;";
+			break;
 
-    default:
-    case "desc":
-        $addparam .= "sort=desc&amp;";
-        $orderby .= " DESC";
-        break;
-} 
+		default:
+		case "desc":
+			$addparam .= "sort=desc&amp;";
+			$orderby .= " DESC";
+			break;
+	}
+}
 
 if ($all) {
     $wherecatina = array();
     $addparam = "";
 } 
 
-if ($_GET["showsearch"] == 1) {
-    $CURUSER["displaysearch"] = "yes";
-    mysql_query("UPDATE users SET displaysearch='yes' WHERE id=".$CURUSER["id"]);
-    $_SESSION["userdata"]["displaysearch"] = "yes";
-} elseif (isset($_GET["showsearch"]) && $_GET["showsearch"] == 0) {
-    $CURUSER["displaysearch"] = "no";
-    mysql_query("UPDATE users SET displaysearch='no' WHERE id=".$CURUSER["id"]);
-    $_SESSION["userdata"]["displaysearch"] = "no";
+if(!isset($_GET["showsearch"])){
+	$_GET["showsearch"] = 1;
+	if ($_GET["showsearch"] == 1) {
+		$CURUSER["displaysearch"] = "yes";
+		mysql_query("UPDATE users SET displaysearch='yes' WHERE id=".$CURUSER["id"]);
+		$_SESSION["userdata"]["displaysearch"] = "yes";
+	} elseif (isset($_GET["showsearch"]) && $_GET["showsearch"] == 0) {
+		$CURUSER["displaysearch"] = "no";
+		mysql_query("UPDATE users SET displaysearch='no' WHERE id=".$CURUSER["id"]);
+		$_SESSION["userdata"]["displaysearch"] = "no";
+	}
 }
 
 if (count($wherecatina) > 1)
@@ -190,7 +210,7 @@ if (isset($cleansearchstr)) {
 } 
 
 $where = implode(" AND ", $wherea);
-if ($wherecatin)
+if (isset($wherecatin))
     $where .= ($where ? " AND " : "") . "category IN(" . $wherecatin . ")";
 
 if ($where != "")
@@ -265,7 +285,7 @@ else
     $i = 0;
     foreach ($cats as $cat) {
         print(($i && $i % $GLOBALS["BROWSE_CATS_PER_ROW"] == 0) ? "</tr><tr>" : "");
-        print("<td class=\"tablea\" style=\"padding-bottom: 2px;padding-left: 7px\" nowrap><input name=\"c$cat[id]\" type=\"checkbox\" " . (in_array($cat[id], $wherecatina) ? "checked " : "") . "value=\"1\"><a class=\"catlink\" href=\"browse.php?cat=$cat[id]&amp;showsearch=1\">" . htmlspecialchars($cat[name]) . "</a></td>\n");
+        print("<td class=\"tablea\" style=\"padding-bottom: 2px;padding-left: 7px\" nowrap><input name=\"c$cat[id]\" type=\"checkbox\" " . (in_array($cat['id'], $wherecatina) ? "checked " : "") . "value=\"1\"><a class=\"catlink\" href=\"browse.php?cat=$cat[id]&amp;showsearch=1\">" . htmlspecialchars($cat['name']) . "</a></td>\n");
         $i++;
     } 
 
@@ -289,6 +309,10 @@ else
   </tr>
   <tr>
     <td colspan="<?=$GLOBALS["BROWSE_CATS_PER_ROW"]?>" class="tablea" nowrap="nowrap">
+	<?php
+	if($searchstr == 0)
+		$searchstr == "";
+	?>
       Suchen:&nbsp;<input type="text" name="search" size="30" value="<?= htmlspecialchars($searchstr) ?>" />
        in <select name="incldead">
 <option value="0">aktiven</option>
