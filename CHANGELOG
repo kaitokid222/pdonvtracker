@@ -1,0 +1,112 @@
+2005-06-02 - zwerg - Changed log.php and takeprofedit.php to add logging of PassKey resets by users, so mods are able to determine if the "connection problems" of certain users are in fact caused by themselves to cheat ratio. 
+
+2005-05-18 - zwerg - Changed takeupload.php, takedit.php, viewnfo.php, global.php and bittorrent.php and added code to generate PNG images of the uploaded NFOs, so we are no longer depending on the MS LineDraw font installed on client machines. The text version of the NFO can be downloaded through a new link above the image.
+
+2005-05-17 - zwerg - Changed upload.php, takeupload.php, edit.php, takeedit.php and global.php to add an ASCII art stripper for torrent descriptions.
+
+2005-05-16 - zwerg - Added picture upload to upload.php / takeupload.php, and changed details.php, bittorrent.php and global.php accordingly. Also moved resize_image() function from bitbucket-upload.php to global.php. Changed news admin page, and added collapsing news functionality beneath a new "title" field.
+
+2005-05-06 - zwerg - Added deletion of orphaned entries in completed table to cleanup.php. Entries are orphaned if either the user or the torrent doesn't exist anymore.
+
+2005-05-04 - zwerg - Changed takeupload.php and added some code to insert the "private" and a "rndid" flag, which is necessary to prevent current Azureus and some other clients from sharing peer information with other peers who are not registered with the tracker. Changed details.php to reflect these changes to uploaders, and fixed some design issues with those messages.
+
+2005-04-27 - zwerg - Changed redir.php to determine whether a redirect is external or internal. Added a new array to config.php which contains allowed internal domains for which a simple HTTP redirect is done.
+
+2005-04-26 - zwerg - Made NFOs available to all users. Removed user level checks from viewnfo.php and details.php.
+
+2005-04-22 - zwerg - Fixed bitbucket.php, so the bucket size of other users is now shown correctly to mods and admins.
+
+2005-04-20 - zwerg - Changed the wait time rules and function in global.php. Added the possibility to let the rules depend on how long a user is registered with the tracker. This rule is "AND" combined with the ratio and upload rules.
+
+2005-04-18 - zwerg - Added an auto resize function to bitbucket.php and bitbucket-upload.php, so large files are automatically resized to a width of 150 pixels.
+
+2005-04-14 - zwerg - Security fix in global.php. Edited format_quotes(), which crashed PHP on nested [quote] BBCodes. Removed the string searches, and simplified the regular expressions. Now they'll take care of replacing the deepest nested elements first, without the need of "cutting" the text.
+
+2005-04-13 - zwerg - Changed modtask.php. Added check if user has been promoted to something higher than UC_VIP, and now has to re-accept the rules afterwards.
+
+2005-04-08 - zwerg - Added robots.txt and edited includes/bittorrent.php to prevent (most) search engines from indexing the page.
+
+2005-04-05 - zwerg - Changed rules.php, takeprofedit.php and includes/bittorent.php to force users to re-accept changed rules. Added a field "accept_rules" to the user profiles.
+
+2005-03-31 - zwerg - Translation of tags.php, and added [list] and [center] BBCode explanation.
+
+2005-03-31 - zwerg - Changes? LOADS! I was too lazy to document every little change, so here's a quick overview what I've altered as of today compared to the original TBSource:
+ - Primarily design changes. Changed almost all pages so they can use WBB styles, which are very simple to adapt (just a style sheet and some graphics).
+ - Translated most things to german, since there are MANY people here which are unable to understand english (some not even german I guess...).
+ - Added a PassKey authentication scheme for torrents. This replaces the method of comparing the IP address to the profile, and enables multiple users sharing a single line/IP to have their stats assigned correctly.
+ - Added a torrent limit dependent on ratio and uploaded data. This has been introduced to prevent users from running/leeching lots of torrents simultaneously (at least on this tracker). Mods have the ability to change the limit on a per-user base.
+ - Lots of code cleanups, optimizations and fixes (I must state almost all bugs were due to my changes).
+ - Added new (missing) BBCodes, [list] and [center].
+ - Introduced a new torrent list view which takes less horizontal space, and displays more information in an expandable view. Also added an option in my.php to switch between the new and classic views.
+ - Added a form in details.php to request an overriding of the torrent wait time, so users with a poor ratio can begin to seed earlier.
+ - Added bitbucket.php, altered bitbucket-upload.php and added a new MySQL table so users have the ability to upload, view and delete their own files in the BitBucket. The original filename is preserved in the database, and all uploaded files are removed from the server if a user's account is deleted.
+ - Altered IRC chat page and added ircapplet.php, now the free PJIRC applet (instead of the proprietary JPilot one) opens in a fix sized external window.
+ - Created a new includes/config.php and moved all configurable options there (except some options as blocked UAs in announce.php and blacklisted mail providers in takesignup.php).
+ - Changed the wait time and torrent limiters, now the directives can be easily altered inside config.php, and faq.php doesn't need to be changed for that purpose.
+ - Added checkboxes in the In- and Outbox for private messages, so users now have the ability to delete more than one message at a time.
+ - Heavily extended the site logging facility, events are now categorized and contain more information than before (including links to affected users/torrents). sitelog.php was changed respectively, and allows some filtering.
+ - Added a log that records torrent start and stop events to make it easier to detect clone accounts and, in some extend, even cheaters. Also added startstoplog.php with a few nice tools to analyze the logged data.
+ - Added an account cleaner, which is primarily a search form, with the difference that it enabled the admin or sysop to quickly disable the resulting accounts.
+ - Many, many more small changes I can't remember...
+
+2004-05-26 - wyz - Security fix in userdetails.php. Avatar field was not being escaped, html injection was possible (confirmed).
+
+2004-05-26 - rb - userdetails: added seeder/leecher count and did some optimizations.
+
+2004-05-25 - wyz - Comments editing added. Added comment.php, removed takecomment.php, addcomment.php, deletecomment.php. Altered details.php, bittorrent.php.
+
+2004-05-25 - rb - Share ratio changed to 3 decimals in userdetails and details.
+
+2004-05-22 - rb - Added a 'revived' column to the peers (database) table. Set to "yes" if the event is not "start" and the peer is not found in the database. This replaces the "Peer not found" error message which seemed to cause quite some problems.
+
+2004-05-21 - rb - Made download speed static for seeders.
+
+2004-05-18 - wyz - Passwords are no longer stored in cleartext: altered adduser.php, confirm.php, delacct.php, recover.php, takelogin.php, takeprofedit.php, takesignup.php, bittorrent.php. Database: new field passhash in users.
+
+2004-05-18 - rb - Added "Client" column to peers table.
+
+2004-05-18 - rb - Added upload/download "Avg. Rate" columns to the peers table in details.php.
+
+2004-05-17 - wyz - Detail changes to forums.php (On editing, redirect to edited post; on deleting, redirect to previous post; "top" anchor; show "quote" button to moderators in locked topics).
+
+2004-05-15 - wyz - More more extensive stats available to PUs. Altered topten.php.
+
+2004-05-15 - wyz - Stronger category filtering on browse page. Altered browse.php, my.php, takeprofedit.php.
+
+2004-05-14 - wyz - Altered announce.php. Seeders are now also subject to delay (in order to avoid an exploit).
+
+2004-05-12 - wyz - Altered stats.php, added total uploaded by country.
+
+2004-05-12 - wyz - Introduced 'friends' and 'blocks', for now for PM filtering purposes (the old 'all' is now 'all except blocked', and there's an accept 'from friends only' option). Altered my.php, userdetails.php, takemessage.php, takeprofedit.php. Added friends.php. Database: acceptpms changed from enum('yes','no') to enum ('yes','friends','no').
+
+2004-05-12 - wyz - Added time-limited warnings. Altered userdetails.php, modtask.php, cleanup.php. Database: 'warnedat' changed to 'warneduntil' in table users.
+
+2004-05-12 - wyz - Changes to polls: ability to edit and delete them, extra choice on sorting. Altered polls.php, makepoll.php, index.poll. Database: extra field 'sort' in table polls. 
+
+2004-05-12 - rb - Moved a few backup files out of the source tree.
+
+2004-05-12 - rb - Fixed a security hole in bitbucket-upload.php which could allow an attacker to run his own PHP code.
+
+2004-05-11 - rb - Moderators and higher may now post replies in locked topics.
+
+2004-05-07 - wyz - Altered global.php (fixed "quotes within quotes").
+
+2004-05-06 - wyz - Altered userdetails.php, userhistory.php (PUs or above can now see their own post/comment history);
+
+2004-05-04 - wyz - Altered announce.php (Minor bug fix: users with dl = 0 would be delayed no matter what the upload); Altered browse.php (added "wait" column).
+
+2004-05-03 - rb - Cleanup interval changed to 15 mins
+
+2004-05-03 - rb - Removed archive feature.
+
+2004-05-02 - wyz - Altered forums.php (posts in locked threads may no longer be edited by poster); Altered global.php (new smilies :D); Altered inbox.php (minor redirection problem fixed).
+
+2004-05-01 - wyz - Added news.php; Altered index.php (polls always have an option "Blank vote (a.k.a. "I just want to see the results!"" at the end. Changed code accordingly to not count those votes. News moved to database.); Database: Added news table.
+
+2004-05-30 - wyz - Altered modtask.php; it now automatically adds a comment to the profile on (pro|de)moting, warning, (en|dis)abling; Altered forums.php; the warning icon is now a link to the appropriate rules section; usersearch.php; search by 'warned' status;
+
+2004-04-29 - wyz - Altered takeprofedit.php, deletemessage.php, my.php, inbox.php, sendmessage.php, takemessage.php. ("Sentbox"); Database: added 'location' field to messages (in, out, both); added 'savepms', 'deletepms' to users (so they can choose default values).
+
+2004-04-21 - wyz - Altered testip.php (accept GET requests), corrections in usersearch.php.
+
+2004-04-20 - wyz - Added usersearch.php, userhistory.php, stats.php.
