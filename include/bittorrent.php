@@ -480,33 +480,30 @@ function stdhead($title = "", $msgalert = true)
         $title = $GLOBALS["SITENAME"] . " :: " . htmlspecialchars($title);
 
     if ($CURUSER) {
-        $ss_a = @mysql_fetch_assoc(@mysql_query("SELECT `uri` FROM `stylesheets` WHERE `id`=" . $CURUSER["stylesheet"]));
-        if ($ss_a) $GLOBALS["ss_uri"] = $ss_a["uri"];
-    } 
-	// mit null gefüllt, level notice
-	// kaito 07.11.2017
-	$GLOBALS["ss_uri"] = "zero";
-    if (!$GLOBALS["ss_uri"] || $GLOBALS["ss_uri"] == "zero") {
-       /* ($r = mysql_query("SELECT `uri` FROM `stylesheets` WHERE `default`='yes'")) or die(mysql_error());
-        ($a = mysql_fetch_assoc($r)) or die(mysql_error());
-        $GLOBALS["ss_uri"] = $a["uri"];*/
-
-		$qry = $GLOBALS['DB']->prepare("SELECT `uri` FROM `stylesheets` WHERE `default`='yes'");
+		$qry = $GLOBALS['DB']->prepare('SELECT `uri` FROM `stylesheets` WHERE `id`= :id');
+		$qry->bindParam(':id', $CURUSER["stylesheet"], PDO::PARAM_INT);
 		$qry->execute();
-		if($qry->rowCount() > 0){
-			$row = $qry->fetchObject();
-		}
-		$GLOBALS["ss_uri"] = $row->uri;
-    } 
+		$ss_a = $qry->fetchObject();
+        if ($ss_a) $GLOBALS["ss_uri"] = $ss_a->uri;
+    }else{
+		if (!isset($GLOBALS["ss_uri"])) {
+			$qry = $GLOBALS['DB']->prepare("SELECT `uri` FROM `stylesheets` WHERE `default`='yes'");
+			$qry->execute();
+			if($qry->rowCount() > 0){
+				$row = $qry->fetchObject();
+			}
+			$GLOBALS["ss_uri"] = $row->uri;
+		} 
+	}
 
     if ($msgalert && $CURUSER) {
-        $res = mysql_query("SELECT COUNT(*) FROM `messages` WHERE `folder_in`<>0 AND `receiver`=" . $CURUSER["id"] . " && `unread`='yes'") or die("OopppsY!");
-        $arr = mysql_fetch_row($res);
-        $unread = $arr[0];
+		$unread = pdo_row_count('messages','`folder_in`<>0 AND `receiver`=' . $CURUSER["id"] . ' && `unread`= yes');
+		if($unread < 1)
+			unset($unread);
         if ($CURUSER["class"] >= UC_MODERATOR) {
-            $res = mysql_query("SELECT COUNT(*) FROM `messages` WHERE `sender`=0 AND `receiver`=0 && `mod_flag`='open'") or die("OopppsY!");
-            $arr = mysql_fetch_row($res);
-            $unread_mod = $arr[0];
+            $unread_mod = pdo_row_count('messages','`sender`= 0 AND `receiver`= 0 && `mod_flag`= open');
+			if($unread_mod < 1)
+				unset($unread_mod);
         } 
     } 
 
@@ -608,16 +605,16 @@ function stdhead($title = "", $msgalert = true)
               <tr><td class="tablea"><a style="display:block;padding:4px;" href="my.php" title="Hier kannst Du Deine Einstellungen &auml;ndern">Profil bearbeiten</a></td></tr>
               <tr><td class="tablea"><a style="display:block;padding:4px;" href="friends.php" title="Eine Liste Deiner &quot;Freunde&quot; auf dem Tracker">Buddyliste</a></td></tr>
               <tr><td class="tablea"><a style="display:block;padding:4px;" href="messages.php" title="Pers&ouml;nliche Nachrichten lesen und beantworten">Nachrichten<?php
-        if ($unread || $unread_mod)
+        if (isset($unread) || isset($unread_mod))
             echo "&nbsp;&nbsp;";
 
-        if ($unread) {
+        if (isset($unread)) {
             echo "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "multipage.gif\" border=\"0\"> <b>$unread</b>";
             if ($unread_mod)
                 echo "&nbsp;&nbsp;";
         } 
 
-        if ($unread_mod) {
+        if (isset($unread_mod)) {
             echo "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "multipagemod.gif\" border=\"0\"> <b>$unread_mod</b>";
         } 
 
