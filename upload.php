@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -59,7 +59,7 @@ verwenden.</font></p>
 <a href="rules.php">Regeln</a> und das <a href="faq.php#up">FAQ</a> zum Thema Uploaden!</p>
 <table width=610 border="0" cellspacing="1" cellpadding="4" class="tableinborder">
 
-<?
+<?php
 
 tr(".torrent", "<input type=\"file\" name=\"file\" size=\"80\">\n", 1);
 tr("Name", "<input type=\"text\" name=\"name\" size=\"80\" /><br />(Wird keine Name angegeben, wird der Dateiname benutzt. <b>Halte Dich bitte an die Richtlinien.</b>)\n", 1);
@@ -86,7 +86,7 @@ tr("Typ", $s, 1);
 </form>
 </td></tr></table>
 
-<?
+<?php
 
 stdfoot();
 hit_end();

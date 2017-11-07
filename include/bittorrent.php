@@ -1,5 +1,6 @@
 <?php
-
+error_reporting(E_ALL);
+ini_set('display_errors', 1);  
 /*
 // +--------------------------------------------------------------------------+
 // | Project:    NVTracker - NetVision BitTorrent Tracker                     |
@@ -40,8 +41,25 @@ if (!file_exists("include/secrets.php") || !file_exists("include/config.php"))
 require_once("include/secrets.php");
 require_once("include/config.php");
 require_once("include/cleanup.php");
+
 require_once("include/shoutcast.php");
 
+// NEU PDO!
+	$GLOBALS['DB'] = new PDO("mysql:host=".$db_info['db_host'].';port='.$db_info['db_port'].';dbname='.$db_info['db_name'], $db_info['db_user'], $db_info['db_pass']);
+	$GLOBALS['DB']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+	$GLOBALS['DB']->query('SET NAMES utf8');
+
+// SQL-funktionen OUTSOURCEN!!!
+function pdo_row_count($table,$condition = '1=1'){
+	$sql = "SELECT COUNT(*) FROM ";
+	$sql .= "" . $table . " ";
+	$sql .= "WHERE ";
+	$sql .= "" . $condition . "";
+	$qry = $GLOBALS['DB']->prepare($sql);
+	$qry->execute();
+	return $qry->fetchColumn(0);
+}
+	
 /**
  * *** validip/getip courtesy of manolete <manolete@myway.com> ***
  */
@@ -73,14 +91,22 @@ function validip($ip)
 // Patched function to detect REAL IP address if it's valid
 function getip()
 {
-    if (validip($_SERVER['_CLIENT_IP']))
-        return $_SERVER['_CLIENT_IP'];
-    elseif ($_SERVER['_X_FORWARDED_FOR'] != "") {
-        $forwarded = str_replace(",", "", $_SERVER['_X_FORWARDED_FOR']);
-        $forwarded_array = split(" ", $forwarded);
-        foreach($forwarded_array as $value) if (validip($value)) return $value;
-    } 
-    return $_SERVER['REMOTE_ADDR'];
+    $ipaddress = '';
+    if (getenv('HTTP_CLIENT_IP'))
+        $ipaddress = getenv('HTTP_CLIENT_IP');
+    else if(getenv('HTTP_X_FORWARDED_FOR'))
+        $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+    else if(getenv('HTTP_X_FORWARDED'))
+        $ipaddress = getenv('HTTP_X_FORWARDED');
+    else if(getenv('HTTP_FORWARDED_FOR'))
+        $ipaddress = getenv('HTTP_FORWARDED_FOR');
+    else if(getenv('HTTP_FORWARDED'))
+       $ipaddress = getenv('HTTP_FORWARDED');
+    else if(getenv('REMOTE_ADDR'))
+        $ipaddress = getenv('REMOTE_ADDR');
+    else
+        $ipaddress = 'UNKNOWN';
+    return $ipaddress;
 } 
 
 function dbconn($autoclean = false)
@@ -119,12 +145,12 @@ function userlogin()
 
     $ip = getip();
     $nip = ip2long($ip);
-    $res = mysql_query("SELECT * FROM bans WHERE $nip >= first AND $nip <= last") or sqlerr(__FILE__, __LINE__);
-    if (mysql_num_rows($res) > 0) {
+    //$res = mysql_query("SELECT * FROM bans WHERE " . $nip . " >= first AND " . $nip . " <= last") or sqlerr(__FILE__, __LINE__);
+    /*if (mysql_num_rows($res) > 0) {
         header("HTTP/1.0 403 Forbidden");
         print("<html><body><h1>403 Forbidden</h1>Unauthorized IP address.</body></html>\n");
         die;
-    } 
+    } */
     // Neues sessionbasiertes Login für bessere Performance und Anzeige neuer Torrents
     session_start();
 
@@ -134,6 +160,7 @@ function userlogin()
     if (isset($_SESSION["userdata"])) {
         // Aktivierungsstatus und IP prüfen (Session hijacking vermeiden)
         $enabled = mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS `cnt` FROM `users` WHERE `id` = " . $_SESSION["userdata"]["id"] . " AND `enabled`='yes' AND `status` = 'confirmed'"));
+        //$enabled = mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS `cnt` FROM `users` WHERE `id` = " . $_SESSION->userdata->id . " AND `enabled`='yes' AND `status` = 'confirmed'"));
         if ($enabled["cnt"] != 1 || $_SESSION["userdata"]["ip"] != $ip) {
             session_unset();
             session_destroy();
@@ -201,8 +228,11 @@ function logincookie($id, $passhash, $updatedb = 1, $expires = 0x7fffffff)
     setcookie("uid", $id, $expires, "/");
     setcookie("pass", $passhash, $expires, "/");
 
-    if ($updatedb)
-        mysql_query("UPDATE users SET last_login = NOW() WHERE id = $id");
+    if ($updatedb){
+		$qry = $GLOBALS['DB']->prepare('UPDATE users SET last_login = NOW() WHERE id = :id');
+		$qry->bindParam(':id', $id, PDO::PARAM_STR);
+		$qry->execute();
+	}
 } 
 
 function logoutcookie()
@@ -217,7 +247,7 @@ function loggedinorreturn()
 {
     global $CURUSER, $DEFAULTBASEURL;
     if (!$CURUSER) {
-        header("Location: $DEFAULTBASEURL/login.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]));
+        header("Location: " . $DEFAULTBASEURL . "/login.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]));
         exit();
     } 
 } 
@@ -394,18 +424,24 @@ function ratiostatbox()
         if ($tlimits["seeds"] >= 0) {
             if ($tlimits["seeds"] - $seeds < 1)
                 $seedwarn = " style=\"background-color:red;color:white;\"";
+			else
+				$seedwarn = "";
             $tlimits["seeds"] = " / " . $tlimits["seeds"];
         } else
             $tlimits["seeds"] = "";
         if ($tlimits["leeches"] >= 0) {
             if ($tlimits["leeches"] - $leeches < 1)
                 $leechwarn = " style=\"background-color:red;color:white;\"";
+			else
+				$leechwarn = "";
             $tlimits["leeches"] = " / " . $tlimits["leeches"];
         } else
             $tlimits["leeches"] = "";
         if ($tlimits["total"] >= 0) {
             if ($tlimits["total"] - $leeches + $seeds < 1)
                 $totalwarn = " style=\"background-color:red;color:white;\"";
+			else
+				$totalwarn = "";
             $tlimits["total"] = " / " . $tlimits["total"];
         } else
             $tlimits["total"] = "";
@@ -447,11 +483,20 @@ function stdhead($title = "", $msgalert = true)
         $ss_a = @mysql_fetch_assoc(@mysql_query("SELECT `uri` FROM `stylesheets` WHERE `id`=" . $CURUSER["stylesheet"]));
         if ($ss_a) $GLOBALS["ss_uri"] = $ss_a["uri"];
     } 
-
-    if (!$GLOBALS["ss_uri"]) {
-        ($r = mysql_query("SELECT `uri` FROM `stylesheets` WHERE `default`='yes'")) or die(mysql_error());
+	// mit null gefüllt, level notice
+	// kaito 07.11.2017
+	$GLOBALS["ss_uri"] = "zero";
+    if (!$GLOBALS["ss_uri"] || $GLOBALS["ss_uri"] == "zero") {
+       /* ($r = mysql_query("SELECT `uri` FROM `stylesheets` WHERE `default`='yes'")) or die(mysql_error());
         ($a = mysql_fetch_assoc($r)) or die(mysql_error());
-        $GLOBALS["ss_uri"] = $a["uri"];
+        $GLOBALS["ss_uri"] = $a["uri"];*/
+
+		$qry = $GLOBALS['DB']->prepare("SELECT `uri` FROM `stylesheets` WHERE `default`='yes'");
+		$qry->execute();
+		if($qry->rowCount() > 0){
+			$row = $qry->fetchObject();
+		}
+		$GLOBALS["ss_uri"] = $row->uri;
     } 
 
     if ($msgalert && $CURUSER) {

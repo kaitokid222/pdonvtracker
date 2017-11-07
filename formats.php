@@ -239,6 +239,6 @@ This file was originally written by hussdiesel at filesoup, then edited by Rhomb
 </td></tr></table>
 </td></tr></table>
 <br>
-<?
+<?php
 stdfoot();
 ?>

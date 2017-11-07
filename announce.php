@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -34,28 +34,23 @@ require_once("include/benc.php");
 hit_start();
 
 function hex2bin($hexdata) {
-  
-   for ($i=0;$i<strlen($hexdata);$i+=2) {
-     $bindata.=chr(hexdec(substr($hexdata,$i,2)));
-   }
-  
+    for ($i=0;$i<strlen($hexdata);$i+=2) {
+        $bindata.=chr(hexdec(substr($hexdata,$i,2)));
+    }
    return $bindata;
 }
 
-function err($msg)
-{
+function err($msg){
     benc_resp(array("failure reason" => array(type => "string", value => $msg)));
     hit_end();
     exit();
 }
 
-function benc_resp($d)
-{
+function benc_resp($d){
     benc_resp_raw(benc(array(type => "dictionary", value => $d)));
 }
 
-function benc_resp_raw($x)
-{
+function benc_resp_raw($x){
     header("Content-Type: text/plain");
     header("Pragma: no-cache");
     print($x);
@@ -104,14 +99,11 @@ if ($GLOBALS["CLIENT_AUTH"] == CLIENT_AUTH_PASSKEY) {
     }
 }
 
-foreach (explode(":", $req) as $x)
-{
-    if ($x[0] == "!")
-    {
+foreach (explode(":", $req) as $x){
+    if ($x[0] == "!"){
         $x = substr($x, 1);
         $opt = 1;
-    }
-    else
+    }else
         $opt = 0;
     if (!isset($_GET[$x]))
     {

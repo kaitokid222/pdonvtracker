@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -223,23 +223,23 @@ function messageLine($arr, $msgnr)
   <td class="tablea"><?=$receiverlink?></td>
   <td class="tableb" nowrap="nowrap"><?=$arr["added"]?></td>
   <td class="tablea" nowrap="nowrap">
-    <? if ($arr["receiver"] > 0) { ?>
+    <?php if ($arr["receiver"] > 0) { ?>
     <a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=delete&amp;id=<?=$arr["id"]?>"><img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/mail_delete.png" alt="Nachricht löschen" title="Nachricht löschen" style="border:none;"></a>
-    <? } else { ?>
+    <?php } else { ?>
     <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/mail_delete_disabled.png" alt="Nachricht löschen" title="Nachricht löschen" style="border:none;">
-    <? } ?>
+    <?php } ?>
     
-    <? if ($arr["receiver"] == $CURUSER["id"] && $arr["sender"] > 0 && $senderlink != "---") { ?>
+    <?php if ($arr["receiver"] == $CURUSER["id"] && $arr["sender"] > 0 && $senderlink != "---") { ?>
     <a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=reply&amp;id=<?=$arr["id"]?>"><img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/mail_reply.png" alt="Antworten" title="Antworten" style="border:none;"></a>
-    <? } else { ?>
+    <?php } else { ?>
     <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/mail_reply_disabled.png" alt="Antworten" title="Antworten" style="border:none;">
-    <? } ?>
+    <?php } ?>
     
-    <? if ($arr["receiver"] > 0 && $arr["sender"] > 0) { ?>
+    <?php if ($arr["receiver"] > 0 && $arr["sender"] > 0) { ?>
     <a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=move&amp;id=<?=$arr["id"]?>"><img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/2rightarrow.png" alt="Verschieben" title="Verschieben" style="border:none;"></a>
-    <? } else { ?>
+    <?php } else { ?>
     <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/2rightarrow_disabled.png" alt="Verschieben" title="Verschieben" style="border:none;">
-    <? } ?>
+    <?php } ?>
   </td>
 </tr>
 <?php
@@ -570,13 +570,13 @@ function folderConfigDialog()
     ?>
   <tr>
     <td class="tableb">Ordnername:</td>
-    <td class="tablea"><? if ($changename) { ?><input type="text" name="foldername" size="60" maxlength="120" value="<?=htmlspecialchars($finfo["name"])?>"><? } else { echo htmlspecialchars($finfo["name"]); } ?></td>
+    <td class="tablea"><?php if ($changename) { ?><input type="text" name="foldername" size="60" maxlength="120" value="<?=htmlspecialchars($finfo["name"])?>"><?php } else { echo htmlspecialchars($finfo["name"]); } ?></td>
   </tr>
   <tr>
     <td class="tableb">Sortieren nach:</td>
     <td class="tablea">
       <select name="sortfield" size="1">
-        <option value="added"<?=($finfo["sortfield"]=="added"?' selected="selected"':'')?>>Datum</option>
+        <option value="added"<?=($finfo["sortfield"]=="added"?' selected=\"selected\"':'')?>>Datum</option>
         <option value="subject"<?=($finfo["sortfield"]=="subject"?' selected="selected"':'')?>>Betreff</option>
         <option value="sendername"<?=($finfo["sortfield"]=="sendername"?' selected="selected"':'')?>>Absender</option>
         <option value="receivername"<?=($finfo["sortfield"]=="receivername"?' selected="selected"':'')?>>Empfänger</option>
@@ -645,7 +645,7 @@ Bitte gib an, was mit den enthaltenen Nachrichten geschehen soll, und klicke zur
 <form action="messages.php" method="post">
 <input type="hidden" name="folder" value="<?=$GLOBALS["FOLDER"]?>">
 <input type="hidden" name="action" value="deletefolder">
-    <?
+    <?php
     begin_table(TRUE);
     ?>
   <tr>
@@ -669,11 +669,11 @@ Bitte gib an, was mit den enthaltenen Nachrichten geschehen soll, und klicke zur
       <input type="submit" name="dodelete" value="Löschen">
     </td>
   </tr>
-    <?
+    <?php
     end_table();
     ?>
 </form>
-    <?
+    <?php
     end_frame();
     stdfoot();
 
@@ -691,9 +691,9 @@ function selectTargetFolderDialog($selids)
 <p>Bitte wähle einen Zielordner aus, in den Du die Nachricht(en) verschieben willst:</p>
 <form action="messages.php" method="post">
 <input type="hidden" name="folder" value="<?=$GLOBALS["FOLDER"]?>">
-<? if (strpos($selids, ",") === FALSE) { ?>
+<?php if (strpos($selids, ",") === FALSE) { ?>
 <input type="hidden" name="id" value="<?=$selids?>">
-<? } else {
+<?php } else {
     $arr = explode(",", $selids);
     for ($I=0; $I<count($arr); $I++)
         echo '<input type="hidden" name="selids[]" value="'.$arr[$I].'">'."\n";
@@ -713,7 +713,7 @@ function selectTargetFolderDialog($selids)
 </p>
 </center>
 </form>
-<?
+<?php
     end_frame();
     stdfoot();
 }
@@ -762,9 +762,9 @@ function displayMessage()
 <input type="hidden" name="folder" value="<?=$GLOBALS["FOLDER"]?>">
 <input type="hidden" name="action" value="read">
 <input type="hidden" name="id" value="<?=$msg["id"]?>">
-<? if ($sender_valid) { ?>
+<?php if ($sender_valid) { ?>
 <input type="hidden" name="receiver" value="<?=$msg["sender"]?>">
-<? } ?>
+<?php } ?>
     <?php
     begin_table(TRUE);
     ?>
@@ -793,11 +793,11 @@ function displayMessage()
   </tr>
   <tr>
     <td class="tablea" style="text-align:center;" colspan="2">
-      <? if ($msg["folder_in"] != PM_FOLDERID_MOD) { ?>
+      <?php if ($msg["folder_in"] != PM_FOLDERID_MOD) { ?>
       <input type="submit" name="delete" value="Nachricht löschen">
-      <? if ($msg["receiver"] == $CURUSER["id"] && $msg["sender"] > 0 && $msg["sendername"] != "Gelöscht") { ?>
+      <?php if ($msg["receiver"] == $CURUSER["id"] && $msg["sender"] > 0 && $msg["sendername"] != "Gelöscht") { ?>
       <input type="submit" name="reply" value="Antworten">
-      <? } ?>
+      <?php } ?>
         <select name="to_folder" size="1">
             <option>** Bitte Ordner auswählen **</option>
             <option value="<?=PM_FOLDERID_INBOX?>">Posteingang</option>
@@ -807,12 +807,12 @@ function displayMessage()
 ?>
           </select>
           <input type="submit" name="move" value="Verschieben">
-      <? } ?>
-      <? if ($msg["folder_in"] == PM_FOLDERID_MOD && $msg["mod_flag"] == "open") { ?>
+      <?php } ?>
+      <?php if ($msg["folder_in"] == PM_FOLDERID_MOD && $msg["mod_flag"] == "open") { ?>
       <input type="submit" name="markclosed" value="Als erledigt markieren">
-      <? } elseif ($msg["folder_in"] == PM_FOLDERID_MOD && $msg["mod_flag"] == "closed") { ?>
+      <?php } elseif ($msg["folder_in"] == PM_FOLDERID_MOD && $msg["mod_flag"] == "closed") { ?>
       <input type="submit" name="markopen" value="Als ausstehend markieren">
-      <? } ?>
+      <?php } ?>
     </td>
   </tr>
     <?php
@@ -936,9 +936,9 @@ function sendMessageDialog($replymsg = 0)
   <tr>
     <td class="tableb"><b>Optionen:</b></td>
     <td class="tablea">
-      <? if ($is_reply) { ?>
+      <?php if ($is_reply) { ?>
       <input type="checkbox" name="delorig" value="yes" <?=$CURUSER['deletepms'] == 'yes'?"checked":""?>> Nachricht l&ouml;schen, auf die Du antwortest<br>
-      <? } ?>
+      <?php } ?>
       <input type="checkbox" name="save" value="yes" <?=$CURUSER['savepms'] == 'yes'?"checked":""?>> Nachricht im Postausgang speichern
   </tr>
   <tr>

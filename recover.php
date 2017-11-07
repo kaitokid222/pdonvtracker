@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -142,7 +142,7 @@ else
     <?php begin_table(); ?>
 	<tr><td class="tableb">Verwendete E-Mail Adresse</td><td class="tablea"><input type=text size=40 name=email></td></tr>
 	<tr><td class="tablea" colspan="2" style="text-align:center"><input type="submit" value="Und ab!" class="btn"></td></tr>
-	<?
+	<?php
     end_table();
     ?></center></form><?php
     end_frame();

@@ -83,7 +83,7 @@ ob_start("ob_gzhandler");
 <td class=tablecat align=left>Registriert</td>
 
 </tr>
-<?
+<?php
     $num = 0;
     while ($a = mysql_fetch_assoc($res))
     {
@@ -129,7 +129,7 @@ ob_start("ob_gzhandler");
 <td class=tablecat style="text-align:right">To.</td>
 <td class=tablecat style="text-align:right">Ratio</td>
 </tr>
-<?
+<?php
     $num = 0;
     while ($a = mysql_fetch_assoc($res))
     {
@@ -165,7 +165,7 @@ ob_start("ob_gzhandler");
 <td class=tablecat>Land</td>
 <td class=tablecat style="text-align:right"><?=$what?></td>
 </tr>
-<?
+<?php
   	$num = 0;
 		while ($a = mysql_fetch_assoc($res))
 		{
@@ -201,7 +201,7 @@ ob_start("ob_gzhandler");
 <td class=tablecat>Upload-Rate</td>
 <td class=tablecat>Download-Rate</td>
 </tr>
-<?
+<?php
 
         $n = 1;
         while ($arr = mysql_fetch_assoc($res))
@@ -232,14 +232,14 @@ ob_start("ob_gzhandler");
 <table cellpadding="4" cellspacing="1" border="0" style="width:750px" class="tableinborder">
 <tr class="tabletitle" width="100%">
 <td colspan="10" width="100%"><span class="smallfont"><center>
-<?
+<?php
     print(($type == 1 && !$limit ? "<b>Benutzer</b>" : "<a href=topten.php?type=1>Benutzer</a>") .    " | " .
           ($type == 2 && !$limit ? "<b>Torrents</b>" : "<a href=topten.php?type=2>Torrents</a>") . " | " .
           ($type == 3 && !$limit ? "<b>Länder</b>" : "<a href=topten.php?type=3>Länder</a>") . " | " .
           ($type == 4 && !$limit ? "<b>Peers</b>" : "<a href=topten.php?type=4>Peers</a>"));
 ?>
  </center></span></td></tr></table><br>
-<?
+<?php
 	$pu = get_user_class() >= UC_POWER_USER;
 
   if (!$pu)
@@ -395,7 +395,7 @@ ob_start("ob_gzhandler");
   <td colspan="10" width="100%"><span class="smallfont"><center>
   Transferaufzeichnungen am 2003-08-31 begonnen
  </tr></table>
-<?  
+<?php  
   print("");
   stdfoot();
 ?>

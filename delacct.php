@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -57,15 +57,15 @@ noch nicht bestätigten Account zu entfernen.</p>
 in diesem Fall eine PN an ein Teammitglied. Dieses wird Deinen Account dann
 deaktivieren.</p>
 <form method=post action=delacct.php>
-<?
+<?php
 begin_table(TRUE);
 ?>
 <tr><td class=tableb>Benutzername</td><td class=tablea><input size="40" name="username"<? if ($CURUSER) echo " value=\"".$CURUSER["username"]."\""; ?>></td></tr>
 <tr><td class=tableb>Passwort</td><td class=tablea><input type=password size=40 name=password></td></tr>
 <tr><td class=tablea colspan=2 align="center"><input type=submit class=btn value='L&ouml;schen'></td></tr>
-<? end_table(); ?>
+<?php end_table(); ?>
 </form>
-<?
+<?php
 end_frame();
 
 stdfoot();

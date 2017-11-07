@@ -3,7 +3,7 @@
 <title>Figg Disch Und Stirb</title>
 </head>
 <body>
-<h1><?
+<h1><?php
 
 $headlines = Array(
     "Geh kacken!",
@@ -17,7 +17,7 @@ shuffle($headlines);
 echo $headlines[0];
 
 ?></h1>
-<p>Diese Fehlermeldung wird Ihnen präsentiert von <?
+<p>Diese Fehlermeldung wird Ihnen präsentiert von <?php
 
 $user = Array(
     "DMI",
@@ -39,7 +39,7 @@ shuffle($user);
 echo $user[0];
 
 ?> und:</p>
-<p><?
+<p><?php
 
 $sponsors = Array(
     "HOMBACHER - Die Pferdesalami", 

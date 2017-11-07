@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -224,10 +224,10 @@ begin_table(TRUE);
 </colgroup>
 <tr>
   <th class="tablecat"><input onclick="selectAll();" type="checkbox" id="selall" name="selall" value="1"></th>
-  <th class="tablecat" nowrap="nowrap"><? if ($finfo["sortfield"] == "subject") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=subject&amp;sortorder=<? if ($finfo["sortfield"] == "subject") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Betreff</a></th>
-  <th class="tablecat" nowrap="nowrap"><? if ($finfo["sortfield"] == "sendername") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=sendername&amp;sortorder=<? if ($finfo["sortfield"] == "sendername") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Absender</a></th>
-  <th class="tablecat" nowrap="nowrap"><? if ($finfo["sortfield"] == "receivername") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=receivername&amp;sortorder=<? if ($finfo["sortfield"] == "receivername") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Empfänger</a></th>
-  <th class="tablecat" nowrap="nowrap"><? if ($finfo["sortfield"] == "added") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=added&amp;sortorder=<? if ($finfo["sortfield"] == "added") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Datum</a></th>
+  <th class="tablecat" nowrap="nowrap"><?php if ($finfo["sortfield"] == "subject") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=subject&amp;sortorder=<?php if ($finfo["sortfield"] == "subject") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Betreff</a></th>
+  <th class="tablecat" nowrap="nowrap"><?php if ($finfo["sortfield"] == "sendername") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=sendername&amp;sortorder=<?php if ($finfo["sortfield"] == "sendername") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Absender</a></th>
+  <th class="tablecat" nowrap="nowrap"><?php if ($finfo["sortfield"] == "receivername") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=receivername&amp;sortorder=<?php if ($finfo["sortfield"] == "receivername") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Empfänger</a></th>
+  <th class="tablecat" nowrap="nowrap"><?php if ($finfo["sortfield"] == "added") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=added&amp;sortorder=<?php if ($finfo["sortfield"] == "added") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Datum</a></th>
   <th class="tablecat">&nbsp;</th>
 </tr>
 <?php
@@ -325,9 +325,9 @@ end_table();
 ?>
         <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/folder_new.png" alt="Neuer Ordner" title="Neuer Ordner" style="vertical-align:middle">&nbsp;<a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=createfolder">Ordner erstellen</a><br>
         <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/configure.png" alt="Konfigurieren" title="Konfigurieren" style="vertical-align:middle">&nbsp;<a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=config">Ordner konfigurieren</a><br>
-        <? if ($GLOBALS["FOLDER"] > 0) { ?>
+        <?php if ($GLOBALS["FOLDER"] > 0) { ?>
         <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/editdelete.png" alt="Löschen" title="Löschen" style="vertical-align:middle">&nbsp;<a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=deletefolder">Ordner löschen</a><br>
-        <? } ?>
+        <?php } ?>
         <br>
         <?php
         end_frame();

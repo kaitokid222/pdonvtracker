@@ -16,7 +16,7 @@ CREATE TABLE `accounts` (
   `email` varchar(128) NOT NULL default '',
   `baduser` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`userid`,`chash`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `announcedelay`
@@ -27,7 +27,7 @@ CREATE TABLE `announcedelay` (
   `first` int(10) unsigned NOT NULL default '0',
   `second` int(10) unsigned NOT NULL default '0',
   `quantity` bigint(20) unsigned NOT NULL default '0'
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `avps`
@@ -39,7 +39,7 @@ CREATE TABLE `avps` (
   `value_i` int(11) NOT NULL default '0',
   `value_u` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`arg`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Dumping data for table `avps`
@@ -62,7 +62,7 @@ CREATE TABLE `bans` (
   `last` int(11) default NULL,
   PRIMARY KEY  (id),
   KEY first_last (`first`,`last`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `bitbucket`
@@ -75,7 +75,7 @@ CREATE TABLE `bitbucket` (
   `size` int(11) NOT NULL default '0',
   `originalname` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `blocks`
@@ -87,7 +87,7 @@ CREATE TABLE blocks (
   `blockid` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `userfriend` (`userid`,`blockid`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `casino_bank`
@@ -98,7 +98,7 @@ CREATE TABLE `casino_bank` (
   `passphrase` varchar(32) NOT NULL default '',
   `balance` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`userid`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `categories`
@@ -109,7 +109,7 @@ CREATE TABLE `categories` (
   `name` varchar(30) NOT NULL default '',
   `image` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Dumping data for table `categories`
@@ -127,7 +127,7 @@ INSERT INTO `categories` VALUES (19,'Movies/XviD','cat_movies2.gif');
 INSERT INTO `categories` VALUES (20,'Movies/DVD-R','cat_movies4.gif');
 INSERT INTO `categories` VALUES (21,'Games/PC Rips','cat_games2.gif');
 INSERT INTO `categories` VALUES (22,'Software/Sonstiges','cat_apps2.gif');
-INSERT INTO `categories` VALUES (24,'Hörspiel/Hörbuch','cat_music2.gif');
+INSERT INTO `categories` VALUES (24,'HÃ¶rspiel/HÃ¶rbuch','cat_music2.gif');
 INSERT INTO `categories` VALUES (25,'Doku / Magazin','cat_documentation.gif');
 INSERT INTO `categories` VALUES (26,'Movies/(M)VCD','cat_movies5.gif');
 
@@ -147,7 +147,7 @@ CREATE TABLE `comments` (
   PRIMARY KEY  (id),
   KEY `user` (`user`),
   KEY `torrent` (`torrent`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `completed`
@@ -161,7 +161,7 @@ CREATE TABLE `completed` (
   `torrent_category` int(10) NOT NULL default '0',
   `complete_time` datetime NOT NULL default '0000-00-00 00:00:00',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `countries`
@@ -172,7 +172,7 @@ CREATE TABLE `countries` (
   `name` varchar(50) default NULL,
   `flagpic` varchar(50) default NULL,
   PRIMARY KEY  (id)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Dumping data for table `countries`
@@ -291,7 +291,7 @@ CREATE TABLE `files` (
   `size` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `torrent` (`torrent`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `forums`
@@ -308,20 +308,20 @@ CREATE TABLE `forums` (
   `topiccount` int(10) unsigned NOT NULL default '0',
   `minclasscreate` tinyint(3) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Dumping data for table `forums`
 --
 
-INSERT INTO `forums` VALUES (3,1,'Support','Hier bekommt ihr Hilfe für alle Trackerprobleme, die NICHT in der FAQ beschrieben sind.',0,0,118,19,0);
+INSERT INTO `forums` VALUES (3,1,'Support','Hier bekommt ihr Hilfe fÃ¼r alle Trackerprobleme, die NICHT in der FAQ beschrieben sind.',0,0,118,19,0);
 INSERT INTO `forums` VALUES (4,2,'Support for English Users','If you are an english speaking user and have a question or a problem, you can post it here.',0,0,3,2,0);
-INSERT INTO `forums` VALUES (0,3,'SysOp-Talk','SysOps willkommen, alle anderen müssen draussen bleiben ;)',6,6,0,0,6);
+INSERT INTO `forums` VALUES (0,3,'SysOp-Talk','SysOps willkommen, alle anderen mÃ¼ssen draussen bleiben ;)',6,6,0,0,6);
 INSERT INTO `forums` VALUES (1,4,'Mod-Talk','',4,4,0,0,4);
-INSERT INTO `forums` VALUES (2,5,'Uploader-Talk','Falls die Uploader untereinander etwas besprechen müssen',3,3,34,8,3);
+INSERT INTO `forums` VALUES (2,5,'Uploader-Talk','Falls die Uploader untereinander etwas besprechen mÃ¼ssen',3,3,34,8,3);
 INSERT INTO `forums` VALUES (0,6,'Off Topic','',0,0,82,21,0);
-INSERT INTO `forums` VALUES (6,7,'Ich könnte anbieten','Der Name sagt wohl alles ;)',0,0,84,31,0);
-INSERT INTO `forums` VALUES (7,8,'Umfragen','Hier könnt ihr über die aktuelle Umfrage diskutieren',0,0,29,4,0);
+INSERT INTO `forums` VALUES (6,7,'Ich kÃ¶nnte anbieten','Der Name sagt wohl alles ;)',0,0,84,31,0);
+INSERT INTO `forums` VALUES (7,8,'Umfragen','Hier kÃ¶nnt ihr Ã¼ber die aktuelle Umfrage diskutieren',0,0,29,4,0);
 
 --
 -- Table structure for table `friends`
@@ -333,7 +333,7 @@ CREATE TABLE `friends` (
   `friendid` int(10) unsigned NOT NULL default '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `userfriend` (`userid`,`friendid`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `messages`
@@ -353,7 +353,7 @@ CREATE TABLE `messages` (
   `mod_flag` enum('','open','closed') NOT NULL default '',
   PRIMARY KEY  (`id`),
   KEY `receiver` (`receiver`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `modcomments`
@@ -364,7 +364,7 @@ CREATE TABLE `modcomments` (
   `userid` int(10) unsigned NOT NULL default '0',
   `moduid` int(10) unsigned NOT NULL default '0',
   `txt` text NOT NULL
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `news`
@@ -378,7 +378,7 @@ CREATE TABLE `news` (
   `body` text NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `added` (`added`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `nowait`
@@ -390,7 +390,7 @@ CREATE TABLE `nowait` (
   `status` enum('pending','granted','rejected') NOT NULL default 'pending',
   `grantor` int(10) NOT NULL default '0',
   `msg` text NOT NULL
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `peers`
@@ -421,7 +421,7 @@ CREATE TABLE `peers` (
   KEY `last_action` (`last_action`),
   KEY `connectable` (`connectable`),
   KEY `userid` (`userid`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `pmfolders`
@@ -436,7 +436,7 @@ CREATE TABLE `pmfolders` (
   `sortorder` varchar(4) NOT NULL default 'DESC',
   `prunedays` int(10) NOT NULL default '0',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `pollanswers`
@@ -451,7 +451,7 @@ CREATE TABLE `pollanswers` (
   KEY `pollid` (`pollid`),
   KEY `selection` (`selection`),
   KEY `userid` (`userid`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `polls`
@@ -483,7 +483,7 @@ CREATE TABLE `polls` (
   `option19` varchar(150) NOT NULL default '',
   `sort` enum('yes','no') NOT NULL default 'yes',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `posts`
@@ -501,7 +501,7 @@ CREATE TABLE `posts` (
   KEY `topicid` (`topicid`),
   KEY `userid` (`userid`),
   FULLTEXT KEY `body` (`body`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `ratiostats`
@@ -514,7 +514,7 @@ CREATE TABLE `ratiostats` (
   `downloaded` bigint(20) unsigned NOT NULL default '0',
   `uploaded` bigint(20) unsigned NOT NULL default '0',
   PRIMARY KEY  (`userid`,`timecode`,`type`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `readposts`
@@ -528,7 +528,7 @@ CREATE TABLE `readposts` (
   PRIMARY KEY  (`id`),
   KEY `userid` (`id`),
   KEY `topicid` (`topicid`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `sitelog`
@@ -541,7 +541,7 @@ CREATE TABLE `sitelog` (
   `txt` text,
   PRIMARY KEY  (`id`),
   KEY `added` (`added`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `startstoplog`
@@ -555,7 +555,7 @@ CREATE TABLE `startstoplog` (
   `ip` varchar(15) NOT NULL default '',
   `peerid` varchar(20) NOT NULL default '',
   `useragent` varchar(255) NOT NULL default ''
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `stylesheets`
@@ -567,7 +567,7 @@ CREATE TABLE `stylesheets` (
   `name` varchar(64) NOT NULL default '',
   `default` enum('yes','no') NOT NULL default 'no',
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Dumping data for table `stylesheets`
@@ -590,28 +590,28 @@ CREATE TABLE `test` (
   `question` text NOT NULL,
   `answers` text NOT NULL,
   PRIMARY KEY  (`id`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Dumping data for table `test`
 --
 
-INSERT INTO `test` VALUES (1,'checkbox','Was darf ich in meinem BitBucket speichern?','a:6:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:59:\"Filmplakate, CD-Covers und Sample-Screenshots für Releases.\";s:7:\"correct\";i:1;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:93:\"Dateien und Downloads aller Art, falls mein Free-Webspace bei Arcor etc. nicht mehr ausreicht\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:74:\"Nur Bilder, jedoch keine mit pornographischen oder gewalttätigen Inhalten.\";s:7:\"correct\";i:1;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:69:\"Bilder, Videos und MP3s, jedoch nur bis zu einer Dateigröße von 5 MB.\";s:7:\"correct\";i:0;}i:4;a:3:{s:2:\"id\";i:5;s:6:\"answer\";s:48:\"Nur ein Avatar-Bild in der Größe 150x150 Punkte.\";s:7:\"correct\";i:0;}i:5;a:3:{s:2:\"id\";i:6;s:6:\"answer\";s:75:\"Auch Screenshots und Wallpaper, solange diese nicht größer als 256 KB sind.\";s:7:\"correct\";i:1;}}');
+INSERT INTO `test` VALUES (1,'checkbox','Was darf ich in meinem BitBucket speichern?','a:6:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:59:\"Filmplakate, CD-Covers und Sample-Screenshots fÃ¼r Releases.\";s:7:\"correct\";i:1;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:93:\"Dateien und Downloads aller Art, falls mein Free-Webspace bei Arcor etc. nicht mehr ausreicht\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:74:\"Nur Bilder, jedoch keine mit pornographischen oder gewalttÃ¤tigen Inhalten.\";s:7:\"correct\";i:1;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:69:\"Bilder, Videos und MP3s, jedoch nur bis zu einer DateigrÃ¶ÃŸe von 5 MB.\";s:7:\"correct\";i:0;}i:4;a:3:{s:2:\"id\";i:5;s:6:\"answer\";s:48:\"Nur ein Avatar-Bild in der GrÃ¶ÃŸe 150x150 Punkte.\";s:7:\"correct\";i:0;}i:5;a:3:{s:2:\"id\";i:6;s:6:\"answer\";s:75:\"Auch Screenshots und Wallpaper, solange diese nicht grÃ¶ÃŸer als 256 KB sind.\";s:7:\"correct\";i:1;}}');
 INSERT INTO `test` VALUES (2,'checkbox','Welche Client-Ports sind auf diesem Tracker blockiert?','a:6:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:2:\"80\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:4:\"1214\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:4:\"4662\";s:7:\"correct\";i:1;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:9:\"6881-6889\";s:7:\"correct\";i:1;}i:4;a:3:{s:2:\"id\";i:5;s:6:\"answer\";s:5:\"27005\";s:7:\"correct\";i:0;}i:5;a:3:{s:2:\"id\";i:6;s:6:\"answer\";s:11:\"45300-45350\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (3,'radio','Welche Voraussetzung muss erfüllt sein, um eine Wartezeitaufhebung erfolgreich beantragen zu können?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:49:\"Es sind weniger als drei Stunden Wartezeit übrig.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:73:\"Der Benutzer muss den festen Willen haben, diese Datei leechen zu wollen.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:114:\"Der Benutzer muss einen wichtigen Grund haben, z.B. möchte er den Film etc. seiner Mutter zum Geburtstag schenken.\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:61:\"Der Benutzer hat die Datei schon und möchte diese nur seeden.\";s:7:\"correct\";i:1;}}');
-INSERT INTO `test` VALUES (4,'radio','Welche Mindestgröße müssen Torrents haben, die auf den Tracker geladen werden?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:5:\"10 MB\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:5:\"30 MB\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:6:\"100 MB\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:4:\"1 GB\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (5,'radio','Was sollte auf jeden Fall im Torrentnamen stehen?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:17:\"Name der Trackers\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:20:\"Sprache des Releases\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:16:\"Name des Seeders\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:17:\"Gruß an die Mutti\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (6,'radio','Nach wie vielen Tagen werden inaktive Accounts automatisch gelöscht?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:13:\"Nach 30 Tagen\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:13:\"Nach 42 Tagen\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:13:\"Nach 60 Tagen\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:13:\"Nach 72 Tagen\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (7,'radio','Welche Datenmenge darf ein Webseeder maximal hochladen?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:62:\"Ca. 200% der Torrentgröße, bei hoher Nachfrage ggf. auch mehr.\";s:7:\"correct\";i:1;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:60:\"So viel wie der Server des Webseeders noch Traffic über hat.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:49:\"Bis der Webseeder auf Platz 1 der Uploader steht.\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:54:\"Auf diesem Tracker muss gar nichts hochgeladen werden.\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (8,'radio','Was sollte man tun, wenn man ein Release fertig runtergeladen hat (100%)?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:79:\"Die Daten mehrfach auf CD/DVD brennen und auf dem nächsten Flohmarkt verkaufen.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:83:\"Das Release noch im Client aktiv lassen und bestenfalls nochmal komplett hochladen.\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:75:\"Sofort stoppen, damit man mehr Bandbreite für das nächste Release frei hat.\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:50:\"Das Release sofort auf anderen Trackern hochladen.\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (9,'radio','Was kannst Du machen, wenn Du eine Frage hast oder Dir wegen einer Regel unsicher bist?','a:3:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:93:\"Ich melde mich im Board an, und eröffne in möglichst vielen Foren ein thema mit meiner Frage.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:76:\"Ich benutze den \"IRC-Chat\"-Link im Menü, und frage die Benutzer dort um Rat.\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:68:\"Ich will hier nur Releases leechen, da bleibt für Fragen keine Zeit.\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (10,'radio','Was bedeutet \"Anti-Leech-Tracker\"?','a:3:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:115:\"Auf einem Anti-Leech-Tracker kann man Saugen bis die Leitung glüht, da viele Leute mit dicken Leitungen aktiv sind.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:112:\"Anti-Leech heißt \"Nehmen und Geben\", sprich es müssen auch Daten hochgeladen werden, um dabei bleiben zu dürfen.\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:135:\"Ein \"Anti-Leech-Tracker\" ist ein neues Fahrzeug zur Bekämpfung.von Blutegeln auf Reisfeldern, damit die Arbeiter nicht gebissen werden.\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (11,'radio','Was ist eine Ratio?','a:3:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:103:\"Ratio ist eine Abkürzung von Rotation. Je höher die Rotation, desto schlechter ist es für den Benutzer.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:86:\"Das ist falsch geschrieben und heißt Ration, ein Wort für eine tägliche Portion Essen.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:112:\"Die Ratio ist das Verhältnis der hochgeladenen Daten zu den heruntergeladenen. Je höher die Ratio, desto besser.\";s:7:\"correct\";i:1;}}');
-INSERT INTO `test` VALUES (12,'radio','Was bedeutet es, wenn Du als nicht erreichbar angezeigt wirst?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:97:\"Ein SysOp hat versucht, Dich über Deine E-Mail-Adresse zu erreichen, aber das hat nicht geklappt.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:65:\"Dein (DSL-)Provider hat die Nutzung von BitTorrent eingeschränkt.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:104:\"Dein Client-Port ist für Rechner im Internet nicht offen, da Du einen Router oder eine Firewall benutzt.\";s:7:\"correct\";i:1;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:77:\"Nicht erreichbar sein ist gut, denn dann kann man Dich nicht zurückverfolgen.\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (13,'checkbox','Welche der folgenden Aussagen treffen zu, damit Du Uploader werden kannst und bleibst?','a:7:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:72:\"Ich muss lediglich einen Moderator bitten, mir diesen Rang zu verleihen.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:48:\"Ich muss eine gute Upload-Geschwindigkeit haben.\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:64:\"Ich muss mindestens 4 Releases innerhalb von 28 Tagen hochladen.\";s:7:\"correct\";i:1;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:66:\"Wenn ich einen Rootserver besitze, werde ich automatisch Uploader.\";s:7:\"correct\";i:0;}i:4;a:3:{s:2:\"id\";i:5;s:6:\"answer\";s:49:\"Ich muss schon mindestens 5 GB hochgeladen haben.\";s:7:\"correct\";i:1;}i:5;a:3:{s:2:\"id\";i:6;s:6:\"answer\";s:35:\"Meine Ratio muss größer als 1 sein.\";s:7:\"correct\";i:1;}i:6;a:3:{s:2:\"id\";i:7;s:6:\"answer\";s:46:\"T-DSL 6000 ist Minimum, um Uploader zu werden.\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (14,'radio','Wo kannst Du Dein Avatar-Bild ablegen?','a:3:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:96:\"Ich lege es nirgends ab, sondern verlinke das Bild direkt von der Seite wo ich es gefunden habe.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:113:\"Ich lade es auf meine private Website, so können andere Benutzer auch direkt über meine Domain sehen wer ich bin.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:91:\"Ich lade das Bild auf den Tracker-Server, dort wird mir Platz dafür zur Verfügung gestellt.\";s:7:\"correct\";i:1;}}');
-INSERT INTO `test` VALUES (15,'radio','Was machst Du, wenn Du eine Verwarnung wegen zu wenig Upload erhalten hast?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:59:\"Ich lösche den Account und lege mir einfach einen Neuen an.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:97:\"Ich versuche, so lange Daten hochzuladen bis das Verhältnis zum Download wieder ausgeglichen ist.\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:70:\"Ich packe meine DoS-Tools aus und lege den Tracker für einen Tag lahm.\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:72:\"Gar nichts, die Verwarnung wird nach einer Woche automatisch aufgehoben.\";s:7:\"correct\";i:0;}}');
-INSERT INTO `test` VALUES (16,'radio','Wie viele Torrents darfst Du gleichzeitig leechen?','a:5:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:97:\"Die Menge ist abhängig davon, wie viel ich bislang hochgeladen habe, und wie gut meine Ratio ist.\";s:7:\"correct\";i:1;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:51:\"Ich darf maximal 10 Torrent zeitgleich runterladen.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:91:\"Wenn ich gerade mindestens einen Torrent hochlade, darf ich in der Zeit keinen runterladen.\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:148:\"Die Menge ist abhängig von meiner Internetgeschwindigkeit. Ein T-DSL 6000 Benutzer darf z.B. 6 Torrents zeitgleich saugen (Bandbreite in KBit/1000).\";s:7:\"correct\";i:0;}i:4;a:3:{s:2:\"id\";i:5;s:6:\"answer\";s:27:\"Es gibt keine Beschränkung.\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (3,'radio','Welche Voraussetzung muss erfÃ¼llt sein, um eine Wartezeitaufhebung erfolgreich beantragen zu kÃ¶nnen?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:49:\"Es sind weniger als drei Stunden Wartezeit Ã¼brig.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:73:\"Der Benutzer muss den festen Willen haben, diese Datei leechen zu wollen.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:114:\"Der Benutzer muss einen wichtigen Grund haben, z.B. mÃ¶chte er den Film etc. seiner Mutter zum Geburtstag schenken.\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:61:\"Der Benutzer hat die Datei schon und mÃ¶chte diese nur seeden.\";s:7:\"correct\";i:1;}}');
+INSERT INTO `test` VALUES (4,'radio','Welche MindestgrÃ¶ÃŸe mÃ¼ssen Torrents haben, die auf den Tracker geladen werden?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:5:\"10 MB\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:5:\"30 MB\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:6:\"100 MB\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:4:\"1 GB\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (5,'radio','Was sollte auf jeden Fall im Torrentnamen stehen?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:17:\"Name der Trackers\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:20:\"Sprache des Releases\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:16:\"Name des Seeders\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:17:\"GruÃŸ an die Mutti\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (6,'radio','Nach wie vielen Tagen werden inaktive Accounts automatisch gelÃ¶scht?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:13:\"Nach 30 Tagen\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:13:\"Nach 42 Tagen\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:13:\"Nach 60 Tagen\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:13:\"Nach 72 Tagen\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (7,'radio','Welche Datenmenge darf ein Webseeder maximal hochladen?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:62:\"Ca. 200% der TorrentgrÃ¶ÃŸe, bei hoher Nachfrage ggf. auch mehr.\";s:7:\"correct\";i:1;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:60:\"So viel wie der Server des Webseeders noch Traffic Ã¼ber hat.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:49:\"Bis der Webseeder auf Platz 1 der Uploader steht.\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:54:\"Auf diesem Tracker muss gar nichts hochgeladen werden.\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (8,'radio','Was sollte man tun, wenn man ein Release fertig runtergeladen hat (100%)?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:79:\"Die Daten mehrfach auf CD/DVD brennen und auf dem nÃ¤chsten Flohmarkt verkaufen.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:83:\"Das Release noch im Client aktiv lassen und bestenfalls nochmal komplett hochladen.\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:75:\"Sofort stoppen, damit man mehr Bandbreite fÃ¼r das nÃ¤chste Release frei hat.\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:50:\"Das Release sofort auf anderen Trackern hochladen.\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (9,'radio','Was kannst Du machen, wenn Du eine Frage hast oder Dir wegen einer Regel unsicher bist?','a:3:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:93:\"Ich melde mich im Board an, und erÃ¶ffne in mÃ¶glichst vielen Foren ein thema mit meiner Frage.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:76:\"Ich benutze den \"IRC-Chat\"-Link im MenÃ¼, und frage die Benutzer dort um Rat.\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:68:\"Ich will hier nur Releases leechen, da bleibt fÃ¼r Fragen keine Zeit.\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (10,'radio','Was bedeutet \"Anti-Leech-Tracker\"?','a:3:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:115:\"Auf einem Anti-Leech-Tracker kann man Saugen bis die Leitung glÃ¼ht, da viele Leute mit dicken Leitungen aktiv sind.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:112:\"Anti-Leech heiÃŸt \"Nehmen und Geben\", sprich es mÃ¼ssen auch Daten hochgeladen werden, um dabei bleiben zu dÃ¼rfen.\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:135:\"Ein \"Anti-Leech-Tracker\" ist ein neues Fahrzeug zur BekÃ¤mpfung.von Blutegeln auf Reisfeldern, damit die Arbeiter nicht gebissen werden.\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (11,'radio','Was ist eine Ratio?','a:3:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:103:\"Ratio ist eine AbkÃ¼rzung von Rotation. Je hÃ¶her die Rotation, desto schlechter ist es fÃ¼r den Benutzer.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:86:\"Das ist falsch geschrieben und heiÃŸt Ration, ein Wort fÃ¼r eine tÃ¤gliche Portion Essen.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:112:\"Die Ratio ist das VerhÃ¤ltnis der hochgeladenen Daten zu den heruntergeladenen. Je hÃ¶her die Ratio, desto besser.\";s:7:\"correct\";i:1;}}');
+INSERT INTO `test` VALUES (12,'radio','Was bedeutet es, wenn Du als nicht erreichbar angezeigt wirst?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:97:\"Ein SysOp hat versucht, Dich Ã¼ber Deine E-Mail-Adresse zu erreichen, aber das hat nicht geklappt.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:65:\"Dein (DSL-)Provider hat die Nutzung von BitTorrent eingeschrÃ¤nkt.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:104:\"Dein Client-Port ist fÃ¼r Rechner im Internet nicht offen, da Du einen Router oder eine Firewall benutzt.\";s:7:\"correct\";i:1;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:77:\"Nicht erreichbar sein ist gut, denn dann kann man Dich nicht zurÃ¼ckverfolgen.\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (13,'checkbox','Welche der folgenden Aussagen treffen zu, damit Du Uploader werden kannst und bleibst?','a:7:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:72:\"Ich muss lediglich einen Moderator bitten, mir diesen Rang zu verleihen.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:48:\"Ich muss eine gute Upload-Geschwindigkeit haben.\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:64:\"Ich muss mindestens 4 Releases innerhalb von 28 Tagen hochladen.\";s:7:\"correct\";i:1;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:66:\"Wenn ich einen Rootserver besitze, werde ich automatisch Uploader.\";s:7:\"correct\";i:0;}i:4;a:3:{s:2:\"id\";i:5;s:6:\"answer\";s:49:\"Ich muss schon mindestens 5 GB hochgeladen haben.\";s:7:\"correct\";i:1;}i:5;a:3:{s:2:\"id\";i:6;s:6:\"answer\";s:35:\"Meine Ratio muss grÃ¶ÃŸer als 1 sein.\";s:7:\"correct\";i:1;}i:6;a:3:{s:2:\"id\";i:7;s:6:\"answer\";s:46:\"T-DSL 6000 ist Minimum, um Uploader zu werden.\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (14,'radio','Wo kannst Du Dein Avatar-Bild ablegen?','a:3:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:96:\"Ich lege es nirgends ab, sondern verlinke das Bild direkt von der Seite wo ich es gefunden habe.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:113:\"Ich lade es auf meine private Website, so kÃ¶nnen andere Benutzer auch direkt Ã¼ber meine Domain sehen wer ich bin.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:91:\"Ich lade das Bild auf den Tracker-Server, dort wird mir Platz dafÃ¼r zur VerfÃ¼gung gestellt.\";s:7:\"correct\";i:1;}}');
+INSERT INTO `test` VALUES (15,'radio','Was machst Du, wenn Du eine Verwarnung wegen zu wenig Upload erhalten hast?','a:4:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:59:\"Ich lÃ¶sche den Account und lege mir einfach einen Neuen an.\";s:7:\"correct\";i:0;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:97:\"Ich versuche, so lange Daten hochzuladen bis das VerhÃ¤ltnis zum Download wieder ausgeglichen ist.\";s:7:\"correct\";i:1;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:70:\"Ich packe meine DoS-Tools aus und lege den Tracker fÃ¼r einen Tag lahm.\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:72:\"Gar nichts, die Verwarnung wird nach einer Woche automatisch aufgehoben.\";s:7:\"correct\";i:0;}}');
+INSERT INTO `test` VALUES (16,'radio','Wie viele Torrents darfst Du gleichzeitig leechen?','a:5:{i:0;a:3:{s:2:\"id\";i:1;s:6:\"answer\";s:97:\"Die Menge ist abhÃ¤ngig davon, wie viel ich bislang hochgeladen habe, und wie gut meine Ratio ist.\";s:7:\"correct\";i:1;}i:1;a:3:{s:2:\"id\";i:2;s:6:\"answer\";s:51:\"Ich darf maximal 10 Torrent zeitgleich runterladen.\";s:7:\"correct\";i:0;}i:2;a:3:{s:2:\"id\";i:3;s:6:\"answer\";s:91:\"Wenn ich gerade mindestens einen Torrent hochlade, darf ich in der Zeit keinen runterladen.\";s:7:\"correct\";i:0;}i:3;a:3:{s:2:\"id\";i:4;s:6:\"answer\";s:148:\"Die Menge ist abhÃ¤ngig von meiner Internetgeschwindigkeit. Ein T-DSL 6000 Benutzer darf z.B. 6 Torrents zeitgleich saugen (Bandbreite in KBit/1000).\";s:7:\"correct\";i:0;}i:4;a:3:{s:2:\"id\";i:5;s:6:\"answer\";s:27:\"Es gibt keine BeschrÃ¤nkung.\";s:7:\"correct\";i:0;}}');
 
 --
 -- Table structure for table `topics`
@@ -630,7 +630,7 @@ CREATE TABLE `topics` (
   KEY `userid` (`userid`),
   KEY `subject` (`subject`),
   KEY `lastpost` (`lastpost`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `torrents`
@@ -672,7 +672,7 @@ CREATE TABLE `torrents` (
   KEY `visible` (`visible`),
   KEY `category_visible` (`category`,`visible`),
   FULLTEXT KEY `ft_search` (`search_text`,`ori_descr`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `traffic`
@@ -686,7 +686,7 @@ CREATE TABLE `traffic` (
   `downloadtime` int(11) unsigned NOT NULL default '0',
   `uploadtime` int(11) unsigned NOT NULL default '0',
   PRIMARY KEY  (`userid`,`torrentid`)
-) TYPE=MyISAM;
+) ;
 
 --
 -- Table structure for table `users`
@@ -750,4 +750,4 @@ CREATE TABLE `users` (
   KEY `last_access` (`last_access`),
   KEY `enabled` (`enabled`),
   KEY `warned` (`warned`)
-) TYPE=MyISAM;
+) ;

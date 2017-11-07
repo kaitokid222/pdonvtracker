@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -30,8 +30,11 @@ require_once("include/bittorrent.php");
 
 hit_start();
 
-if (!mkglobal("username:password"))
-	die("Hier ist was faul...");
+//if (!mkglobal("username:password"))
+//	die("Hier ist was faul...");
+// back 2 post -kaito 07.11.2017
+$username = $_POST['username'];
+$password = $_POST['password'];
 
 dbconn();
 
@@ -44,31 +47,42 @@ function bark($text = "Benutzername oder Passwort ungültig")
 
 session_start();
 
-$res = mysql_query("SELECT * FROM users WHERE username = " . sqlesc($username) . " AND status = 'confirmed'");
-$row = mysql_fetch_assoc($res);
+$qry = $GLOBALS['DB']->prepare("SELECT * FROM users WHERE username = :username AND status = 'confirmed'");
+$qry->bindParam(':username', $username, PDO::PARAM_STR);
+$qry->execute();
+if($qry->rowCount() > 0){
+    $row = $qry->fetchObject();
+}
 
 if (!$row)
-	bark();
+	bark("row fehlerhaft");
 
-if ($row["passhash"] != md5($row["secret"] . $password . $row["secret"]))
-	bark();
+if ($row->passhash != md5($row->secret . $password . $row->secret))
+	bark("PW problem");
 
-if ($row["enabled"] == "no")
+if ($row->enabled == "no")
 	bark("Dieser Account wurde deaktiviert.");
 
-logincookie($row["id"], $row["passhash"]);
+logincookie($row->id, $row->passhash);
 
 $ip = getip();
 
-$_SESSION["userdata"] = $row;
+// konvertiere objekt zu array
+$array = (array) $row;
+
+$_SESSION["userdata"] = $array;
 $_SESSION["userdata"]["ip"] = $ip;
 
-mysql_query("UPDATE users SET last_access='" . date("Y-m-d H:i:s") . "', ip='$ip' WHERE id=" . $row["id"]); // or die(mysql_error());
+$qry = $GLOBALS['DB']->prepare('UPDATE users SET last_access = :la, ip = :ip WHERE id = :id');
+$qry->bindParam(':la', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+$qry->bindParam(':ip', $ip, PDO::PARAM_STR);
+$qry->bindParam(':id', $row->id, PDO::PARAM_STR);
+$qry->execute();
 
 if (!empty($_POST["returnto"]))
 	header("Location: ".$BASEURL.$_POST["returnto"]);
 else
-	header("Location: $BASEURL/my.php?".SID);
+	header("Location: " . $BASEURL . "/my.php");
 
 hit_end();
 

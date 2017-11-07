@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -199,4 +199,4 @@ else
 <input type=hidden name=returnto value=<?=$_GET["returnto"]?>>
 </form>
 
-<? stdfoot(); ?>
+<?php stdfoot(); ?>

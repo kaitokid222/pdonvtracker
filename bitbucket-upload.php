@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -95,7 +95,7 @@ begin_table(TRUE);
 <tr><td class="tablea" align="center"><a href="bitbucket.php">Zur&uuml;ck zum BitBucket-Inhalt</a></td></tr></table></br>
 <form method=post action="bitbucket-upload.php" enctype="multipart/form-data">
 <p><b>Maximale Dateigr&ouml;&szlig;e: <?=number_format($maxfilesize); ?> Bytes.</b></p>
-<? begin_table(TRUE); ?>
+<?php begin_table(TRUE); ?>
 <tr><td class=tableb>Datei</td><td class=tablea><input type=file name=file size=60></td></tr>
 <tr><td class=tablea colspan=2 align=center><input type=submit value="Upload" class=btn></td></tr>
 </table>
@@ -104,9 +104,8 @@ begin_table(TRUE);
 <table class=main width=640 border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>
 <font class=small><b>Hinweis:</b> Die hochgeladenen Dateien m&uuml;ssen mit den Avatar-Regeln konform sein, und d&uuml;rfen keine illegalen, gewaltverherrlichenden oder pronographischen Inhalte enthalten. Lade bitte auch keine Dateien hoch, von denen du nicht m&ouml;chtest, dass diese ein Fremder zu sehen bekommt.</font>
 </td></tr></table>
-<? end_frame(); ?>
+<?php end_frame(); ?>
 
-<?
+<?php
 stdfoot();
-
 ?>

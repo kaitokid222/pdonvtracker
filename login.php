@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -30,7 +30,7 @@ require_once("include/bittorrent.php");
 
 hit_start();
 
-dbconn();
+//dbconn();
 
 hit_count();
 
@@ -46,7 +46,7 @@ if (!empty($_GET["returnto"])) {
   <td colspan="10" width="100%"><span class="normalfont"><center><b> Nicht angemeldet! </b></center></span></td> 
  </tr><tr><td width="100%" class="tablea"><img src="<?=$GLOBALS["PIC_BASE_URL"]?>warned16.gif"> Die gew&uuml;nschte Seite ist nur angemeldeten Benutzern
  zug&auml;nglich.</td></tr></table><br>
-<?
+<?php
 	}
 }
 
@@ -64,7 +64,7 @@ Dich einloggen kannst.</p>
 <!--<tr><td class=rowhead>Duration:</td><td align=left><input type=checkbox name=logout value='yes' checked>Log me out after 15 minutes inactivity</td></tr>-->
 <tr><td class=tablea colspan="2" align="center"><input type="submit" value="Log in!" class=btn></td></tr>
 </table>
-<?
+<?php
 
 if (isset($returnto))
 	print("<input type=\"hidden\" name=\"returnto\" value=\"" . htmlspecialchars($returnto) . "\" />\n");
@@ -74,7 +74,7 @@ if (isset($returnto))
 <p>Du hast noch keinen Account? <a href="signup.php">Registriere Dich</a> hier!</p>
 </center>
 </td></tr></table>
-<?
+<?php
 
 stdfoot();
 

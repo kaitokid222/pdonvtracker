@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -26,12 +26,12 @@
 // +--------------------------------------------------------------------------+
 */
 
-ob_start("ob_gzhandler");
+//ob_start("ob_gzhandler");
 
 require "include/bittorrent.php";
-hit_start();
+//hit_start();
 
-dbconn(true);
+dbconn();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST")
 {
@@ -56,17 +56,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     stderr("Error", "Bitte w&auml;hle eine Option aus.");
 }    
 
-$a = @mysql_fetch_assoc(@mysql_query("SELECT id,username FROM users WHERE status='confirmed' ORDER BY id DESC LIMIT 1")) or die(mysql_error());
-if ($CURUSER)
-    $latestuser = "<a href=userdetails.php?id=" . $a["id"] . ">" . $a["username"] . "</a>";
-else
-    $latestuser = $a['username'];
-
-$registered = number_format(get_row_count("users"));
-$unverified = number_format(get_row_count("users", "WHERE status='pending'"));
-$inactive = number_format(get_row_count("users", "WHERE enabled='no'"));
-$torrents = get_row_count("torrents");
-$dead = get_row_count("torrents", "WHERE visible='no'");
+$registered = number_format(pdo_row_count('users'));
+$unverified = number_format(pdo_row_count("users", "status='pending'"));
+$inactive = number_format(pdo_row_count("users", "enabled='no'"));
+$torrents = pdo_row_count("torrents");
+$dead = pdo_row_count("torrents", "visible='no'");
 
 $r = mysql_query("SELECT value_u FROM avps WHERE arg='seeders'") or sqlerr(__FILE__, __LINE__);
 $a = mysql_fetch_row($r);
@@ -95,9 +89,10 @@ $dt = sqlesc(get_date_time($dt));
 $maxdt = get_date_time(time() - 21600*28);
 $res = mysql_query("SELECT id, username, class, donor, warned, added, enabled FROM users WHERE last_access >= $dt AND last_access <= NOW() ORDER BY class DESC,username") or print(mysql_error());
 $activeusers_no = mysql_num_rows($res);
-
+$activeusers = "";
 while ($arr = mysql_fetch_assoc($res))
 {
+	
     if ($activeusers) $activeusers .= ",\n";
     $arr["username"] = "<font class=".get_class_color($arr["class"]).">" . $arr["username"] . "</font>";
     if ($CURUSER)
@@ -139,7 +134,7 @@ function expandCollapse(newsId)
 <table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
  <tr  class="tabletitle" width="100%">
         <td colspan="10" width="100%"><span class="normalfont"><center><img src="<?=$GLOBALS["PIC_BASE_URL"]?>newsticker.png" width="22" height="22" alt="" style="vertical-align: middle;"> <b>Neuigkeiten 
-<?
+<?php
 
 
 if (get_user_class() >= UC_ADMINISTRATOR)
@@ -148,7 +143,7 @@ if (get_user_class() >= UC_ADMINISTRATOR)
 
 </b></center></span></td> 
  </tr><tr><td width="100%" class="tablea">
- <?
+ <?php
 $res = mysql_query("SELECT * FROM news WHERE ADDDATE(added, INTERVAL 45 DAY) > NOW() ORDER BY added DESC LIMIT 10") or sqlerr(__FILE__, __LINE__);
 
 if (mysql_num_rows($res) > 0)
@@ -241,7 +236,7 @@ if ($CURUSER)
 ?><td valign="top" width="50%">
 <table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
  <tr class="tabletitle" width="100%">
-  <td colspan="10" width="100%"><span class="normalfont"><center><b> Aktuelle Umfrage<?
+  <td colspan="10" width="100%"><span class="normalfont"><center><b> Aktuelle Umfrage<?php
 
     if (get_user_class() >= UC_MODERATOR)
     {
@@ -253,7 +248,7 @@ if ($CURUSER)
     }
 ?> </b></center></span></td> 
  </tr><tr><td width="100%" class="tablea">
- <?
+ <?php
     print("<p align=center><b>$question</b></p>\n");
   
     $voted = $arr2;
@@ -332,7 +327,7 @@ if ($voted)
 ?>
 </td></tr></table>
 </td>
-<?
+<?php
     }
     
     if ($GLOBALS["ENABLESHOUTCAST"]) {
@@ -350,23 +345,23 @@ if ($voted)
  </tr><tr><td width="100%" class="tablea">
 <center>
 <table border="0" cellspacing="1" cellpadding="5" class="tableinborder">
-        <tr><td class="tableb" align="left">Max. Mitgliederzahl</td><td align="right" class="tablea"><? $max=$GLOBALS["MAX_USERS"]/1000; echo number_format($max,3); ?></td></tr>
-        <? if ($CURUSER) { ?>
+        <tr><td class="tableb" align="left">Max. Mitgliederzahl</td><td align="right" class="tablea"><?php $max=$GLOBALS["MAX_USERS"]/1000; echo number_format($max,3); ?></td></tr>
+        <?php if ($CURUSER) { ?>
 <tr><td class="tableb" align="left">Registrierte Mitglieder</td><td align="right" class="tablea"><?=$registered?></td></tr>
 <tr><td class="tableb" align="left">&nbsp;&nbsp;Unbest&auml;tigte Mitglieder</td><td align="right" class="tablea"><?=$unverified?></td></tr>
 <tr><td class="tableb" align="left">&nbsp;&nbsp;Deaktivierte Accounts</td><td align="right" class="tablea"><?=$inactive?></td></tr>
-        <? } ?>
+        <?php } ?>
 <tr><td class="tableb" align="left">Torrents</td><td align="right" class="tablea"><?=number_format($torrents)?></td></tr>
 <tr><td class="tableb" align="left">&nbsp;&nbsp;&nbsp;Aktive Torrents</td><td align="right" class="tablea"><?=number_format($torrents-$dead)?></td></tr>
 <tr><td class="tableb" align="left">&nbsp;&nbsp;&nbsp;Inaktive Torrents</td><td align="right" class="tablea"><?=number_format($dead)?></td></tr>
-<? if (isset($peers)) { ?>
+<?php if (isset($peers)) { ?>
 <tr><td class="tableb" align="left">Peers</td><td align="right" class="tablea"><?=$peers?></td></tr>
 <tr><td class="tableb" align="left">&nbsp;&nbsp;&nbsp;Seeders</td><td align="right" class="tablea"><?=$seeders?></td></tr>
 <tr><td class="tableb" align="left">&nbsp;&nbsp;&nbsp;Leechers</td><td align="right" class="tablea"><?=$leechers?></td></tr>
 <tr><td class="tableb" align="left">&nbsp;&nbsp;&nbsp;Seeder/Leecher Ratio (%)</td><td align="right" class="tablea"><?=$ratio?></td></tr>
 <tr><td class="tableb" align="left">Total Runtergeladen</td><td align="right" class="tablea"><?=$totaldown?></td></tr>
 <tr><td class="tableb" align="left">Total Hochgeladen</td><td align="right" class="tablea"><?=$totalup?></td></tr>
-<? } ?>
+<?php } ?>
 </table>
 </center>
 </td></tr></table>
@@ -381,7 +376,7 @@ if ($voted)
    <tr>
         <td align="left" style="padding: 0px; background-image: url('<?=$GLOBALS["PIC_BASE_URL"]?>loadbarbg.gif'); background-repeat: repeat-x">
 
-<? 
+<?php 
 
     $percent = min(100, round(exec('ps ax | grep -c apache2') / 150 * 100));
     if ($percent <= 70) $pic = "loadbargreen.gif";
@@ -400,7 +395,7 @@ if ($voted)
   echo $loadavg[0]*100, "% (1min) - ", $loadavg[1]*100, "% (5min) - ", $loadavg[2]*100, "% (15min)";
   
   ?></p>
-  <p>Diese Seite wurde in <?
+  <p>Diese Seite wurde in <?php
     $now = gettimeofday();
     $runtime = ($now["sec"] - $RUNTIME_START["sec"]) + ($now["usec"] - $RUNTIME_START["usec"]) / 1000000;
     echo $runtime;
@@ -408,7 +403,7 @@ if ($voted)
   </center>
 </td></tr></table>
 
-<?
+<?php
 // stdfoot();
 
 hit_end();

@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -59,15 +59,15 @@ begin_frame("Benutzeraccount anlegen", FALSE, "400px");
 ?>
 
 <form method="post" action="adduser.php">
-<? begin_table(TRUE); ?>
+<?php begin_table(TRUE); ?>
 <tr><td class="tableb">Benutzername:</td><td class="tablea"><input type="text" name="username" size="40"></td></tr>
 <tr><td class="tableb">Passwort:</td><td class="tablea"><input type="password" name="password" size="40"></td></tr>
 <tr><td class="tableb">Passwort wdh.:</td><td class="tablea"><input type="password" name="password2" size="40"></td></tr>
 <tr><td class="tableb">E-Mail:</td><td class="tablea"><input type="text" name="email" size="40"></td></tr>
 <tr><td class="tablea" colspan="2" style="text-align:center"><input type="submit" value="Okay" class="btn"></td></tr>
-<? end_table(); ?>
+<?php end_table(); ?>
 </form>
-<?
+<?php
 end_frame();
 stdfoot();
 ?>

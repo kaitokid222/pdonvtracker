@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -85,8 +85,8 @@ function isproxy()
 
 session_start();
 
-if ($_SESSION["proofcode"] == "" || $_POST["proofcode"] == "" || strtolower($_POST["proofcode"]) != strtolower($_SESSION["proofcode"]))
-        bark("Der Anmeldungscode ist ungültig.");
+//if ($_SESSION["proofcode"] == "" || $_POST["proofcode"] == "" || strtolower($_POST["proofcode"]) != strtolower($_SESSION["proofcode"]))
+//        bark("Der Anmeldungscode ist ungültig.");
 
 if (empty($wantusername) || empty($wantpassword) || empty($email))
 	bark("Du musst alle Felder ausfüllen.");
@@ -126,49 +126,6 @@ foreach ($GLOBALS["EMAIL_BADWORDS"] as $badword) {
     if (preg_match("/".preg_quote($badword)."/i", $email))
 	stderr("Anmeldung fehlgeschlagen", "Diese E-Mail Adresse kann nicht für eine Anmeldung an diesem Tracker verwendet werden. Wir akzeptieren keine Wegwerf-Mailadressen!");
 }
-
-// FAQ-Test auswerten
-$questions = $_POST["choice"];
-if (!is_array($questions) || count($questions) != 7)
-    stderr("Anmeldung fehlgeschlagen", "Du hast die Fragen zu den FAQ und den Regeln nicht vollständig beantwortet.");
-
-// IDs zusammenstellen
-$qquery = "SELECT * FROM `test` WHERE `id` IN (";
-foreach ($questions as $qnr => $ans) {
-    if (substr($qquery, strlen($qquery)-1) != "(")
-	$qquery .= ",";
-    $qquery .= intval($qnr);
-}
-$qquery .= ")";
-
-$qres = mysql_query($qquery);
-
-// Fragen prüfen
-$allok = TRUE;
-while ($qdata = mysql_fetch_assoc($qres)) {
-    $answers = unserialize($qdata["answers"]);
-    if ($qdata["type"] == "radio") {
-	foreach ($answers as $answer) {
-	    if ($answer["id"] == intval($questions[$qdata["id"]]) && $answer["correct"] != 1) {
-		$allok = FALSE;
-		break;
-	    }
-	}
-    } else {
-	foreach ($questions[$qdata["id"]] AS $aid => $acor) {
-	    reset($answers);
-	    foreach ($answers as $answer) {
-        	if ($answer["id"] == intval($aid) && $answer["correct"] != intval($acor)) {
-		    $allok = FALSE;
-    	    	    break;
-		}
-	    }
-	}	
-    }
-}
-
-if (!$allok)
-    stderr("Anmeldung fehlgeschlagen", "Du hast die Fragen zum FAQ und den Regeln nicht korrekt beantwortet. Bitte lies Dir die Regeln und die FAQ durch, und versuche es erneut!");
 
 /*
 // do simple proxy check

@@ -74,7 +74,7 @@ function openApplet()
 
 </script>
 <p>Unser offizieller IRC-Channel ist <a href="irc://<?=$GLOBALS["IRCHOST"].":".$GLOBALS["IRCPORT"]."/".str_replace("#", "", $GLOBALS["IRCCHANNEL"])?>"><?=$GLOBALS["IRCCHANNEL"]?></a>
-<? if ($GLOBALS["IRCNETWORKTITLE"]!="" && $GLOBALS["IRCNETWORKWEB"]!="") { ?>im <a href="<?=$GLOBALS["IRCNETWORKWEB"] ?>"><?=$GLOBALS["IRCNETWORKTITLE"]?></a> Netzwerk<? } ?>. Bitte
+<?php if ($GLOBALS["IRCNETWORKTITLE"]!="" && $GLOBALS["IRCNETWORKWEB"]!="") { ?>im <a href="<?=$GLOBALS["IRCNETWORKWEB"] ?>"><?=$GLOBALS["IRCNETWORKTITLE"]?></a> Netzwerk<? } ?>. Bitte
 beachtet die <a href="rules.php">Regeln in unserem IRC-Channel</a>!</p>
 <p>Alternativ zu Deinem eigenen Client kannst Du einfach unseren Java-Client benutzen.
 Der Chat startet in einem eigenen Fenster, so dass Du hier in Ruhe weitersurfen kannst.</p>
@@ -84,7 +84,7 @@ Der Chat startet in einem eigenen Fenster, so dass Du hier in Ruhe weitersurfen 
         <option value="3">1024 x 768</option>
 </select> <input type="button" onclick="openApplet();" value="IRC &uuml;ber Java-Applet starten"></p>
 <p align="center">Powered by <a href="http://www.pjirc.com/">P J I R C - a free Java IRC client</a></p>
-<?
+<?php
 
 end_frame();
 end_main_frame();

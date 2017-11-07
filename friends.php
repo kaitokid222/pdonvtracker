@@ -188,7 +188,7 @@ print("</td></tr></table>\n");
 </colgroup>
 <tr><td colspan="6" width="100%" class="tablecat" align="center"><b>Blockierte Benutzer</b></td></tr>
 <tr>
-<?
+<?php
 $res = mysql_query("SELECT b.blockid as id, u.username AS name, u.donor, u.warned, u.enabled, u.last_access FROM blocks AS b JOIN users as u ON b.blockid = u.id WHERE userid=$userid ORDER BY name") or sqlerr(__FILE__, __LINE__);
 if (mysql_num_rows($res) == 0)
     $blocks = "<td colspan=\"6\" class=\"tablea\" align=\"center\"><em>Du hast keine anderen Mitglieder blockiert.</em></td>";

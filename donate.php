@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -57,11 +57,14 @@ BLZ: 501 108 00
 <p><b>Wichtig!</b> Als Verwendungszweck bitte folgenden Text angeben: 21EU8W8H6HQUCPN</p>
 </td>
 </tr>
-<? end_table(); ?>
+<?php end_table(); ?>
 <p><b>Nachdem Du gespendet hast, sende einem Admin oder SysOp die <font color=red>PayPal Transaction ID</font> damit wir die Spende Deinem Account zuordnen k&ouml;nnen!</b></p>
 
-<? end_frame(); end_main_frame(); ?>
+<?php 
+end_frame(); 
+end_main_frame(); 
+?>
 
-<?
+<?php
 stdfoot();
 ?>

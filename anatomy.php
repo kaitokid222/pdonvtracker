@@ -92,6 +92,6 @@ Do not use it as a way of updating stats more often, it just doesn't work. (Chec
 </td></tr></table>
 </td></tr></table>
 <br>
-<?
+<?php
 stdfoot();
 ?>

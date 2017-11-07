@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -41,7 +41,7 @@ if (isset($_GET["accept_rules"])) {
 <tr><td width="100%" class="tablea" style="font-weight:bold;color:red;">
 WICHTIG! Regeländerung - Du musst die neuen Regeln akzeptieren, bevor Du den
 Tracker weiter nutzen kannst!</td></tr></table><br>
-<? } ?>
+<?php } ?>
 <table cellpadding="4" cellspacing="1" border="0" style="width:750px" class="tableinborder">
 <tr class="tabletitle" width="100%">
 <td colspan="10" width="100%"><span class="smallfont"><center>
@@ -251,7 +251,7 @@ Benutzer, die wiederholt gegen die Upload-Regeln verstoßen, verlieren diese Bere
 </ul>
 </td></tr></table><br>
 
-<? if (get_user_class() >= UC_MODERATOR) { ?>
+<?php if (get_user_class() >= UC_MODERATOR) { ?>
 
 <table cellpadding="4" cellspacing="1" border="0" style="width:750px" class="tableinborder">
 <tr class="tabletitle" width="100%">
@@ -345,7 +345,7 @@ absolut kein Interesse zeigt.</li>
 </ul>
 </td></tr></table><br>
 
-<? }
+<?php }
 
 if (isset($_GET["accept_rules"])) { ?>
 <table cellpadding="4" cellspacing="1" border="0" style="width:750px" class="tableinborder">
@@ -366,11 +366,11 @@ löschen</a>.</p>
 </center>
 </form>
 </td></tr></table><br>
-<? } ?>
+<?php } ?>
 <table cellpadding="4" cellspacing="1" border="0" style="width:750px" class="tableinborder">
  <tr class="tabletitle" width="100%">
   <td colspan="10" width="100%"><span class="smallfont"><center>
   Regeln zuletzt editiert am 18.10.2005 von ][Dante][ (14:08 CET)</center></span></td> 
  </tr></table>
  
-<? stdfoot(); ?>
+<?php stdfoot(); ?>

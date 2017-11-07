@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -57,7 +57,7 @@ Signaturen, PMs und in Forum-Beiträgen benutzen.</p>
 <input type=submit value="Teste diesen BBCode!" style='height: 23px; margin-left: 5px'>
 </p>
 </form>
-<?
+<?php
 
 if ($test != "")
   print("<p><b>Dein BBCode wird so aussehen:</b><br><hr>" . format_comment($test) . "<hr></p>\n");

@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -44,7 +44,7 @@ Da Du auf diesem Tracker wegen Missachtung der Regeln gebannt werden kannst,
 solltest Du Dir die Regeln in eigenem Interesse durchlesen. Das FAQ enthält auch
 nützliche Informationen zu den meistgestellten Fragen.</p>
 <form action="faqtest.php" method="post">
-<?
+<?php
 
 while ($qdata = mysql_fetch_assoc($questions)) {
     begin_table(true);
@@ -70,7 +70,7 @@ while ($qdata = mysql_fetch_assoc($questions)) {
 ?>
 <p style="text-align:center"><input type="submit" name="dosubmit" value="Weiter"></p>
 </form>
-<?
+<?php
 end_frame();
 stdfoot();
 

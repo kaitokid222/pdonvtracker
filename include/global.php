@@ -27,20 +27,20 @@
 */
 
 // User levels
-define (UC_USER, 0);
-define (UC_POWER_USER, 1);
-define (UC_VIP, 5);
-define (UC_UPLOADER, 10);
-define (UC_GUTEAM, 20);
-define (UC_MODERATOR, 25);
-define (UC_ADMINISTRATOR, 50);
-define (UC_SYSOP, 100);
+define ('UC_USER', 0);
+define ('UC_POWER_USER', 1);
+define ('UC_VIP', 5);
+define ('UC_UPLOADER', 10);
+define ('UC_GUTEAM', 20);
+define ('UC_MODERATOR', 25);
+define ('UC_ADMINISTRATOR', 50);
+define ('UC_SYSOP', 100);
 
 // PM special folder IDs
-define (PM_FOLDERID_INBOX, -1);
-define (PM_FOLDERID_OUTBOX, -2);
-define (PM_FOLDERID_SYSTEM, -3);
-define (PM_FOLDERID_MOD, -4);
+define ('PM_FOLDERID_INBOX', -1);
+define ('PM_FOLDERID_OUTBOX', -2);
+define ('PM_FOLDERID_SYSTEM', -3);
+define ('PM_FOLDERID_MOD', -4);
 
 
 $client_uas = array("/^Azureus ([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)(;.+?)?$/i",
@@ -287,6 +287,7 @@ $privatesmilies = array(":)" => "smile1.gif",
 // Set this to the line break character sequence of your system
 $linebreak = "\r\n";
 
+/* ersetzt durch pdo_row_count()
 function get_row_count($table, $suffix = "")
 {
     if ($suffix)
@@ -294,7 +295,7 @@ function get_row_count($table, $suffix = "")
     ($r = mysql_query("SELECT COUNT(*) FROM $table$suffix")) or die(mysql_error());
     ($a = mysql_fetch_row($r)) or die(mysql_error());
     return $a[0];
-} 
+} */
 
 function stdmsg($heading, $text)
 {
@@ -554,8 +555,10 @@ function end_main_frame()
 function begin_frame($caption = "", $center = false, $width = "100%")
 {
     if ($center)
-        $tdextra .= " style=\"text-align: center\"";
-
+        $tdextra = " style=\"text-align: center\"";
+	else
+		$tdextra = " ";
+	
     ?><table cellpadding="4" cellspacing="1" border="0" style="width:<?=$width?>" class="tableinborder">
  <tr>
   <td class="tabletitle" colspan="10" width="100%" style="text-align: center"><b><?=$caption?></b></td> 
@@ -577,6 +580,8 @@ function begin_table($fullwidth = false, $padding = 4)
 {
     if ($fullwidth)
         $width = " width=\"100%\"";
+	else
+		$width = " ";
     print("<table class=\"tableinborder\" $width border=\"0\" cellspacing=\"1\" cellpadding=\"$padding\">\n");
 } 
 

@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -59,7 +59,7 @@ if (!isset($CURUSER) || !($CURUSER["id"] == $row["owner"] || get_user_class() >=
  der rechtm&auml;&szlig;ige Besitzer, oder Du bist nicht korrekt
  <a href="login.php?returnto=<?=urlencode($_SERVER["REQUEST_URI"])?>&amp;nowarn=1">eingeloggt</a>.
 </td></tr></table>
-<?
+<?php
 }
 else {
 	print("<form method=post action=takeedit.php enctype=multipart/form-data>\n");
@@ -71,7 +71,7 @@ else {
  <tr class="tabletitle" width="100%">
   <td colspan="10" width="100%"><span class="normalfont"><center><b>Torrent bearbeiten</b></center></span></td> 
  </tr>
-<?        
+<?php      
 	tr("Torrent Name", "<input type=\"text\" name=\"name\" value=\"" . htmlspecialchars($row["name"]) . "\" size=\"80\" />", 1);
 	tr("NFO Datei", "<input type=radio name=nfoaction value='keep' checked>Aktuelle beibehalten<br>".
 	"<input type=radio name=nfoaction value='update'>Ändern:<br><input type=file name=nfo size=60>", 1);

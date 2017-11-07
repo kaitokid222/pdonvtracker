@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -53,7 +53,7 @@ stdhead($CURUSER["username"] . "s Profil", false);
 <table cellpadding="4" cellspacing="1" border="0" style="width:600px" class="tableinborder">
  <tr class="tabletitle">
   <td colspan="10" width="100%"><span class="normalfont"><center><b> 
-<?
+<?php
 if ($_GET["edited"]) {
 	print("Dein Profil wurde aktualisiert!");
 	if ($_GET["mailsent"])
@@ -96,7 +96,7 @@ else
 <br>
 <form method="post" action="takeprofedit.php">
 <table class="tableinborder" border="0" cellspacing="1" cellpadding="4" align="center" width="100%">
-<?
+<?php
 
 /***********************
 
@@ -218,7 +218,7 @@ function priv($name, $descr) {
 </table>
 </form>
 </td></tr></table>
-<?
+<?php
 
 stdfoot();
 

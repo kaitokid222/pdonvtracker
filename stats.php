@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -50,7 +50,7 @@ stdhead("Stats");
 -->
 </STYLE>
 
-<?
+<?php
 begin_main_frame();
 
 $res = mysql_query("SELECT COUNT(*) FROM torrents") or sqlerr(__FILE__, __LINE__);

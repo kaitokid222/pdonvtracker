@@ -241,8 +241,8 @@ function docleanup()
         } 
     } 
     // Update stats
-    $seeders = get_row_count("peers", "WHERE seeder='yes'");
-    $leechers = get_row_count("peers", "WHERE seeder='no'");
+    $seeders = pdo_row_count("peers", "seeder='yes'");
+    $leechers = pdo_row_count("peers", "seeder='no'");
     mysql_query("UPDATE avps SET value_u=$seeders WHERE arg='seeders'") or sqlerr(__FILE__, __LINE__);
     mysql_query("UPDATE avps SET value_u=$leechers WHERE arg='leechers'") or sqlerr(__FILE__, __LINE__); 
     // update forum post/topic count

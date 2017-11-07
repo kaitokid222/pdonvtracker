@@ -1,4 +1,4 @@
-<?
+<?php
 
 /*
 // +--------------------------------------------------------------------------+
@@ -42,7 +42,7 @@ Search:
 in
 <select name="cat">
 <option value="0">(all types)</option>
-<?
+<?php
 
 
 $cats = genrelist();
@@ -60,15 +60,14 @@ if ($_GET["incldead"])
 $deadchkbox .= " /> including dead torrents\n";
 
 ?>
-<?= $catdropdown ?>
+<?=$catdropdown ?>
 </select>
-<?= $deadchkbox ?>
+<?=$deadchkbox ?>
 <input type="submit" value="Search!" />
 </p>
 </form>
 </td></tr></table>
-<?
+<?php
 hit_end();
 stdfoot();
-
 ?>

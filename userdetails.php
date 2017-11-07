@@ -164,13 +164,13 @@ if ($lastseen == "0000-00-00 00:00:00")
     $lastseen = "nie";
 else {
     $lastseen .= " (Vor " . get_elapsed_time(sql_timestamp_to_unix_timestamp($lastseen)) . ")";
-} 
-$res = mysql_query("SELECT COUNT(*) FROM comments WHERE user=" . $user[id]) or sqlerr();
-$arr3 = mysql_fetch_row($res);
-$torrentcomments = $arr3[0];
-$res = mysql_query("SELECT COUNT(*) FROM posts WHERE userid=" . $user[id]) or sqlerr();
-$arr3 = mysql_fetch_row($res);
-$forumposts = $arr3[0];
+}
+
+//SELECT COUNT(*) FROM comments WHERE user= {$user['id']}');
+$torrentcomments = pdo_row_count('comments', 'user = ' . $user['id']);
+$forumposts = pdo_row_count('posts', 'userid = ' . $user['id']);
+
+
 // if ($user['donated'] > 0)
 // $don = "<img src=\"".$GLOBALS["PIC_BASE_URL"]."starbig.gif\">";
 $res = mysql_query("SELECT name,flagpic FROM countries WHERE id=$user[country] LIMIT 1") or sqlerr();
@@ -190,7 +190,7 @@ if (mysql_num_rows($res) > 0)
     $seeding = maketable($res);
 $completed = "";
 if (get_user_class() >= UC_MODERATOR || (isset($CURUSER) && $CURUSER["id"] == $user["id"])) {
-    if (!$_GET["allcompleted"])
+    if (!isset($_GET["allcompleted"]))
         $limit_comp = " LIMIT 3";
     else
         $limit_comp = "";

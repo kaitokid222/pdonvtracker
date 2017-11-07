@@ -7,14 +7,16 @@
 * Database configuration: see secrets.inc.php
 **************************************************************/
 
-define (CLIENT_AUTH_IP, 0);
-define (CLIENT_AUTH_PASSKEY, 1);
+// <--- FATAL ERRORS
+// 06.11.17
+define ('CLIENT_AUTH_IP', 0);
+define ('CLIENT_AUTH_PASSKEY', 1);
 
-define (PASSKEY_USE_PARAM, 0);
-define (PASSKEY_USE_SUBDOMAIN, 1);
+define ('PASSKEY_USE_PARAM', 0);
+define ('PASSKEY_USE_SUBDOMAIN', 1);
 
-define (DOWNLOAD_REWRITE, 0);
-define (DOWNLOAD_ATTACHMENT, 1);
+define ('DOWNLOAD_REWRITE', 0);
+define ('DOWNLOAD_ATTACHMENT', 1);
 
 
 /************************************************************
@@ -42,17 +44,20 @@ $GLOBALS["MAX_USERS"] = 2150;
 // Use IP or PassKey method for user authentication
 // Valid values are CLIENT_AUTH_IP and CLIENT_AUTH_PASSKEY
 $GLOBALS["CLIENT_AUTH"] = CLIENT_AUTH_PASSKEY;
+//$GLOBALS["CLIENT_AUTH"] = 1;
 
 // PassKey source, either by parameter "passkey=...", or by
 // subdomain "http://passkey.tracker.net/announce.php"
 // Use subdomain, if you have access to wildcard subdomains,
 // but not mod_rewrite
 $GLOBALS["PASSKEY_SOURCE"] = PASSKEY_USE_PARAM;
+//$GLOBALS["PASSKEY_SOURCE"] = 0;
 
 // Download method being used by the tracker to publish .torrent files.
 // If you use themod_rewrite method, set this to DOWNLOAD_REWRITE, since
 // this solution is most compatible. Otherwise, set it to DOWNLOAD_ATTACHMENT.
 $GLOBALS["DOWNLOAD_METHOD"] = DOWNLOAD_ATTACHMENT;
+//$GLOBALS["DOWNLOAD_METHOD"] = 1;
 
 // Set this to FALSE to deactivate dynamic RSS feed via rss.php
 $GLOBALS["DYNAMIC_RSS"] = TRUE;
@@ -183,11 +188,11 @@ $GLOBALS["PORTAL_LINK"] = "board/";
 // Valid tracker announce URLs
 // The first entry will be displayed on the upload page
 $GLOBALS["ANNOUNCE_URLS"] = array();
-$GLOBALS["ANNOUNCE_URLS"][] = "http://mytracker.example.com/announce.php";
-$GLOBALS["ANNOUNCE_URLS"][] = "http://mytracker.example.com:80/announce.php";
+$GLOBALS["ANNOUNCE_URLS"][] = "http://localhost/announce.php";
+$GLOBALS["ANNOUNCE_URLS"][] = "http://localhost:80/announce.php";
 
 // Announce URL with passkey placeholder
-$GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://mytracker.example.com:80/announce.php?passkey={KEY}";
+$GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://localhost:80/announce.php?passkey={KEY}";
 
 if ($_SERVER["HTTP_HOST"] == "")
     $_SERVER["HTTP_HOST"] = $_SERVER["SERVER_NAME"];
@@ -196,13 +201,13 @@ if ($_SERVER["SERVER_PORT"] != 80)
     $GLOBALS["BASEURL"] .= ":".$_SERVER["SERVER_PORT"];
 
 // Set this to your site URL, if automatic detection won't work
-$GLOBALS["DEFAULTBASEURL"] = "http://mytracker.example.com";
+$GLOBALS["DEFAULTBASEURL"] = "http://localhost";
 
 // Array containing all domains which are used to reach the tracker
 // This array is used in the redirector script to determine the type of redirect
 // Do not add "http://" in front of the domain, and no trailing slash
 $GLOBALS["TRACKERDOMAINS"] = array();
-$GLOBALS["TRACKERDOMAINS"][] = "mytracker.example.com";
+$GLOBALS["TRACKERDOMAINS"][] = "localhost";
 $GLOBALS["TRACKERDOMAINS"][] = "mytracker2.example.com";
 $GLOBALS["TRACKERDOMAINS"][] = "123.123.123.123";
 
@@ -211,7 +216,7 @@ $GLOBALS["TRACKERDOMAINS"][] = "123.123.123.123";
 $GLOBALS["MEMBERSONLY"] = TRUE;
 
 // Email for sender/return path.
-$GLOBALS["SITEEMAIL"] = "noreply@mytracker.example.com";
+$GLOBALS["SITEEMAIL"] = "noreply@localhost";
 
 $GLOBALS["SITENAME"] = "MyTracker :: Grab it, seed it!";
 

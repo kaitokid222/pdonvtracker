@@ -94,7 +94,7 @@ function get_http_data($URL, $referrer = "")
     // URL zerlegen
     if (!preg_match("/http\:\/\/(([\w\.\-]+)(\:(.+?))?@)?([\w\.\-]+)\:?(\d*)(\/?\S*)/i", $URL, $match)) return false; 
     // Verbinden
-    $fhandle = @fsockopen($match[5], ($match[6] > 0?$match[6]:80), &$errno, &$errstr, $GLOBALS["SC_HTTPTIMEOUT"]);
+    $fhandle = @fsockopen($match[5], ($match[6] > 0?$match[6]:80), $errno, $errstr, $GLOBALS["SC_HTTPTIMEOUT"]);
 
     if (!$fhandle) {
         return false;
