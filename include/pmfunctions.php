@@ -51,11 +51,17 @@ function deletePersonalMessages($delids, $userid = 0)
     
     if ($userid == 0)
         $userid = $CURUSER["id"];
-    
-    mysql_query("DELETE FROM `messages` WHERE `id` IN ($delids) AND `folder_in`=0 AND `folder_out`=".$GLOBALS["FOLDER"]." AND `sender`=".$userid);
-    mysql_query("DELETE FROM `messages` WHERE `id` IN ($delids) AND `folder_out`=0 AND `folder_in`=".$GLOBALS["FOLDER"]." AND `receiver`=".$userid);
-    mysql_query("UPDATE `messages` SET `folder_in`=0 WHERE `id` IN ($delids) AND `folder_in`=".$GLOBALS["FOLDER"]." AND `receiver`=".$userid);
-    mysql_query("UPDATE `messages` SET `folder_out`=0 WHERE `id` IN ($delids) AND `folder_out`=".$GLOBALS["FOLDER"]." AND `sender`=".$userid);
+	$sql = array();
+	$sql[] = ['DELETE FROM `messages` WHERE `id` IN (:delids) AND `folder_in`=0 AND `folder_out`=' . $GLOBALS["FOLDER"] . ' AND `sender`= :userid'];
+	$sql[] = ['DELETE FROM `messages` WHERE `id` IN (:delids) AND `folder_out`=0 AND `folder_in`=' . $GLOBALS["FOLDER"] . ' AND `receiver`= :userid'];
+	$sql[] = ['UPDATE `messages` SET `folder_in`=0 WHERE `id` IN (:delids) AND `folder_in`=' . $GLOBALS["FOLDER"] . ' AND `receiver`= :userid'];
+	$sql[] = ['UPDATE `messages` SET `folder_out`=0 WHERE `id` IN (:delids) AND `folder_out`=' . $GLOBALS["FOLDER"] . ' AND `sender`= :userid'];
+	foreach($sql as $s){
+		$qry = $GLOBALS['DB']->prepare($s);
+		$qry->bindParam(':userid', $userid, PDO::PARAM_INT);
+		$qry->bindParam(':delids', $delids, PDO::PARAM_STR);
+		$qry->execute();
+	}
 }
 
 /***************************************************
@@ -860,20 +866,29 @@ function sendMessageDialog($replymsg = 0)
         stderr("Fehler", "Du kannst keine Nachricht an Dich selbst versenden!");
     
     // Prüfen, ob Empfänger die Nachricht erhalten möchte
-    $res = mysql_query("SELECT `acceptpms`, `notifs`, UNIX_TIMESTAMP(`last_access`) as `la` FROM `users` WHERE `id`=".$receiver) or sqlerr(__FILE__, __LINE__);
-    $user = mysql_fetch_assoc($res);
+	$qry = $GLOBALS['DB']->prepare('SELECT `acceptpms`, `notifs`, UNIX_TIMESTAMP(`last_access`) as `la` FROM `users` WHERE `id`= :id');
+	$qry->bindParam(':id', $receiver, PDO::PARAM_INT);
+	$qry->execute();
+	$user = $qry->fetchObject();
     
-    if (get_user_class() < UC_GUTEAM)
-    {
-        if ($user["acceptpms"] == "yes") {
-            $res2 = mysql_query("SELECT * FROM blocks WHERE userid=$receiver AND blockid=".$CURUSER["id"]) or sqlerr(__FILE__, __LINE__);
-            if (mysql_num_rows($res2) == 1)
-                stderr("Abgelehnt", "Dieser Benutzer hat PNs von Dir blockiert.");
-        } elseif ($user["acceptpms"] == "friends") {
-            $res2 = mysql_query("SELECT * FROM friends WHERE userid=$receiver AND friendid=".$CURUSER["id"]) or sqlerr(__FILE__, __LINE__);
-            if (mysql_num_rows($res2) != 1)
+    if (get_user_class() < UC_GUTEAM){
+        if ($user->acceptpms == "yes") {
+			$qry = $GLOBALS['DB']->prepare('SELECT * FROM blocks WHERE userid=:receiver AND blockid= :id');
+			$qry->bindParam(':receiver', $receiver, PDO::PARAM_INT);
+			$qry->bindParam(':id', $CURUSER["id"], PDO::PARAM_INT);
+			$qry->execute();
+			if($qry->rowCount() > 0){
+				stderr("Abgelehnt", "Dieser Benutzer hat PNs von Dir blockiert.");
+			}
+        } elseif ($user->acceptpms == "friends") {
+			$qry = $GLOBALS['DB']->prepare('SELECT * FROM friends WHERE userid=$receiver AND friendid= :id');
+			$qry->bindParam(':receiver', $receiver, PDO::PARAM_INT);
+			$qry->bindParam(':id', $CURUSER["id"], PDO::PARAM_INT);
+			$qry->execute();
+			if($qry->rowCount() != 1){
                 stderr("Abgelehnt", "Dieser Benutzer akzeptiert nur PNs von Benutzern auf seiner Freundesliste.");
-        } elseif ($user["acceptpms"] == "no")
+			}
+        } elseif ($user->acceptpms == "no")
             stderr("Abgelehnt", "Dieser Benutzer akzeptiert keine PNs.");
     }
     
