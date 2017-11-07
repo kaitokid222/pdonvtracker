@@ -1,0 +1,192 @@
+body {
+    color: #000000;
+    background-color: #A5A4A4;
+    font-family: verdana,tahoma,helvetica;
+scrollbar-face-color:#B2B2B2;
+scrollbar-highlight-color:#D3D3D3;
+scrollbar-3dlight-color:#C2C2C2;
+scrollbar-darkshadow-color:#000000;
+scrollbar-shadow-color:#717171;
+scrollbar-arrow-color:#FFFFFF;
+scrollbar-track-color:#B7B7B7;
+}
+
+body, td {
+    font-size: 12px;
+}
+
+body a:link, body a:visited, body a:active {
+    color: #000000;
+    text-decoration: underline;
+
+}
+
+body a:hover {
+    color: #000000;
+
+}
+
+.logobackground {
+    background-image: url(back.gif);
+    text-align: center;
+}
+
+.mainpage {
+    background-color: #B2B2B2;
+}
+
+.tableoutborder {
+    border-width: 0px;
+    background-color: #000000;
+}
+
+.tableinborder {
+    border-width: 0px;
+    background-color: #000000;
+}
+
+.tabletitle {
+    color: #000000;
+    background-color: #00F400;
+background-image: url(cellpic.gif);
+}
+
+.inposttable {
+    background-color: #E8E8E8;
+border-left: 1px  #FFFFFF solid;
+border-top: 1px  #FFFFFF solid;
+}
+
+.tabletitle a:link, .tabletitle a:visited, .tabletitle a:active {
+    color: #000000;
+    text-decoration: none;
+
+}
+
+.tabletitle a:hover {
+    color: #000000;
+    text-decoration: underline;
+
+}
+
+.smallfont {
+    font-family: verdana,tahoma,helvetica;
+    font-size: 11px;
+
+}
+
+.normalfont {
+    font-family: verdana,tahoma,helvetica;
+    font-size: 12px;
+
+}
+
+.tablecat {
+    color: #FFFFFF;
+    background-color: #9F9F9F;
+background-image: url(catpic.gif);
+}
+
+.tablecat a:link, .tablecat a:visited, .tablecat a:active {
+    color: #FFFFFF;
+    text-decoration: none;
+
+}
+
+.tablecat a:hover {
+    color: #00FF00;
+    text-decoration: none;
+
+}
+
+.tablea {
+    color: #000000;
+    background-color: #DEDEDE;
+border-left: 1px  #FFFFFF solid;
+border-top: 1px  #FFFFFF solid;
+}
+
+.tablea a:link, .tablea a:visited, .tablea a:active {
+    color: #000000;
+    text-decoration: underline;
+
+}
+
+.tablea a:hover {
+    color: #000000;
+    text-decoration: none;
+
+}
+
+.tableb {
+    color: #000000;
+    background-color: #D3D3D3;
+border-left: 1px  #FFFFFF solid;
+border-top: 1px  #FFFFFF solid;
+}
+
+.tableb a:link, .tableb a:visited, .tableb a:active {
+    color: #000000;
+    text-decoration: underline;
+
+}
+
+.tableb a:hover {
+    color: #000000;
+    text-decoration: none;
+
+}
+
+select {
+    color: #000000
+    background-color: #E8E8E8;
+    font-family: verdana,tahoma,helvetica;
+    font-size: 11px;
+
+}
+
+textarea {
+    color: #000000
+    background-color: #E8E8E8;
+    font-family: verdana,tahoma,helvetica;
+    font-size: 11px;
+
+}
+
+input {
+    color: #000000
+    background-color: #E8E8E8;
+    font-family: verdana,tahoma,helvetica;
+    font-size: 11px;
+background-image: url(input.gif);
+border : 1px solid #000000;
+}
+
+.obenmitte {
+background-image: url('obenmitte.gif');
+}
+
+.untenmitte {
+background-image: url('untenmitte.gif');
+}
+
+.topbuttons { background-image: url(top_back.gif);
+}
+
+form {
+ padding:0px;
+ margin:0px;
+}
+
+pre {
+ padding:0px;
+ margin:0px;
+}
+
+.ucuser          { color: #000000; }
+.ucpoweruser     { color: #000000; }
+.ucvip           { color: #B244D9; }
+.ucuploader      { color: #4040C0; }
+.ucmoderator     { color: #348534; }
+.ucadministrator { color: #E57700; }
+.ucsysop         { color: #FF3338; }

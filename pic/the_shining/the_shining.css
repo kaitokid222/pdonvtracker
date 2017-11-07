@@ -1,0 +1,194 @@
+body {
+    color: #555555;
+    background-color: #F0F0F0;
+    font-family: tahoma,helvetica;
+
+}
+
+body, td {
+    font-size: 11px;
+}
+
+body a:link, body a:visited, body a:active {
+    color: #7B7B7B;
+    text-decoration: none;
+
+}
+
+body a:hover {
+    color: #7B7B7B;
+    text-decoration: ;
+
+}
+
+.logobackground {
+    background-image: url(logo_bg.gif);
+}
+
+.mainpage {
+    background-color: #FFFFFF;
+}
+
+.tableoutborder {
+    border-width: 0px;
+    background-color: #808080;
+}
+
+.tableinborder {
+    border-width: 0px;
+    background-color: #808080;
+}
+
+.tabletitle {
+    color: #7B7B7B;
+    background-color: #F0F0F0;
+background-image: url(cellpic.gif);
+}
+
+.inposttable {
+    background-color: #F9F9F9;
+
+}
+
+.tabletitle a:link, .tabletitle a:visited, .tabletitle a:active {
+    color: #7B7B7B;
+    text-decoration: none;
+
+}
+
+.tabletitle a:hover {
+    color: #7B7B7B;
+    text-decoration: underline;
+
+}
+
+.smallfont {
+    font-family: tahoma,helvetica;
+    font-size: 10px;
+
+}
+
+.normalfont {
+    font-family: tahoma,helvetica;
+    font-size: 11px;
+
+}
+
+.tablecat {
+    color: #7B7B7B;
+    background-color: #F8F7F7;
+background-image: url(catpic.gif);
+}
+
+.tablecat a:link, .tablecat a:visited, .tablecat a:active {
+    color: #7B7B7B;
+    text-decoration: none;
+
+}
+
+.tablecat a:hover {
+    color: #7B7B7B;
+    text-decoration: underline;
+
+}
+
+.tablea {
+    color: #555555;
+    background-color: #FEFFFF;
+
+}
+
+.tablea a:link, .tablea a:visited, .tablea a:active {
+    color: #555555;
+    text-decoration: none;
+
+}
+
+.tablea a:hover {
+    color: #444444;
+    text-decoration: underline;
+
+}
+
+.tableb {
+    color: #555555;
+    background-color: #F9F9F9;
+
+}
+
+.tableb a:link, .tableb a:visited, .tableb a:active {
+    color: #555555;
+    text-decoration: none;
+
+}
+
+.tableb a:hover {
+    color: #444444;
+    text-decoration: underline;
+
+}
+
+select {
+    color: #7B7B7B
+    background-color: #FEFFFF;
+    font-family: tahoma,helvetica;
+    font-size: 11px;
+
+}
+
+textarea {
+    color: #7B7B7B
+    background-color: #FEFFFF;
+    font-family: tahoma,helvetica;
+    font-size: 11px;
+
+}
+
+input {
+    color: #7B7B7B
+    background-color: #FEFFFF;
+    font-family: tahoma,helvetica;
+    font-size: 11px;
+
+}
+
+form {
+ padding:0px;
+ margin:0px;
+}
+
+pre {
+ padding:0px;
+ margin:0px;
+}
+
+.obenmitte {
+background-image: url('obenmitte.gif');
+}
+
+.untenmitte {
+background-image: url('untenmitte.gif');
+}
+
+.footerfont {
+ color: #514E4E;
+ font-family: tahoma,helvetica;
+ font-size: 11px;
+}
+
+.footerfont a:link, .footerfont a:visited, .footerfont a:active {
+ color: #514E4E;
+ text-decoration: underline;
+}
+.footerfont a:hover {
+ color: #514E4E;
+ text-decoration: none;
+}
+
+.ucuser          { color: #000000; }
+.ucpoweruser     { color: #000000; }
+.ucvip           { color: #B244D9; }
+.ucuploader      { color: #4040C0; }
+.ucmoderator     { color: #348534; }
+.ucadministrator { color: #E57700; }
+.ucsysop         { color: #FF3338; }
