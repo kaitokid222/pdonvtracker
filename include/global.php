@@ -500,46 +500,67 @@ function is_valid_id($id)
     return is_numeric($id) && ($id > 0) && (floor($id) == $id);
 } 
 
-function delete_acct($id)
-{ 
+function delete_acct($id){ 
     // Mailadresse holen
-    $userinfo = @mysql_fetch_assoc(@mysql_query("SELECT `email`,`username`,`status` FROM `users` WHERE `id`=$id"));
-    if ($userinfo["email"] && $userinfo["status"] == "confirmed") {
+	$qry = $GLOBALS['DB']->prepare('SELECT `email`,`username`,`status` FROM `users` WHERE `id`= :id');
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$qry->execute();
+	if($qry->rowCount() > 0){
+		$userinfo = $qry->fetchObject();
+	}
+	
+    //$userinfo = @mysql_fetch_assoc(@mysql_query("SELECT `email`,`username`,`status` FROM `users` WHERE `id`=$id"));
+	
+    if ($userinfo->email && $userinfo->status == "confirmed") {
         $mailbody = "Dein Account auf ".$GLOBALS["SITENAME"]." wurde gelöscht. Dies ist entweder passiert,
 weil Du Dich längere Zeit nicht mehr eingeloggt hast, oder Dein Account von einem
 Administrator deaktiviert wurde.
 
 Diese E-Mail dient dazu, Dich darüber zu informieren, dass Du diesen Account nun nicht
 mehr nutzen kannst. Bitte antworte nicht auf diese E-Mail!";
-        mail("\"" . $userinfo["username"] . "\" <" . $userinfo["email"] . ">", "Account gelöscht auf ".$GLOBALS["SITENAME"], $mailbody);
+        mail("\"" . $userinfo->username . "\" <" . $userinfo->email . ">", "Account gelöscht auf ".$GLOBALS["SITENAME"], $mailbody);
     } 
+	
+	$sql[] = ['DELETE FROM `users` WHERE `id`= :id'];
+	$sql[] = ['DELETE FROM `bitbucket` WHERE `user`= :id'];
+	$sql[] = ['DELETE FROM `nowait` WHERE `user_id`= :id'];
+	$sql[] = ['DELETE FROM `pmfolders` WHERE `owner`= :id'];
+	$sql[] = ['DELETE FROM `traffic` WHERE `userid`= :id'];
+	$sql[] = ['DELETE FROM `modcomments` WHERE `userid`= :id'];
+	foreach($sql as $s){
+		$qry = $GLOBALS['DB']->prepare($s);
+		$qry->bindParam(':id', $id, PDO::PARAM_INT);
+		$qry->execute();
+	}
 
-    $res = mysql_query("DELETE FROM `users` WHERE `id`=$id") or sqlerr(); 
-    // Verbliebene Wartezeitaufhebungen löschen
-    mysql_query("DELETE FROM `nowait` WHERE `user_id`=$id"); 
-    // BitBucket files löschen
-    $bucketfiles = mysql_query("SELECT `filename` FROM `bitbucket` WHERE `user`=$id");
-    while ($fileinfo = mysql_fetch_array($bucketfiles))
-        @unlink($GLOBALS["BITBUCKET_DIR"] . "/" . $fileinfo["filename"]);
+	$qry = $GLOBALS['DB']->prepare('SELECT `filename` FROM `bitbucket` WHERE `user`= :id');
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$qry->execute();
+	if($qry->rowCount() > 0){
+		$bucketfiles = $qry->fetchAll();
+		foreach($bucketfiles as $f){
+			 @unlink($GLOBALS["BITBUCKET_DIR"] . "/" . $f["filename"]);
+		}
+	}
 
-    mysql_query("DELETE FROM `bitbucket` WHERE `user`=$id");
-    
-    // PM-Ordner löschen
-    mysql_query("DELETE FROM `pmfolders` WHERE `owner`=$id");
-    // Torrent-Traffic
-    mysql_query("DELETE FROM `traffic` WHERE `userid`=$id");
-    // Modcomments
-    mysql_query("DELETE FROM `modcomments` WHERE `userid`=$id");
-    
     // Nachrichten löschen
-    $res = mysql_query("SELECT `id` FROM `messages` WHERE `sender`=$id OR `receiver`=$id");
-    $msgids = array();
-    while ($msg = mysql_fetch_assoc($res))
-        $msgids[] = $msg["id"];
+	$msgids = array();
+	$qry = $GLOBALS['DB']->prepare('SELECT `id` FROM `messages` WHERE `sender`=$id OR `receiver`= :id');
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$qry->execute();
+	if($qry->rowCount() > 0){
+		$msgs = $qry->fetchAll();
+		foreach($msgs as $m){
+			$msgids[] = $m["id"];
+		}
+	}
     $msgids = implode(",", $msgids);
-    deletePersonalMessages($msgids, $id);
+	// enthält... mehr mysql..
+    // . | . .
+	// . v . .
+	deletePersonalMessages($msgids, $id);
 
-    write_log("accdeleted", "Der Benutzer '".htmlspecialchars($userinfo["username"])."' mit der ID $id wurde aus der Datenbank gelöscht.");
+    write_log("accdeleted", "Der Benutzer '".htmlspecialchars($userinfo->username)."' mit der ID " . $id . " wurde aus der Datenbank gelöscht.");
 } 
 // -------- Begins a main frame
 function begin_main_frame()
