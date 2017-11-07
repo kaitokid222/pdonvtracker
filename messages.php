@@ -31,8 +31,10 @@ dbconn(false);
 loggedinorreturn();
 
 initFolder();
-
-$GLOBALS["FOLDER"] = intval($_REQUEST["folder"]);
+if(isset($_REQUEST["folder"]))
+	$GLOBALS["FOLDER"] = intval($_REQUEST["folder"]);
+else
+	$GLOBALS["FOLDER"] = 0;
 if ($GLOBALS["FOLDER"] == 0) $GLOBALS["FOLDER"] = PM_FOLDERID_INBOX;
 
 if ($CURUSER["class"] < UC_MODERATOR && $GLOBALS["FOLDER"] == PM_FOLDERID_MOD)
