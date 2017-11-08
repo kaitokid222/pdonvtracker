@@ -33,17 +33,19 @@ loggedinorreturn();
 if (isset($_GET["id"]) && intval($_GET["id"]) != $CURUSER["id"]) {
     $userid = intval($_GET["id"]);
 
-    $res = mysql_query("SELECT username,class FROM users WHERE id=$userid");
-    if (mysql_num_rows($res) == 0)
-        stderr("Fehler", "Es existiert kein User mit der ID $userid!");
-    
-    $arr = mysql_fetch_assoc($res);
+	$qry = $GLOBALS['DB']->prepare('SELECT username,class FROM users WHERE id= :id');
+	$qry->bindParam(':id', $userid, PDO::PARAM_INT);
+	$qry->execute();
+	if($qry->rowCount() > 0)
+		$obj = $qry->fetchObject();
+	else 
+		stderr("Fehler", "Es existiert kein User mit der ID $userid!");
 
-    if ($CURUSER["class"] < UC_MODERATOR || $CURUSER["class"]<=$arr["class"])
+    if ($CURUSER["class"] < UC_MODERATOR || $CURUSER["class"]<=$obj->class)
         stderr("Fehler", "Du hast keine Rechte, den BitBucket-Inhalt dieses Benutzers anzusehen oder zu ändern!");
 
-    $username = $arr["username"];
-    $userclass = $arr["class"];  
+    $username = $obj->username;
+    $userclass = $obj->class;  
 } else {
     $userid = $CURUSER["id"];
     $username = $CURUSER["username"];
@@ -59,22 +61,37 @@ if ($userclass>=UC_UPLOADER) {
 if ($_GET["delete"] != "")
 {
     $file_id = intval($_GET["delete"]);
-    $numfiles = mysql_result(mysql_query("SELECT COUNT(*) FROM bitbucket WHERE `id`=".$file_id." AND `user`=".$userid),0);
+    $numfiles = pdo_row_count('bitbucket','`id`='.$file_id.' AND `user`='.$userid);
+    //$numfiles = mysql_result(mysql_query("SELECT COUNT(*) FROM bitbucket WHERE `id`=".$file_id." AND `user`=".$userid),0);
     
     if ($numfiles==1) {
-    	$bucketfile = mysql_fetch_array(mysql_query("SELECT * FROM bitbucket WHERE `id`=".$file_id));
+		$qry = $GLOBALS['DB']->prepare('SELECT * FROM bitbucket WHERE `id`= :fid');
+		$qry->bindParam(':fid', $file_id, PDO::PARAM_INT);
+		$qry->execute();
+		if($qry->rowCount() > 0)
+			$bucketfile = $qry->fetchObject();
+    	//$bucketfile = mysql_fetch_array(mysql_query("SELECT * FROM bitbucket WHERE `id`=".$file_id));
 
         if (!$_GET["sure"]) {
-            stderr("Datei wirklich löschen?", "Bist Du Dir wirklich sicher, dass die Datei '".$bucketfile["originalname"]."' aus dem BitBucket gelöscht werden soll? Wenn ja, dann <a href=\"bitbucket.php?".(isset($_GET["id"])?"id=$userid&amp;":"")."delete=$file_id&amp;sure=1\">klicke hier</a>.");
+            stderr("Datei wirklich löschen?", "Bist Du Dir wirklich sicher, dass die Datei '".$bucketfile->originalname."' aus dem BitBucket gelöscht werden soll? Wenn ja, dann <a href=\"bitbucket.php?".(isset($_GET["id"])?"id=$userid&amp;":"")."delete=$file_id&amp;sure=1\">klicke hier</a>.");
         } else {    
-        	@unlink($GLOBALS["BITBUCKET_DIR"]."/".$bucketfile["filename"]);
+        	@unlink($GLOBALS["BITBUCKET_DIR"]."/".$bucketfile->filename);
         	mysql_query("DELETE FROM bitbucket WHERE `id`=".$file_id);
             
             // Modcomment aktualisieren
             if (isset($_GET["id"])) {
-                $arr = mysql_fetch_assoc(mysql_query("SELECT modcomment FROM users WHERE id=$userid"));
-                $arr["modcomment"] = date("Y-m-d") . " - Die Datei '".$bucketfile["originalname"]."' wurde von ".$CURUSER["username"]." aus dem BitBucket gelöscht.\n" .$arr["modcomment"];
-                mysql_query("UPDATE users SET modcomment=".sqlesc($arr["modcomment"])." WHERE id=$userid");
+				$qry = $GLOBALS['DB']->prepare('SELECT modcomment FROM users WHERE id= :id');
+				$qry->bindParam(':id', $userid, PDO::PARAM_INT);
+				$qry->execute();
+				if($qry->rowCount() > 0)
+					$obj = $qry->fetchObject();
+                //$arr = mysql_fetch_assoc(mysql_query("SELECT modcomment FROM users WHERE id=$userid"));
+                $obj->modcomment = date("Y-m-d") . " - Die Datei '".$bucketfile->originalname."' wurde von ".$CURUSER["username"]." aus dem BitBucket gelöscht.\n" . $obj->modcomment;
+                //mysql_query("UPDATE users SET modcomment=".sqlesc($arr["modcomment"])." WHERE id=$userid");
+				$qry = $GLOBALS['DB']->prepare('UPDATE users SET modcomment= :cmt WHERE id= :id');
+				$qry->bindParam(':id', $userid, PDO::PARAM_INT);
+				$qry->bindParam(':cmt', $obj->modcomment, PDO::PARAM_STR);
+				$qry->execute();
             }
             
         	stderr("Erfolg", "<p>Die Datei wurde erfolgreich aus Deinem Bitbucket gel&ouml;scht.</p><p><a href=\"bitbucket.php".(isset($_GET["id"])?"?id=$userid":"")."\">Zur&uuml;ck zum BitBucket</p>");
