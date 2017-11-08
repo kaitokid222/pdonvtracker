@@ -450,10 +450,8 @@ function ratiostatbox()
 
     if ($CURUSER) {
         $ratio = ($CURUSER["downloaded"] > 0?number_format($CURUSER["uploaded"] / $CURUSER["downloaded"], 3, ",", "."):"Inf.");
-        $seedsarr = @mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS `cnt` FROM `peers` WHERE `userid`=" . $CURUSER["id"] . " AND `seeder`='yes'"));
-        $seeds = $seedsarr["cnt"];
-        $leechesarr = @mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS `cnt` FROM `peers` WHERE `userid`=" . $CURUSER["id"] . " AND `seeder`='no'"));
-        $leeches = $leechesarr["cnt"];
+        $seeds = pdo_row_count('peers','`userid`=' . $CURUSER["id"] . ' AND `seeder`= yes') ?: 0;
+        $leeches = pdo_row_count('peers','`userid`=' . $CURUSER["id"] . ' AND `seeder`= no') ?: 0;
         $tlimits = get_torrent_limits($CURUSER);
 
         if ($ratio < 0.5) {
