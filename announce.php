@@ -147,7 +147,9 @@ foreach(array("num want", "numwant", "num_want") as $k)
 $agent = $_SERVER["HTTP_USER_AGENT"];
 
 // Deny access made with a browser...
-if (ereg("^Mozilla\\/", $agent) || ereg("^Opera\\/", $agent) || ereg("^Links ", $agent) || ereg("^Lynx\\/", $agent))
+//if (ereg("^Mozilla\\/", $agent) || ereg("^Opera\\/", $agent) || ereg("^Links ", $agent) || ereg("^Lynx\\/", $agent))
+// ereg is removed in php 7+
+if (preg_match("/^Mozilla\\/", $agent) || preg_match("/^Opera\\/", $agent) || preg_match("/^Links/ ", $agent) || preg_match("/^Lynx\\/", $agent))
     err("Dieser Torrent ist dem Tracker nicht bekannt");
 
 if (!$port || $port > 0xffff)
@@ -371,13 +373,21 @@ if ($event == "stopped")
         }
     }
     mysql_query("INSERT INTO startstoplog (userid,event,`datetime`,torrent,ip,peerid,useragent) VALUES ($userid,'stop',NOW(),$torrentid,".sqlesc($_SERVER["REMOTE_ADDR"]).",".sqlesc($peer_id).",".sqlesc($agent).")");
-    
-    $announcedelay = @mysql_fetch_assoc(@mysql_query("SELECT * FROM `announcedelay` WHERE `peer_id`=".sqlesc($peer_id)));
-    if (is_array($announcedelay)) {
-        if ($announcedelay["first"] && $announcedelay["second"] && $announcedelay["quantity"]) {
-            $duration1 = $announcedelay["second"]-$announcedelay["first"];
-            $duration2 = time() - $announcedelay["second"];
-            if ($duration1 < 310 && $duration2 < 10 && $uploaded - $announcedelay["quantity"] == 0) {
+
+
+	$qry = $GLOBALS['DB']->prepare("SELECT * FROM `announcedelay` WHERE `peer_id`= :id");
+	$qry->bindParam(':id', $peer_id, PDO::PARAM_STR);
+	$qry->execute();
+	if($qry->rowCount() > 0){
+		$announcedelay = $qry->fetchObject();
+	}
+    //$announcedelay = @mysql_fetch_assoc(@mysql_query("SELECT * FROM `announcedelay` WHERE `peer_id`=".sqlesc($peer_id)));
+    //if (is_array($announcedelay)) {
+    if (is_object($announcedelay)) {
+        if ($announcedelay->first && $announcedelay->second && $announcedelay->quantity) {
+            $duration1 = $announcedelay->second-$announcedelay->first;
+            $duration2 = time() - $announcedelay->second;
+            if ($duration1 < 310 && $duration2 < 10 && $uploaded - $announcedelay->quantity == 0) {
                 write_modcomment($userid, 0, "announce.php: Evtl. Ratiomaker 0.5+ benutzt: ".mksize($uploaded)." Upload / ".mksize($downloaded)." Download, Fake Rate: ".mksize($uploaded / $duration1)."/sek, Delays: {$duration1}s / {$duration2}s");
             }
         }
