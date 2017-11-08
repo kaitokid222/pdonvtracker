@@ -27,7 +27,8 @@
 */
 
 require "include/bittorrent.php";
-dbconn();
+//dbconn();
+userlogin();
 loggedinorreturn();
 
 if (isset($_GET["id"]) && intval($_GET["id"]) != $CURUSER["id"]) {
@@ -62,7 +63,6 @@ if ($_GET["delete"] != "")
 {
     $file_id = intval($_GET["delete"]);
     $numfiles = pdo_row_count('bitbucket','`id`='.$file_id.' AND `user`='.$userid);
-    //$numfiles = mysql_result(mysql_query("SELECT COUNT(*) FROM bitbucket WHERE `id`=".$file_id." AND `user`=".$userid),0);
     
     if ($numfiles==1) {
 		$qry = $GLOBALS['DB']->prepare('SELECT * FROM bitbucket WHERE `id`= :fid');
@@ -70,24 +70,22 @@ if ($_GET["delete"] != "")
 		$qry->execute();
 		if($qry->rowCount() > 0)
 			$bucketfile = $qry->fetchObject();
-    	//$bucketfile = mysql_fetch_array(mysql_query("SELECT * FROM bitbucket WHERE `id`=".$file_id));
 
         if (!$_GET["sure"]) {
             stderr("Datei wirklich löschen?", "Bist Du Dir wirklich sicher, dass die Datei '".$bucketfile->originalname."' aus dem BitBucket gelöscht werden soll? Wenn ja, dann <a href=\"bitbucket.php?".(isset($_GET["id"])?"id=$userid&amp;":"")."delete=$file_id&amp;sure=1\">klicke hier</a>.");
         } else {    
         	@unlink($GLOBALS["BITBUCKET_DIR"]."/".$bucketfile->filename);
-        	mysql_query("DELETE FROM bitbucket WHERE `id`=".$file_id);
+			$qry = $GLOBALS['DB']->prepare('DELETE FROM bitbucket WHERE `id`= :fid');
+			$qry->bindParam(':fid', $file_id, PDO::PARAM_INT);
+			$qry->execute();
             
-            // Modcomment aktualisieren
             if (isset($_GET["id"])) {
 				$qry = $GLOBALS['DB']->prepare('SELECT modcomment FROM users WHERE id= :id');
 				$qry->bindParam(':id', $userid, PDO::PARAM_INT);
 				$qry->execute();
 				if($qry->rowCount() > 0)
 					$obj = $qry->fetchObject();
-                //$arr = mysql_fetch_assoc(mysql_query("SELECT modcomment FROM users WHERE id=$userid"));
                 $obj->modcomment = date("Y-m-d") . " - Die Datei '".$bucketfile->originalname."' wurde von ".$CURUSER["username"]." aus dem BitBucket gelöscht.\n" . $obj->modcomment;
-                //mysql_query("UPDATE users SET modcomment=".sqlesc($arr["modcomment"])." WHERE id=$userid");
 				$qry = $GLOBALS['DB']->prepare('UPDATE users SET modcomment= :cmt WHERE id= :id');
 				$qry->bindParam(':id', $userid, PDO::PARAM_INT);
 				$qry->bindParam(':cmt', $obj->modcomment, PDO::PARAM_STR);
@@ -138,10 +136,16 @@ begin_table(TRUE);
   <col width="1*">
 </colgroup>  
 <?php
-
-$numfiles = mysql_result(mysql_query("SELECT COUNT(*) FROM bitbucket WHERE user=".$userid),0);
-$bucketfiles = mysql_query("SELECT * FROM bitbucket WHERE user=".$userid);
-$bucketsize = mysql_result(mysql_query("SELECT SUM(size) FROM bitbucket WHERE user=".$userid),0);
+$numfiles = pdo_row_count('bitbucket','`user`='.$userid);
+$qry = $GLOBALS['DB']->prepare('SELECT SUM(size) FROM bitbucket WHERE user= :id');
+$qry->bindParam(':id', $userid, PDO::PARAM_INT);
+$qry->execute();
+if($qry->rowCount() > 0)
+	$bucketsize = $qry->fetchColumn();
+	
+$bfiles = $GLOBALS['DB']->prepare('SELECT * FROM bitbucket WHERE user= :id');
+$bfiles->bindParam(':id', $userid, PDO::PARAM_INT);
+$bfiles->execute();
 
 if ($numfiles==0) {
     echo "<tr><td class=tablea colspan=4>Es sind zurzeit keine Dateien im BitBucket vorhanden.</td></tr>";
@@ -149,25 +153,25 @@ if ($numfiles==0) {
     $imgline = "<tr>\n";
     $descline = "<tr>\n";
     $cnt = 0;
-    while ($fileinfo = mysql_fetch_array($bucketfiles)) {
-	if ($cnt>0 && $cnt%3==0) {
-	    echo $imgline."</tr>\n";
-	    echo $descline."</tr>\n";
-	    $imgline = "<tr>\n";
-	    $descline = "<tr>\n";	    
-	}
-	$imgline .= "<td class=tablea align=center valign=middle><img src=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" width=\"100\" alt=\"".htmlspecialchars($fileinfo["originalname"])."\" title=\"".htmlspecialchars($fileinfo["originalname"])."\"></td>\n";
-	$descline .= "<td class=tableb align=center valign=top><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\">".htmlspecialchars($fileinfo["originalname"])."</a><br>\n";
-	$descline .="(". mksize($fileinfo["size"]).") ";
-	$descline .= "<a href=\"bitbucket.php?".(isset($_GET["id"])?"id=$userid&amp;":"")."delete=".$fileinfo["id"]."\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."/editdelete.png\" width=\"16\" height=\"16\" alt=\"L&ouml;schen\" style=\"border:none;vertical-align:middle;\"></a></td>";
-	
-	$cnt++;
+    foreach($bfiles->fetchAll() as $fileinfo) {
+		if ($cnt>0 && $cnt%3==0) {
+			echo $imgline."</tr>\n";
+			echo $descline."</tr>\n";
+			$imgline = "<tr>\n";
+			$descline = "<tr>\n";	    
+		}
+		$imgline .= "<td class=tablea align=center valign=middle><img src=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" width=\"100\" alt=\"".htmlspecialchars($fileinfo["originalname"])."\" title=\"".htmlspecialchars($fileinfo["originalname"])."\"></td>\n";
+		$descline .= "<td class=tableb align=center valign=top><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\">".htmlspecialchars($fileinfo["originalname"])."</a><br>\n";
+		$descline .="(". mksize($fileinfo["size"]).") ";
+		$descline .= "<a href=\"bitbucket.php?".(isset($_GET["id"])?"id=$userid&amp;":"")."delete=".$fileinfo["id"]."\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."/editdelete.png\" width=\"16\" height=\"16\" alt=\"L&ouml;schen\" style=\"border:none;vertical-align:middle;\"></a></td>";
+		
+		$cnt++;
     }
     if ($cnt%3!=0) {
-	for ($I=0; $I<3-$cnt%3; $I++) {
-	    $imgline .= "<td class=tablea align=center valign=middle>&nbsp;</td>\n";
-	    $descline .= "<td class=tableb align=center valign=top>&nbsp;</td>\n";
-	}
+		for ($I=0; $I<3-$cnt%3; $I++) {
+			$imgline .= "<td class=tablea align=center valign=middle>&nbsp;</td>\n";
+			$descline .= "<td class=tableb align=center valign=top>&nbsp;</td>\n";
+		}
     }
     
     echo $imgline."</tr>\n";
@@ -190,7 +194,11 @@ begin_table();
 ?>
 <tr><td style='padding: 0px; width: 400px; background-image: url(<?=$GLOBALS["PIC_BASE_URL"]?>loadbarbg.gif); background-repeat: repeat-x'>
 <?php
-    $size = mysql_result(mysql_query("SELECT SUM(size) FROM bitbucket WHERE `user`=".$userid),0);
+	$qry = $GLOBALS['DB']->prepare('SELECT SUM(size) FROM bitbucket WHERE user= :id');
+	$qry->bindParam(':id', $userid, PDO::PARAM_INT);
+	$qry->execute();
+	if($qry->rowCount() > 0)
+		$size = $qry->fetchColumn();
 	$percent = min(100,round($size/$maxbucketsize*100));
         if ($percent <= 70) $pic = "loadbargreen.gif";
         elseif ($percent <= 90) $pic = "loadbaryellow.gif";
