@@ -59,7 +59,7 @@ if ($userclass>=UC_UPLOADER) {
     $maxbucketsize = $GLOBALS["MAX_BITBUCKET_SIZE_USER"];
 }
 
-if ($_GET["delete"] != "")
+if (isset($_GET["delete"]))
 {
     $file_id = intval($_GET["delete"]);
     $numfiles = pdo_row_count('bitbucket','`id`='.$file_id.' AND `user`='.$userid);
@@ -71,7 +71,7 @@ if ($_GET["delete"] != "")
 		if($qry->rowCount() > 0)
 			$bucketfile = $qry->fetchObject();
 
-        if (!$_GET["sure"]) {
+        if (!isset($_GET["sure"])) {
             stderr("Datei wirklich löschen?", "Bist Du Dir wirklich sicher, dass die Datei '".$bucketfile->originalname."' aus dem BitBucket gelöscht werden soll? Wenn ja, dann <a href=\"bitbucket.php?".(isset($_GET["id"])?"id=$userid&amp;":"")."delete=$file_id&amp;sure=1\">klicke hier</a>.");
         } else {    
         	@unlink($GLOBALS["BITBUCKET_DIR"]."/".$bucketfile->filename);
