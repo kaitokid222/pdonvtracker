@@ -27,7 +27,8 @@
 */
 
 require "include/bittorrent.php";
-dbconn();
+//dbconn();
+userlogin();
 loggedinorreturn();
 
 $maxfilesize = $GLOBALS["MAX_UPLOAD_FILESIZE"];
@@ -46,7 +47,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
     if ($_POST["is_avatar"] != "1") {
     	if ($file["size"] > $maxfilesize)
     		stderr("Upload fehlgeschlagen", "Sorry, diese Datei ist zu gro&szlig; f&uuml;r den BitBucket.");
-    	$bucketsize = @mysql_result(mysql_query("SELECT SUM(size) FROM bitbucket WHERE user=".$CURUSER["id"]),0);
+
+		$qry = $GLOBALS['DB']->prepare('SELECT SUM(size) FROM bitbucket WHERE user= :id');
+		$qry->bindParam(':id', $GLOBALS["CURUSER"]["id"], PDO::PARAM_INT);
+		$qry->execute();
+		if($qry->rowCount() > 0){
+			$bucketsize = $qry->fetchColumn();
+		}
     	if ($bucketsize+$file["size"]>$maxbucketsize)
     		stderr("Upload fehlgeschlagen", "Sorry, Dein BitBucket is zu voll, um diese Datei aufnehmen zu k&ouml;nnen. Bitte l&ouml;sche erst eine oder mehrere Dateien, bevor Du eine weitere hochl&auml;dst.");	
     }
@@ -77,14 +84,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
         $file["size"] = filesize($tgtfile);
         if ($bucketsize+filesize($tgtfile)>$maxbucketsize) {
             unlink($tgtfile);
-            stderr("Upload fehlgeschlagen", "Sorry, Dein BitBucket is zu voll, um diese Datei aufnehmen zu k&ouml;nnen. Bitte l&ouml;sche erst eine oder mehrere Dateien, bevor Du eine weitere hochl&auml;dst.");	
+            stderr("Upload fehlgeschlagen", "Sorry, Dein BitBucket ist zu voll, um diese Datei aufnehmen zu k&ouml;nnen. Bitte l&ouml;sche erst eine oder mehrere Dateien, bevor Du eine weitere hochl&auml;dst.");	
         }
     } else {
         move_uploaded_file($file["tmp_name"], $tgtfile) or stderr("Fehler", "Interner Fehler #2.");
     }
         
     $url = str_replace(" ", "%20", htmlspecialchars($GLOBALS["BITBUCKET_DIR"]."/".$filename));
-    mysql_query("INSERT INTO bitbucket (`user`,`filename`,`size`,`originalname`) VALUES (".$CURUSER["id"].",'".$filename."',".$file["size"].",'".$file["name"]."')");
+	$qry = $GLOBALS['DB']->prepare('INSERT INTO bitbucket (`user`,`filename`,`size`,`originalname`) VALUES (:id,:fn,:fz,:fnn)');
+	$qry->bindParam(':id', $CURUSER["id"], PDO::PARAM_INT);
+	$qry->bindParam(':fn', $filename, PDO::PARAM_STR);
+	$qry->bindParam(':fz', $file["size"], PDO::PARAM_STR);
+	$qry->bindParam(':fnn', $file["name"], PDO::PARAM_STR);
+	$qry->execute();
+	
     header("Location: bitbucket.php");
 }
 

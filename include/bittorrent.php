@@ -218,17 +218,35 @@ function userlogin()
                 }else{
 					$baduser = 0;
 				}
-                mysql_query("INSERT INTO `accounts` (`userid`,`chash`,`lastaccess`,`username`,`email`,`baduser`) VALUES (" . $row["id"] . "," . sqlesc($_COOKIE["passhash"]) . ", NOW(), " . sqlesc($row["username"]) . ", " . sqlesc($row["email"]) . ", " . $baduser . ")");
+				$latime = date("Y-m-d H:i:s");
+				$qry = $GLOBALS['DB']->prepare('INSERT INTO `accounts` (`userid`,`chash`,`lastaccess`,`username`,`email`,`baduser`) VALUES (:id, :chash, :date, :un, :em, :bu');
+				$qry->bindParam(':id', $row["id"], PDO::PARAM_INT);
+				$qry->bindParam(':chash', $_COOKIE["passhash"], PDO::PARAM_STR);
+				$qry->bindParam(':date', $latime, PDO::PARAM_STR);
+				$qry->bindParam(':un', $row["username"], PDO::PARAM_STR);
+				$qry->bindParam(':em', $row["email"], PDO::PARAM_STR);
+				$qry->bindParam(':bu', $baduser, PDO::PARAM_STR);
+				$qry->execute();
             } 
         } else {
-            $res = mysql_query("SELECT * FROM `accounts` WHERE `userid`=" . $GLOBALS["CURUSER"]["id"]);
-            if (mysql_num_rows($res)) {
-                set_last_access($GLOBALS["CURUSER"]["id"]);
-                $data = mysql_fetch_assoc($res);
-                $hash = $data["chash"];
-            } else {
+			$qry = $GLOBALS['DB']->prepare('SELECT * FROM `accounts` WHERE `userid`= :id');
+			$qry->bindParam(':id', $GLOBALS["CURUSER"]["id"], PDO::PARAM_INT);
+			$qry->execute();
+			if($qry->rowCount() > 0){
+			    set_last_access($GLOBALS["CURUSER"]["id"]);
+				$data = $qry->FetchAll();
+				$hash = $data["chash"];
+			}else{
                 $hash = md5($row["username"] . mksecret() . $row["username"]);
-                mysql_query("INSERT INTO `accounts` (`userid`,`chash`,`lastaccess`,`username`,`email`,`baduser`) VALUES (" . $row["id"] . "," . sqlesc($hash) . ", NOW(), " . sqlesc($row["username"]) . ", " . sqlesc($row["email"]) . ", 0)");
+                $latime = date("Y-m-d H:i:s");
+				$qry = $GLOBALS['DB']->prepare('INSERT INTO `accounts` (`userid`,`chash`,`lastaccess`,`username`,`email`,`baduser`) VALUES (:id, :chash, :date, :un, :em, :bu');
+				$qry->bindParam(':id', $row["id"], PDO::PARAM_INT);
+				$qry->bindParam(':chash', $hash, PDO::PARAM_STR);
+				$qry->bindParam(':date', $latime, PDO::PARAM_STR);
+				$qry->bindParam(':un', $row["username"], PDO::PARAM_STR);
+				$qry->bindParam(':em', $row["email"], PDO::PARAM_STR);
+				$qry->bindParam(':bu', $baduser, PDO::PARAM_STR);
+				$qry->execute();
             } 
             setcookie("passhash", $hash, 0x7fffffff, "/");
         } 
