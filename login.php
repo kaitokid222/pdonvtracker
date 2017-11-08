@@ -27,15 +27,40 @@
  */
 
 require_once("include/bittorrent.php");
-
 hit_start();
-
-//dbconn();
-
 hit_count();
+function bark($text = "Benutzername oder Passwort ungültig")
+{
+  stderr("Login fehlgeschlagen!", $text);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST"){
+	$username = $_POST['username'];
+	$password = $_POST['password'];
+	session_start();
+	$qry = $GLOBALS['DB']->prepare("SELECT * FROM users WHERE username = :username AND status = 'confirmed'");
+	$qry->bindParam(':username', $username, PDO::PARAM_STR);
+	$qry->execute();
+	if($qry->rowCount() > 0) $row = $qry->fetchObject();
+	if (!$row) bark("row fehlerhaft");
+	if ($row->passhash != md5($row->secret . $password . $row->secret)) bark("PW problem");
+	if ($row->enabled == "no") bark("Dieser Account wurde deaktiviert.");
+	logincookie($row->id, $row->passhash);
+	$ip = getip();
+	$array = (array) $row;
+	$_SESSION["userdata"] = $array;
+	$_SESSION["userdata"]["ip"] = $ip;
+	$qry = $GLOBALS['DB']->prepare('UPDATE users SET last_access = :la, ip = :ip WHERE id = :id');
+	$qry->bindParam(':la', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+	$qry->bindParam(':ip', $ip, PDO::PARAM_STR);
+	$qry->bindParam(':id', $row->id, PDO::PARAM_STR);
+	$qry->execute();
+	if (!empty($_POST["returnto"])) header("Location: ".$BASEURL.$_POST["returnto"]);
+	else header("Location: " . $BASEURL . "/my.php");
+	hit_end();
+}
 
 stdhead("Login");
-
 unset($returnto);
 if (!empty($_GET["returnto"])) {
 	$returnto = $_GET["returnto"];
@@ -49,9 +74,8 @@ if (!empty($_GET["returnto"])) {
 <?php
 	}
 }
-
 ?>
-<form method="post" action="takelogin.php">
+<form method="post" action="<?=$_SERVER['PHP_SELF'] ?>">
 <table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
  <tr class="tabletitle" width="100%">
   <td colspan="10" width="100%"><span class="normalfont"><center><b> Tracker Login </b></center></span></td> 
@@ -65,19 +89,14 @@ Dich einloggen kannst.</p>
 <tr><td class=tablea colspan="2" align="center"><input type="submit" value="Log in!" class=btn></td></tr>
 </table>
 <?php
-
 if (isset($returnto))
 	print("<input type=\"hidden\" name=\"returnto\" value=\"" . htmlspecialchars($returnto) . "\" />\n");
-
 ?>
 </form>
 <p>Du hast noch keinen Account? <a href="signup.php">Registriere Dich</a> hier!</p>
 </center>
 </td></tr></table>
 <?php
-
 stdfoot();
-
 hit_end();
-
 ?>

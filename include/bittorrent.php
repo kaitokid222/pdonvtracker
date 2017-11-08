@@ -1369,14 +1369,19 @@ function expandCollapse(torrentId)
             else
                 $path = "(unknown)";
             $period = date("Y-m-d H") . ":00:00";
-            $RUNTIME_CLAUSE = "page = " . sqlesc($path) . " AND period = '$period'";
-            $update = "UPDATE hits SET count = count + 1 WHERE $RUNTIME_CLAUSE";
-            mysql_query($update);
-            if (mysql_affected_rows())
+            $RUNTIME_CLAUSE = 'page = ' . $path . ' AND period = ' . $period;
+			$qry = $GLOBALS['DB']->prepare("UPDATE hits SET count = count + 1 WHERE page = :path AND period = :period");
+			$qry->bindParam(':path', $path, PDO::PARAM_STR);
+			$qry->bindParam(':period', $period, PDO::PARAM_STR);
+			$qry->execute();
+            if ($qry->rowCount())
                 return;
-            $ret = mysql_query("INSERT INTO hits (page, period, count) VALUES (" . sqlesc($path) . ", '$period', 1)");
-            if (!$ret)
-                mysql_query($update);
+			else{
+				$qry = $GLOBALS['DB']->prepare('INSERT INTO hits (page, period, count) VALUES (:path, :period, 1)');
+				$qry->bindParam(':path', $path, PDO::PARAM_STR);
+				$qry->bindParam(':period', $period, PDO::PARAM_STR);
+				$qry->execute();
+			}
         } 
 
         function hit_end()
@@ -1390,8 +1395,13 @@ function expandCollapse(torrentId)
             $ts = posix_times();
             $sys = ($ts["stime"] - $RUNTIME_TIMES["stime"]) / 100;
             $user = ($ts["utime"] - $RUNTIME_TIMES["utime"]) / 100;
-            mysql_query("UPDATE hits SET runs = runs + 1, runtime = runtime + $runtime, user_cpu = user_cpu + $user, sys_cpu = sys_cpu + $sys WHERE $RUNTIME_CLAUSE");
-        } 
+			$qry = $GLOBALS['DB']->prepare('UPDATE hits SET runs = runs + 1, runtime = runtime + :rt, user_cpu = user_cpu + :user, sys_cpu = sys_cpu + :sys WHERE :rtc');
+			$qry->bindParam(':rt', $runtime, PDO::PARAM_STR);
+			$qry->bindParam(':user', $user, PDO::PARAM_STR);
+			$qry->bindParam(':sys', $sys, PDO::PARAM_STR);
+			$qry->bindParam(':rtc', $RUNTIME_CLAUSE, PDO::PARAM_STR);
+			$qry->execute();
+        }
 
         function hash_pad($hash)
         {
