@@ -349,7 +349,13 @@ function sendPersonalMessage($sender,
     global $CURUSER;
     
     if ($sender == $CURUSER["id"] && $receiver > 0) {
-        $user = @mysql_fetch_assoc(mysql_query("SELECT `notifs`,`email`,UNIX_TIMESTAMP(`last_access`) as `la` FROM `users` WHERE `id`=$receiver"));
+		$qry = $GLOBALS['DB']->prepare('SELECT `notifs`,`email`,UNIX_TIMESTAMP(`last_access`) as `la` FROM `users` WHERE `id`= :id');
+		$qry->bindParam(':id', $receiver, PDO::PARAM_INT);
+		$qry->execute();
+		if($qry->rowCount() > 0)
+			$user = $qry->fetchAll();
+			$dbg = implode("|",$user);
+			print_r("user: " . $dbg);
         if (!is_array($user))
             stderr("Fehler", "Der Empfänger konnte nicht ermittelt werden.");
     }
@@ -359,16 +365,26 @@ function sendPersonalMessage($sender,
     $queryset[] = $receiver;
     $queryset[] = $folder_in;
     $queryset[] = $folder_out;
-    $queryset[] = "NOW()";
-    $queryset[] = sqlesc($subject);
-    $queryset[] = sqlesc($body);
-    $queryset[] = sqlesc($mod_flag);
-    
-    $query = "INSERT INTO `messages` (`sender`,`receiver`,`folder_in`,`folder_out`,`added`,`subject`,`msg`,`mod_flag`) VALUES (";
-    $query .= implode(",", $queryset).")";
-    
-    mysql_query($query);
-    $msgid = mysql_insert_id();
+    $queryset[] = date("Y-m-d H:i:s");
+    //$queryset[] = sqlesc($subject);
+    $queryset[] = $subject;
+    //$queryset[] = sqlesc($body);
+    $queryset[] = $body;
+    //$queryset[] = sqlesc($mod_flag);
+    $queryset[] = $mod_flag;
+	$qry = $GLOBALS['DB']->prepare('INSERT INTO `messages` (`sender`,`receiver`,`folder_in`,`folder_out`,`added`,`subject`,`msg`,`mod_flag`) VALUES (?,?,?,?,?,?,?,?)');
+	$i = 0;
+	foreach($queryset as $q){
+		$x = $i + 1;
+		$qry->bindParam($x, $q, PDO::PARAM_STR);
+		$i++;
+		//dbg
+		print_r("<br>X =" . $x);
+		print_r("<br>i =" . $i);
+		print_r("<br>q =" . $q . "<br>");
+	}
+	$qry->execute();
+    $msgid = $GLOBALS['DB']->lastInsertId();
     
     // Benachrichtigen, wenn Nachricht von einem User an einen anderen versendet wurde
     if ($sender == $CURUSER["id"] && $receiver > 0 && strpos($user["notifs"], "[pm]") !== FALSE) {

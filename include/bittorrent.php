@@ -297,19 +297,25 @@ function autoclean()
 {
     $now = time();
     $docleanup = 0;
-
-    $res = mysql_query("SELECT value_u FROM avps WHERE arg = 'lastcleantime'");
-    $row = mysql_fetch_array($res);
+	
+	$qry = $GLOBALS['DB']->prepare('SELECT value_u FROM avps WHERE arg = lastcleantime');
+	$row = $qry->execute()->fetchColumn();
     if (!$row) {
-        mysql_query("INSERT INTO avps (arg, value_u) VALUES ('lastcleantime',$now)");
+		$qry = $GLOBALS['DB']->prepare('INSERT INTO avps (arg, value_u) VALUES (lastcleantime,:n)');
+		$qry->bindParam(':n', $now, PDO::PARAM_STR);
+		$row = $qry->execute();
         return;
     } 
     $ts = $row[0];
     if ($ts + $GLOBALS["AUTOCLEAN_INTERVAL"] > $now)
         return;
-    mysql_query("UPDATE avps SET value_u=$now WHERE arg='lastcleantime' AND value_u = $ts");
-    if (!mysql_affected_rows())
-        return;
+		
+	$qry = $GLOBALS['DB']->prepare('UPDATE avps SET value_u= :n WHERE arg= lastcleantime AND value_u = :ts');
+	$qry->bindParam(':n', $now, PDO::PARAM_STR);
+	$qry->bindParam(':ts', $ts, PDO::PARAM_STR);
+	$qry->execute();
+	if($qry->rowCount() == 0)
+		return;
 
     docleanup();
 } 
@@ -417,11 +423,12 @@ function validemail($email)
     return preg_match('/^[\w.-]+@([\w.-]+\.)+[a-z]{2,6}$/is', $email);
 } 
 
+// Muss weg!
 function sqlesc($x)
 {
     return "'" . mysql_real_escape_string($x) . "'";
 } 
-
+// Muss weg!
 function sqlwildcardesc($x)
 {
     return str_replace(array("%", "_"), array("\\%", "\\_"), mysql_real_escape_string($x));
@@ -755,21 +762,35 @@ function deletetorrent($id, $owner = 0, $comment = "")
 {
     global $CURUSER;
 
-    $torrent = mysql_fetch_assoc(mysql_query("SELECT name,numpics FROM torrents WHERE id = $id")); 
+    //$torrent = mysql_fetch_assoc(mysql_query("SELECT name,numpics FROM torrents WHERE id = $id")); 
+	$qry = $GLOBALS['DB']->prepare('SELECT name,numpics FROM torrents WHERE id = :id');
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$torrent = $qry->execute()->fetchAll();
+	
     // Delete pictures associated with torrent
     if ($torrent["numpics"] > 0) {
         for ($I = 1; $I <= $torrent["numpics"]; $I++) {
-            @unlink($GLOBALS["BITBUCKET_DIR"] . "/t-$id-$I.jpg");
-            @unlink($GLOBALS["BITBUCKET_DIR"] . "/f-$id-$I.jpg");
+            @unlink($GLOBALS["BITBUCKET_DIR"] . "/t-" . $id . "-" . $I . ".jpg");
+            @unlink($GLOBALS["BITBUCKET_DIR"] . "/f-" . $id . "-" . $I . ".jpg");
         } 
     } 
     // Delete NFO image
     @unlink($GLOBALS["BITBUCKET_DIR"] . "/nfo-$id.png");
-    mysql_query("DELETE FROM torrents WHERE id = $id");
-    mysql_query("DELETE FROM traffic WHERE torrentid = $id");
+    //mysql_query("DELETE FROM torrents WHERE id = $id");
+	$qry = $GLOBALS['DB']->prepare('DELETE FROM torrents WHERE id = :id');
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$qry->execute();
+    //mysql_query("DELETE FROM traffic WHERE torrentid = $id");
+	$qry = $GLOBALS['DB']->prepare('DELETE FROM traffic WHERE torrentid = :id');
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$qry->execute();
     foreach(explode(".", "peers.files.comments.ratings.nowait") as $x)
-    mysql_query("DELETE FROM $x WHERE torrent = $id");
-    @unlink($GLOBALS["TORRENT_DIR"] . "/$id.torrent"); 
+		//mysql_query("DELETE FROM $x WHERE torrent = $id");
+		$qry = $GLOBALS['DB']->prepare('DELETE FROM :x WHERE torrent = :id');
+		$qry->bindParam(':x', $x, PDO::PARAM_INT);
+		$qry->bindParam(':id', $id, PDO::PARAM_INT);
+		$qry->execute();
+    @unlink($GLOBALS["TORRENT_DIR"] . "/" . $id . ".torrent"); 
     // Send notification to owner if someone else deleted the torrent
     if ($CURUSER && $owner > 0 && $CURUSER["id"] != $owner) {
         $msg = sqlesc("Dein Torrent '$torrent[name]' wurde von [url=$DEFAULTBASEURL/userdetails.php?id=" . $CURUSER["id"] . "]" . $CURUSER["username"] . "[/url] gelöscht.\n\n[b]Grund:[/b]\n" . $comment);
