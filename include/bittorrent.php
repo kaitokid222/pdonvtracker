@@ -59,6 +59,14 @@ function pdo_row_count($table,$condition = '1=1'){
 	$qry->execute();
 	return $qry->fetchColumn(0);
 }
+
+function set_last_access($id){
+	$latime = date("Y-m-d H:i:s");
+	$qry = $GLOBALS['DB']->prepare('UPDATE users SET last_access= :date WHERE id= :id');
+	$qry->bindParam(':date', $latime, PDO::PARAM_STR);
+	$qry->bindParam(':id', $GLOBALS["CURUSER"]["id"], PDO::PARAM_INT);
+	$qry->execute();
+}
 	
 /**
  * *** validip/getip courtesy of manolete <manolete@myway.com> ***
@@ -144,66 +152,78 @@ function userlogin()
     unset($GLOBALS["CURUSER"]);
 
     $ip = getip();
-    $nip = ip2long($ip);
-    //$res = mysql_query("SELECT * FROM bans WHERE " . $nip . " >= first AND " . $nip . " <= last") or sqlerr(__FILE__, __LINE__);
-    /*if (mysql_num_rows($res) > 0) {
+    /*$nip = ip2long($ip);
+    $res = mysql_query("SELECT * FROM bans WHERE " . $nip . " >= first AND " . $nip . " <= last") or sqlerr(__FILE__, __LINE__);
+    if (mysql_num_rows($res) > 0) {
         header("HTTP/1.0 403 Forbidden");
         print("<html><body><h1>403 Forbidden</h1>Unauthorized IP address.</body></html>\n");
         die;
     } */
-    // Neues sessionbasiertes Login für bessere Performance und Anzeige neuer Torrents
+
     session_start();
 
     if (!$SITE_ONLINE || (!isset($_SESSION["userdata"]) && (empty($_COOKIE["uid"]) || empty($_COOKIE["pass"]))))
         return;
 
     if (isset($_SESSION["userdata"])) {
-        // Aktivierungsstatus und IP prüfen (Session hijacking vermeiden)
-        $enabled = mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS `cnt` FROM `users` WHERE `id` = " . $_SESSION["userdata"]["id"] . " AND `enabled`='yes' AND `status` = 'confirmed'"));
-        //$enabled = mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS `cnt` FROM `users` WHERE `id` = " . $_SESSION->userdata->id . " AND `enabled`='yes' AND `status` = 'confirmed'"));
-        if ($enabled["cnt"] != 1 || $_SESSION["userdata"]["ip"] != $ip) {
-            session_unset();
-            session_destroy();
-            return;
-        } 
+		$qry = $GLOBALS['DB']->prepare('SELECT COUNT(*) AS `cnt` FROM `users` WHERE `id` = :id AND `enabled`= yes AND `status` = confirmed');
+		$qry->bindParam(':id', $GLOBALS["CURUSER"]["id"], PDO::PARAM_INT);
+		$qry->execute();
+		if($qry->rowCount() > 0){
+			$enabled = $qry->FetchAll();
+			if ($enabled["cnt"] != 1 || $_SESSION["userdata"]["ip"] != $ip) {
+				session_unset();
+				session_destroy();
+				return;
+			} 
+		}
         $GLOBALS["CURUSER"] = $_SESSION["userdata"];
     } else {
         // Keine Session aktiv, login via Cookie
         $id = 0 + $_COOKIE["uid"];
         if (!$id || strlen($_COOKIE["pass"]) != 32)
             return;
-        $res = mysql_query("SELECT * FROM users WHERE id = $id AND enabled='yes' AND status = 'confirmed'"); // or die(mysql_error());
-        $row = mysql_fetch_array($res);
-        if (!$row)
-            return;
-        $sec = hash_pad($row["secret"]);
+			
+		$qry = $GLOBALS['DB']->prepare('SELECT * FROM users WHERE id = :id AND enabled= yes AND status = confirmed');
+		$qry->bindParam(':id', $id, PDO::PARAM_INT);
+		$qry->execute();
+		if($qry->rowCount() > 0){
+			$row = $qry->FetchAll();
+		}else{
+			return;
+		}
+		$sec = hash_pad($row["secret"]);
         if ($_COOKIE["pass"] !== $row["passhash"])
             return;
-
-        /* mysql_query("UPDATE users SET last_access='" . get_date_time() . "', ip='$ip' WHERE id=" . $row["id"]);// or die(mysql_error()); */
 
         $row['ip'] = $ip;
         $GLOBALS["CURUSER"] = $row;
         $_SESSION["userdata"] = $row;
 
         if (isset($_COOKIE["passhash"])) {
-            $res = mysql_query("SELECT * FROM `accounts` WHERE `userid`=" . $GLOBALS["CURUSER"]["id"] . " AND `chash`=" . sqlesc($_COOKIE["passhash"]));
-            if (mysql_num_rows($res))
-                mysql_query("UPDATE `accounts` SET `lastaccess`=NOW() WHERE `userid`=" . $GLOBALS["CURUSER"]["id"]);
-            else {
-                $res = mysql_query("SELECT * FROM `accounts` WHERE `chash`=" . sqlesc($_COOKIE["passhash"]));
-                if (mysql_num_rows($res)) {
-                    $data = mysql_fetch_assoc($res);
+			$qry = $GLOBALS['DB']->prepare('SELECT * FROM `accounts` WHERE `userid`= :id AND `chash`= :chash');
+			$qry->bindParam(':id', $GLOBALS["CURUSER"]["id"], PDO::PARAM_INT);
+			$qry->bindParam(':chash', $_COOKIE["passhash"], PDO::PARAM_STR);
+			$qry->execute();
+			if($qry->rowCount() > 0){
+				//$row = $qry->FetchAll();
+				set_last_access($GLOBALS["CURUSER"]["id"]);
+			}else{
+				$qry = $GLOBALS['DB']->prepare('SELECT * FROM `accounts` WHERE `chash`= :chash');
+				$qry->bindParam(':chash', $_COOKIE["passhash"], PDO::PARAM_STR);
+				$qry->execute();
+				if($qry->rowCount() > 0){
+					$data = $qry->fetchAll();
                     $baduser = $data["baduser"];
-                } else {
-                    $baduser = 0;
-                } 
+                }else{
+					$baduser = 0;
+				}
                 mysql_query("INSERT INTO `accounts` (`userid`,`chash`,`lastaccess`,`username`,`email`,`baduser`) VALUES (" . $row["id"] . "," . sqlesc($_COOKIE["passhash"]) . ", NOW(), " . sqlesc($row["username"]) . ", " . sqlesc($row["email"]) . ", " . $baduser . ")");
             } 
         } else {
             $res = mysql_query("SELECT * FROM `accounts` WHERE `userid`=" . $GLOBALS["CURUSER"]["id"]);
             if (mysql_num_rows($res)) {
-                mysql_query("UPDATE `accounts` SET `lastaccess`=NOW() WHERE `userid`=" . $GLOBALS["CURUSER"]["id"]);
+                set_last_access($GLOBALS["CURUSER"]["id"]);
                 $data = mysql_fetch_assoc($res);
                 $hash = $data["chash"];
             } else {
@@ -213,10 +233,13 @@ function userlogin()
             setcookie("passhash", $hash, 0x7fffffff, "/");
         } 
     } 
+	$latime = date("Y-m-d H:i:s");
+	$qry = $GLOBALS['DB']->prepare('UPDATE users SET last_access= :date, ip= :ip WHERE id= :id');
+	$qry->bindParam(':date', $latime, PDO::PARAM_STR);
+	$qry->bindParam(':ip', $ip, PDO::PARAM_STR);
+	$qry->bindParam(':id', $GLOBALS["CURUSER"]["id"], PDO::PARAM_STR);
+	$qry->execute();
 
-    if ($GLOBALS["CURUSER"]["id"] != 1010) 
-        // Letzten Zugriff aktualisieren
-        mysql_query("UPDATE users SET last_access='" . date("Y-m-d H:i:s") . "', ip='$ip' WHERE id=" . $GLOBALS["CURUSER"]["id"]); // or die(mysql_error());
     if ($GLOBALS["CURUSER"]["accept_rules"] == "no" && !preg_match("/(takeprofedit|rules|faq|logout|delacct)\\.php$/", $_SERVER["PHP_SELF"])) {
         header("Location: rules.php?accept_rules");
         die();
