@@ -27,38 +27,44 @@
  */
 
 require "include/bittorrent.php";
-dbconn();
+userlogin();
+//dbconn();
 loggedinorreturn();
 if (get_user_class() < UC_ADMINISTRATOR)
 	stderr("Error", "Access denied.");
-if ($_SERVER["REQUEST_METHOD"] == "POST")
-{
+if ($_SERVER["REQUEST_METHOD"] == "POST"){
     if ($_POST["username"] == "" || $_POST["password"] == "" || $_POST["email"] == "")
         stderr("Fehler", "Formulardaten unvollständig.");
     if ($_POST["password"] != $_POST["password2"])
         stderr("Fehler", "Passwörter sind nicht identisch.");
-    $username = sqlesc($_POST["username"]);
+    $username = $_POST["username"];
     $password = $_POST["password"];
-    $email = sqlesc($_POST["email"]);
+    $email = $_POST["email"];
     $secret = mksecret();
-    $passkey = sqlesc(mksecret(8));
-    $passhash = sqlesc(md5($secret . $password . $secret));
-    $secret = sqlesc($secret);
-    
-    mysql_query("INSERT INTO users (added, last_access, secret, username, passhash, passkey, status, email) VALUES(NOW(), NOW(), $secret, $username, $passhash, $passkey, 'confirmed', $email)") or sqlerr(__FILE__, __LINE__);
-    $res = mysql_query("SELECT id FROM users WHERE username=$username");
-    $arr = mysql_fetch_row($res);
-    if (!$arr)
+    $passkey = mksecret(8);
+    $passhash = md5($secret . $password . $secret);
+	$now = date("Y-m-d H:i:s");
+	$state = 'confirmed';
+    $qry = $GLOBALS['DB']->prepare('INSERT INTO users (added, last_access, secret, username, passhash, passkey, status, email) VALUES(:now, :now, :secret, :un, :passhash, :passkey, :c, :mail)');
+	$qry->bindParam(':now', $now, PDO::PARAM_STR);
+	$qry->bindParam(':secret', $secret, PDO::PARAM_STR);
+	$qry->bindParam(':un', $username, PDO::PARAM_STR);
+	$qry->bindParam(':passhash', $passhash, PDO::PARAM_STR);
+	$qry->bindParam(':passkey', $passkey, PDO::PARAM_STR);
+	$qry->bindParam(':c', $state, PDO::PARAM_STR);
+	$qry->bindParam(':mail', $email, PDO::PARAM_STR);
+	$qry->execute();
+	if(!$qry->rowCount())
         stderr("Fehler", "Der Account konnte nicht erstellt werden. Möglicherweise ist der Benuzername bereits vergeben.");
-    header("Location: $BASEURL/userdetails.php?id=".$arr[0]."&".SID);
+    header("Location: " . $BASEURL . "/userdetails.php?id=" . $GLOBALS['DB']->lastInsertId());
     die;
 }
-stdhead("Add user");
+stdhead("Benutzer hinzufügen");
 
 begin_frame("Benutzeraccount anlegen", FALSE, "400px");
 ?>
 
-<form method="post" action="adduser.php">
+<form method="post" action="<?=$_SERVER['PHP_SELF'] ?>">
 <?php begin_table(TRUE); ?>
 <tr><td class="tableb">Benutzername:</td><td class="tablea"><input type="text" name="username" size="40"></td></tr>
 <tr><td class="tableb">Passwort:</td><td class="tablea"><input type="password" name="password" size="40"></td></tr>
