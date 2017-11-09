@@ -354,8 +354,6 @@ function sendPersonalMessage($sender,
 		$qry->execute();
 		if($qry->rowCount() > 0)
 			$user = $qry->fetchAll();
-			$dbg = implode("|",$user);
-			print_r("user: " . $dbg);
         if (!is_array($user))
             stderr("Fehler", "Der Empfänger konnte nicht ermittelt werden.");
     }
@@ -366,24 +364,21 @@ function sendPersonalMessage($sender,
     $queryset[] = $folder_in;
     $queryset[] = $folder_out;
     $queryset[] = date("Y-m-d H:i:s");
-    //$queryset[] = sqlesc($subject);
     $queryset[] = $subject;
-    //$queryset[] = sqlesc($body);
     $queryset[] = $body;
-    //$queryset[] = sqlesc($mod_flag);
     $queryset[] = $mod_flag;
-	$qry = $GLOBALS['DB']->prepare('INSERT INTO `messages` (`sender`,`receiver`,`folder_in`,`folder_out`,`added`,`subject`,`msg`,`mod_flag`) VALUES (?,?,?,?,?,?,?,?)');
-	$i = 0;
-	foreach($queryset as $q){
-		$x = $i + 1;
-		$qry->bindParam($x, $q, PDO::PARAM_STR);
-		$i++;
-		//dbg
-		print_r("<br>X =" . $x);
-		print_r("<br>i =" . $i);
-		print_r("<br>q =" . $q . "<br>");
-	}
+	
+	$qry = $GLOBALS['DB']->prepare('INSERT INTO `messages` (`sender`,`receiver`,`folder_in`,`folder_out`,`added`,`subject`,`msg`,`mod_flag`) VALUES (:sender,:receiver,:fin,:fout,:added,:sub,:msg,:mf)');
+	$qry->bindParam(':sender', $queryset[0], PDO::PARAM_INT);
+	$qry->bindParam(':receiver', $queryset[1], PDO::PARAM_INT);
+	$qry->bindParam(':fin', $queryset[2], PDO::PARAM_STR);
+	$qry->bindParam(':fout', $queryset[3], PDO::PARAM_STR);
+	$qry->bindParam(':added', $queryset[4], PDO::PARAM_STR);
+	$qry->bindParam(':sub', $queryset[5], PDO::PARAM_STR);
+	$qry->bindParam(':msg', $queryset[6], PDO::PARAM_STR);
+	$qry->bindParam(':mf', $queryset[7], PDO::PARAM_STR);
 	$qry->execute();
+	
     $msgid = $GLOBALS['DB']->lastInsertId();
     
     // Benachrichtigen, wenn Nachricht von einem User an einen anderen versendet wurde
