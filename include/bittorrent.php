@@ -762,38 +762,33 @@ function deletetorrent($id, $owner = 0, $comment = "")
 {
     global $CURUSER;
 
-    //$torrent = mysql_fetch_assoc(mysql_query("SELECT name,numpics FROM torrents WHERE id = $id")); 
 	$qry = $GLOBALS['DB']->prepare('SELECT name,numpics FROM torrents WHERE id = :id');
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
 	$torrent = $qry->execute()->fetchAll();
 	
-    // Delete pictures associated with torrent
     if ($torrent["numpics"] > 0) {
         for ($I = 1; $I <= $torrent["numpics"]; $I++) {
             @unlink($GLOBALS["BITBUCKET_DIR"] . "/t-" . $id . "-" . $I . ".jpg");
             @unlink($GLOBALS["BITBUCKET_DIR"] . "/f-" . $id . "-" . $I . ".jpg");
         } 
     } 
-    // Delete NFO image
     @unlink($GLOBALS["BITBUCKET_DIR"] . "/nfo-$id.png");
-    //mysql_query("DELETE FROM torrents WHERE id = $id");
 	$qry = $GLOBALS['DB']->prepare('DELETE FROM torrents WHERE id = :id');
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
 	$qry->execute();
-    //mysql_query("DELETE FROM traffic WHERE torrentid = $id");
 	$qry = $GLOBALS['DB']->prepare('DELETE FROM traffic WHERE torrentid = :id');
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
 	$qry->execute();
-    foreach(explode(".", "peers.files.comments.ratings.nowait") as $x)
-		//mysql_query("DELETE FROM $x WHERE torrent = $id");
+    foreach(explode(".", "peers.files.comments.ratings.nowait") as $x){
 		$qry = $GLOBALS['DB']->prepare('DELETE FROM :x WHERE torrent = :id');
 		$qry->bindParam(':x', $x, PDO::PARAM_INT);
 		$qry->bindParam(':id', $id, PDO::PARAM_INT);
 		$qry->execute();
-    @unlink($GLOBALS["TORRENT_DIR"] . "/" . $id . ".torrent"); 
-    // Send notification to owner if someone else deleted the torrent
+	}
+    @unlink($GLOBALS["TORRENT_DIR"] . "/" . $id . ".torrent");
+
     if ($CURUSER && $owner > 0 && $CURUSER["id"] != $owner) {
-        $msg = sqlesc("Dein Torrent '$torrent[name]' wurde von [url=$DEFAULTBASEURL/userdetails.php?id=" . $CURUSER["id"] . "]" . $CURUSER["username"] . "[/url] gelöscht.\n\n[b]Grund:[/b]\n" . $comment);
+        $msg = "Dein Torrent '" . $torrent['name'] . "' wurde von [url=" . $DEFAULTBASEURL . "/userdetails.php?id=" . $CURUSER["id"] . "]" . $CURUSER["username"] . "[/url] gelöscht.\n\n[b]Grund:[/b]\n" . $comment;
         sendPersonalMessage(0, $owner, "Einer Deiner Torrents wurde gelöscht", $msg, PM_FOLDERID_SYSTEM, 0);
     } 
 } 
