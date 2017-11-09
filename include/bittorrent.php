@@ -797,7 +797,7 @@ function pager($rpp, $count, $href, $opts = array())
 {
     $pages = ceil($count / $rpp);
 
-    if (!$opts["lastpagedefault"])
+    if (!isset($opts["lastpagedefault"]))
         $pagedefault = 0;
     else {
         $pagedefault = floor(($count - 1) / $rpp);
@@ -869,11 +869,16 @@ function pager($rpp, $count, $href, $opts = array())
     return array($pagertop, $pagerbottom, "LIMIT $start,$rpp");
 } 
 
-function downloaderdata($res)
+// ???
+// Wird diese Funktion genutzt?
+/*function downloaderdata($res)
 {
     $rows = array();
     $ids = array();
     $peerdata = array();
+	//$qry = $GLOBALS['DB']->prepare('... WHERE id = :id');
+	//$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	//$arr = $qry->execute()->fetchAll();
     while ($row = mysql_fetch_assoc($res)) {
         $rows[] = $row;
         $id = $row["id"];
@@ -898,7 +903,7 @@ function downloaderdata($res)
     } 
 
     return array($rows, $peerdata);
-} 
+} */
 
 function commenttable($rows)
 {
@@ -946,9 +951,9 @@ function searchfield($s)
 function genrelist()
 {
     $ret = array();
-    $res = mysql_query("SELECT id, name FROM categories ORDER BY name");
-    while ($row = mysql_fetch_array($res))
-    $ret[] = $row;
+	$rows = $GLOBALS['DB']->query('SELECT id, name FROM categories ORDER BY name')->fetchAll();
+	foreach($rows as $row)
+		$ret[] = $row;
     return $ret;
 } 
 
@@ -1103,7 +1108,18 @@ function torrenttable_row_oldschool($torrent_info)
 
         $seedercolor = get_slr_color($ratio);
 
-        $res = mysql_query("SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid FROM completed,users LEFT JOIN peers ON peers.userid=users.id AND peers.torrent=" . $torrent_info["id"] . " AND peers.seeder='yes' WHERE completed.user_id=users.id AND completed.torrent_id=" . $torrent_info["id"] . " ORDER BY complete_time DESC LIMIT 10");
+		//$qry = $GLOBALS['DB']->prepare('... WHERE id = :id');
+		//$qry->bindParam(':id', $id, PDO::PARAM_INT);
+		//$arr = $qry->execute()->fetchAll();
+		//$rows = $GLOBALS['DB']->query('SELECT id, name FROM categories ORDER BY name')->fetchAll();
+        $res = mysql_query("SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid 
+		FROM completed,users 
+		LEFT JOIN peers ON peers.userid=users.id 
+		AND peers.torrent=" . $torrent_info["id"] . " 
+		AND peers.seeder='yes' 
+		WHERE completed.user_id=users.id 
+		AND completed.torrent_id=" . $torrent_info["id"] . " 
+		ORDER BY complete_time DESC LIMIT 10");
 
         $last10users = "";
         while ($arr = mysql_fetch_assoc($res)) {
@@ -1415,6 +1431,8 @@ function expandCollapse(torrentId)
             $RUNTIME_START = gettimeofday();
         } 
 
+		// es gibt keine table "hits"
+		// TODO!!
         function hit_count()
         {
             return;

@@ -39,17 +39,22 @@ stdhead("BitBucket Gallerie");
 begin_frame("BitBucket Gallerie", FALSE, "750px");
 
 // Alle Dateien im BitBucket holen
-$count = mysql_fetch_assoc(mysql_query("SELECT COUNT(DISTINCT(user)) AS cnt FROM bitbucket"));
+$count = $GLOBALS['DB']->query('SELECT COUNT(DISTINCT(user)) AS cnt FROM bitbucket')->fetch();
 list($pagertop, $pagerbottom, $limit) = pager(10, $count["cnt"], "bitbucket-gallery.php?");
-$userres = mysql_query("SELECT DISTINCT(bitbucket.user) AS id,users.username AS username FROM bitbucket JOIN users ON bitbucket.user=users.id ORDER BY users.username ASC $limit");
-
-if (mysql_num_rows($userres) == 0) {
-    echo "<p>Es wurde bislang in keinen BitBucket etwas hochgeladen!</p>";
-} else {
+//$qry = $GLOBALS['DB']->prepare('SELECT DISTINCT(bitbucket.user) AS id,users.username AS username FROM bitbucket JOIN users ON bitbucket.user=users.id ORDER BY users.username ASC :limit'); // buggy
+$qry = $GLOBALS['DB']->prepare('SELECT DISTINCT(bitbucket.user) AS id,users.username AS username FROM bitbucket JOIN users ON bitbucket.user=users.id ORDER BY users.username ASC');
+//echo($limit);
+//$qry->bindParam(':limit', $limit, PDO::PARAM_STR);
+$qry->execute();
+if(!$qry->rowCount())
+	echo "<p>Es wurde bislang in keinen BitBucket etwas hochgeladen!</p>";
+else {
+	$userres = $qry->FetchAll();
     echo $pagertop;
     
-    while ($user = mysql_fetch_assoc($userres)) {
-        $res = mysql_query("SELECT * FROM bitbucket WHERE user=".$user["id"]);
+    //while ($user = mysql_fetch_assoc($userres)) {
+	foreach($userres as $user){
+		$res = mysql_query("SELECT * FROM bitbucket WHERE user=".$user["id"]);
         begin_table(TRUE);
         echo "<colgroup><col width=\"25%\"><col width=\"25%\"><col width=\"25%\"><col width=\"25%\"></colgroup>\n";
         echo "<tr><td class=\"tablecat\" align=\"center\" colspan=\"4\"><b>".htmlspecialchars($user["username"])."</b> [<a href=\"bitbucket.php?id=".$user["id"]."\">BitBucket bearbeiten</a>]</td></tr>";
