@@ -377,6 +377,7 @@ function _strlastpos ($haystack, $needle, $offset = 0)
 
 function format_quotes($s)
 {
+	$old_s = '';
     while ($old_s != $s) {
         $old_s = $s; 
         // [quote]Text[/quote]

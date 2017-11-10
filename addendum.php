@@ -28,7 +28,8 @@
 
 require "include/bittorrent.php";
 
-dbconn(false);
+//dbconn(false);
+userlogin();
 stdhead();
 ?>
 

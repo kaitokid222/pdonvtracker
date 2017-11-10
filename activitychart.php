@@ -27,19 +27,12 @@
  */
 
 require "include/bittorrent.php";
-dbconn();
-
-/*
-loggedinorreturn();
-
-if (get_user_class() < UC_MODERATOR)
-        stderr("Error", "Permission denied.");
-*/
-
+//dbconn();
+userlogin();
 
 function get_count($inactive_time)
 {
-    $arr = mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS cnt FROM users WHERE UNIX_TIMESTAMP(`last_access`)<".$inactive_time));
+    $arr['cnt'] = pdo_row_count('users','UNIX_TIMESTAMP(`last_access`)<'.$inactive_time);
     return $arr["cnt"];
 }
         
@@ -58,8 +51,7 @@ begin_table(TRUE);
 echo '<tr><td class="tablecat">Inakt. seit</td><td class="tablecat">Anzahl (prozentual von Gesamtbenutzern)</td></tr>', "\n";
 
 $curtime = time();
-$uarr = mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS cnt FROM users"));
-$usercount = $uarr["cnt"];
+$usercount = pdo_row_count('users');
 
 // 24h, stdl. --> 24x
 for ($I=0; $I<24; $I++) {
