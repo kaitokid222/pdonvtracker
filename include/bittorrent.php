@@ -857,10 +857,10 @@ function pager($rpp, $count, $href, $opts = array())
                 $pagerarr[] = "<b>$text</b>";
         } 
         $pagerstr = join(" | ", $pagerarr);
-        $pagertop = "<p align=\"center\">$pager<br />$pagerstr</p>\n";
-        $pagerbottom = "<p align=\"center\">$pagerstr<br />$pager</p>\n";
+        $pagertop = '<p align=\"center\">' . $pager . '<br />$pagerstr</p>\n';
+        $pagerbottom = '<p align=\"center\">' . $pagerstr . '<br />$pager</p>\n';
     } else {
-        $pagertop = "<p align=\"center\">$pager</p>\n";
+        $pagertop = '<p align=\"center\">' . $pager . '</p>\n';
         $pagerbottom = $pagertop;
     } 
 
@@ -1108,9 +1108,10 @@ function torrenttable_row_oldschool($torrent_info)
 
         $seedercolor = get_slr_color($ratio);
 
-		//$qry = $GLOBALS['DB']->prepare('... WHERE id = :id');
-		//$qry->bindParam(':id', $id, PDO::PARAM_INT);
-		//$arr = $qry->execute()->fetchAll();
+		//$qry = $GLOBALS['DB']->prepare('SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid FROM completed,users LEFT JOIN peers ON peers.userid=users.id AND peers.torrent= :tid AND peers.seeder= yes WHERE completed.user_id=users.id AND completed.torrent_id= :tid ORDER BY complete_time DESC');
+		//$qry = $GLOBALS['DB']->prepare('SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid FROM completed,users LEFT JOIN peers ON peers.userid=users.id AND peers.torrent= :tid AND peers.seeder= yes WHERE completed.user_id=users.id AND completed.torrent_id= :tid ORDER BY complete_time DESC LIMIT 10');
+		//$qry->bindParam(':tid', $torrent_info["id"], PDO::PARAM_INT);
+		//$res = $qry->execute()->fetchAll();
 		//$rows = $GLOBALS['DB']->query('SELECT id, name FROM categories ORDER BY name')->fetchAll();
         $res = mysql_query("SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid 
 		FROM completed,users 
@@ -1122,7 +1123,8 @@ function torrenttable_row_oldschool($torrent_info)
 		ORDER BY complete_time DESC LIMIT 10");
 
         $last10users = "";
-        while ($arr = mysql_fetch_assoc($res)) {
+        //foreach($res as $arr){
+		while ($arr = mysql_fetch_assoc($res)) {
             if ($last10users) $last10users .= ", ";
             $arr["username"] = "<font class=\"" . get_class_color($arr["class"]) . "\">" . $arr["username"] . "</font>";
             if ($arr["peerid"] > 0) {

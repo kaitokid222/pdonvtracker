@@ -26,17 +26,17 @@
 // +--------------------------------------------------------------------------+
 */
 
-ob_start("ob_gzhandler");
+//ob_start("ob_gzhandler");
 
 require_once("include/bittorrent.php");
 
-hit_start();
+//hit_start();
 
 dbconn(false);
-
+//userlogin();
 loggedinorreturn();
-hit_count();
-
+//hit_count();
+//stdhead();
 $cats = genrelist();
 
 if(isset($_GET['search']))
@@ -183,11 +183,11 @@ if(!isset($_GET["showsearch"])){
 	$_GET["showsearch"] = 1;
 	if ($_GET["showsearch"] == 1) {
 		$CURUSER["displaysearch"] = "yes";
-		mysql_query("UPDATE users SET displaysearch='yes' WHERE id=".$CURUSER["id"]);
+		//mysql_query("UPDATE users SET displaysearch='yes' WHERE id=".$CURUSER["id"]);
 		$_SESSION["userdata"]["displaysearch"] = "yes";
 	} elseif (isset($_GET["showsearch"]) && $_GET["showsearch"] == 0) {
 		$CURUSER["displaysearch"] = "no";
-		mysql_query("UPDATE users SET displaysearch='no' WHERE id=".$CURUSER["id"]);
+		//mysql_query("UPDATE users SET displaysearch='no' WHERE id=".$CURUSER["id"]);
 		$_SESSION["userdata"]["displaysearch"] = "no";
 	}
 }
@@ -213,11 +213,16 @@ $where = implode(" AND ", $wherea);
 if (isset($wherecatin))
     $where .= ($where ? " AND " : "") . "category IN(" . $wherecatin . ")";
 
-if ($where != "")
-    $where = "WHERE $where";
-
+//WHERE is in pdo_row_count();
+if ($where != ""){
+	$owhere = $where;
+    $where = 'WHERE ' . $where;
+}
+//echo '<br><br>Condition: ' . $where;
+//$res = pdo_row_count('torrents',$owhere);
 $res = mysql_query("SELECT COUNT(*) FROM torrents LEFT JOIN users ON torrents.owner=users.id $where") or die(mysql_error());
 $row = mysql_fetch_array($res);
+//$count = $res;
 $count = $row[0];
 
 if (!$count && isset($cleansearchstr)) {
@@ -252,16 +257,26 @@ if (!$torrentsperpage)
 
 if ($count) {
     list($pagertop, $pagerbottom, $limit) = pager($torrentsperpage, $count, "browse.php?" . $addparam);
-    $query = "SELECT torrents.id, torrents.category, torrents.leechers, torrents.seeders, torrents.name, torrents.times_completed, torrents.size, torrents.added, torrents.last_action, torrents.comments,torrents.numfiles,torrents.filename,torrents.owner,IF(torrents.nfo <> '', 1, 0) as nfoav," . 
-    // "IF(torrents.numratings < ".$GLOBALS["MINVOTES"].", NULL, ROUND(torrents.ratingsum / torrents.numratings, 1)) AS rating, categories.name AS cat_name, categories.image AS cat_pic, users.username FROM torrents LEFT JOIN categories ON category = categories.id LEFT JOIN users ON torrents.owner = users.id $where $orderby $limit";
-    "categories.name AS cat_name, categories.image AS cat_pic, users.username, users.class AS uploaderclass FROM torrents LEFT JOIN categories ON category = categories.id LEFT JOIN users ON torrents.owner = users.id $where $orderby $limit";
-    $res = mysql_query($query) or die(mysql_error());
+    $query = "
+	SELECT torrents.id, torrents.category, torrents.leechers, 
+	torrents.seeders, torrents.name, torrents.times_completed, 
+	torrents.size, torrents.added, torrents.last_action, 
+	torrents.comments,torrents.numfiles,torrents.filename,torrents.owner,
+	IF(torrents.nfo <> '', 1, 0) as nfoav," . 
+    //"IF(torrents.numratings < ".$GLOBALS["MINVOTES"].", NULL, ROUND(torrents.ratingsum / torrents.numratings, 1)) AS rating, categories.name AS cat_name, categories.image AS cat_pic, users.username FROM torrents LEFT JOIN categories ON category = categories.id LEFT JOIN users ON torrents.owner = users.id $where $orderby $limit";
+    "categories.name AS cat_name, categories.image AS cat_pic, 
+	users.username, users.class AS uploaderclass FROM torrents 
+	LEFT JOIN categories ON category = categories.id LEFT JOIN users 
+	ON torrents.owner = users.id $where $orderby $limit";
+	echo '<br><br>QRY: ' . $query .' <br>';
+   // $res = mysql_query($query) or die(mysql_error());
+    $res = mysql_query($query);
 } else
     unset($res);
 if (isset($cleansearchstr))
     stdhead("Suchergebnisse für \"$searchstr\"");
 else
-    stdhead();
+   stdhead();
 
 ?>
 <form method="get" action="browse.php">
