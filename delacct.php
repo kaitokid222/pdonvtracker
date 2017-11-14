@@ -27,26 +27,29 @@
  */
 
 require "include/bittorrent.php";
-dbconn();
-if ($HTTP_SERVER_VARS["REQUEST_METHOD"] == "POST")
-{
-  $username = trim($_POST["username"]);
-  $password = trim($_POST["password"]);
-  if (!$username || !$password)
-    stderr("Fehler", "Bitte fülle das Formular vollständig aus.");
-  $res = mysql_query(
+userlogin();
+if ($_SERVER["REQUEST_METHOD"] == "POST"){
+	if (!isset($_POST["username"]) OR !isset($_POST["password"]))
+		stderr("Fehler", "Bitte fülle das Formular vollständig aus.");
+	else{
+		$username = $_POST["username"];
+		$password = $_POST["password"];
+	}
 
-  "SELECT * FROM users WHERE username=" . sqlesc($username) .
-  " AND status='pending' AND passhash=md5(concat(secret,concat(" . sqlesc($password) . ",secret)))") or sqlerr();
-  if (mysql_num_rows($res) != 1)
-    stderr("Fehler", "Ungültiger Benutzername oder Passwort, oder der Account ist bereits bestätigt. Bitte stelle sicher, dass die eingegebenen Informationen korrekt sind!");
-  $arr = mysql_fetch_assoc($res);
+	$qry = $GLOBALS['DB']->prepare("SELECT id FROM users WHERE username=:username AND status='pending' AND passhash=md5(concat(secret,concat(:password,secret)))");
+	$qry->bindParam(':username', $username, PDO::PARAM_STR);
+	$qry->bindParam(':password', $password, PDO::PARAM_STR);
+	$qry->execute();
+	if(!$qry->rowCount())
+		stderr("Fehler", "Ungültiger Benutzername oder Passwort, oder der Account ist bereits bestätigt. Bitte stelle sicher, dass die eingegebenen Informationen korrekt sind!");
+	else
+		$arr = $qry->FetchAll();
 
-  delete_acct($arr['id']);
+	$del = delete_acct($arr['id']);
 
-  if (mysql_affected_rows() != 1)
-    stderr("Fehler", "Der Account konnte nicht gelöscht werden.");
-  stderr("ERfolg", "Der Account <b>$username</b> wurde erfolgreich gelöscht.");
+	if ($del !== TRUE)
+		stderr("Fehler", "Der Account konnte nicht gelöscht werden.");
+	stderr("ERfolg", "Der Account <b>" . $username . "</b> wurde erfolgreich gelöscht.");
 }
 stdhead("Account löschen");
 begin_frame("Account löschen", FALSE, "500px");
@@ -56,17 +59,26 @@ noch nicht bestätigten Account zu entfernen.</p>
 <p>Wenn Dein Account bereits bestätigt wurde, kannst du diesen nicht löschen. Sende
 in diesem Fall eine PN an ein Teammitglied. Dieses wird Deinen Account dann
 deaktivieren.</p>
-<form method=post action=delacct.php>
+<form method="post" action=<?=$_SERVER['PHP_SELF'] ?>>
 <?php
 begin_table(TRUE);
 ?>
-<tr><td class=tableb>Benutzername</td><td class=tablea><input size="40" name="username"<? if ($CURUSER) echo " value=\"".$CURUSER["username"]."\""; ?>></td></tr>
-<tr><td class=tableb>Passwort</td><td class=tablea><input type=password size=40 name=password></td></tr>
-<tr><td class=tablea colspan=2 align="center"><input type=submit class=btn value='L&ouml;schen'></td></tr>
-<?php end_table(); ?>
+<tr>
+	<td class="tableb">Benutzername</td>
+	<td class="tablea"><input size="40" name="username"<?php if ($CURUSER) echo " value=\"".$CURUSER["username"]."\""; ?>></td>
+</tr>
+<tr>
+	<td class="tableb">Passwort</td>
+	<td class="tablea"><input type="password" size="40" name="password"></td>
+</tr>
+<tr>
+	<td class="tablea" colspan="2" align="center"><input type="submit" class="btn" value="L&ouml;schen"></td>
+</tr>
+<?php
+end_table();
+?>
 </form>
 <?php
 end_frame();
-
 stdfoot();
 ?>

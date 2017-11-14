@@ -40,7 +40,7 @@ userlogin();
 $qry = $GLOBALS['DB']->prepare('SELECT passhash, editsecret, status FROM users WHERE id = :id');
 $qry->bindParam(':id', $id, PDO::PARAM_INT);
 $qry->execute();
-if($qry->rowCount() > 0){
+if($qry->rowCount() > 0)
 	$row = $qry->FetchAll();
 else
 	httperr();

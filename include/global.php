@@ -557,12 +557,9 @@ mehr nutzen kannst. Bitte antworte nicht auf diese E-Mail!";
 		}
 	}
     $msgids = implode(",", $msgids);
-	// enthält... mehr mysql..
-    // . | . .
-	// . v . .
 	deletePersonalMessages($msgids, $id);
-
     write_log("accdeleted", "Der Benutzer '".htmlspecialchars($userinfo->username)."' mit der ID " . $id . " wurde aus der Datenbank gelöscht.");
+	return TRUE;
 } 
 // -------- Begins a main frame
 function begin_main_frame()
