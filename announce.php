@@ -32,12 +32,13 @@ require_once("include/bittorrent.php");
 require_once("include/benc.php");
 
 hit_start();
-
-function hex2bin($hexdata) {
-    for ($i=0;$i<strlen($hexdata);$i+=2) {
-        $bindata.=chr(hexdec(substr($hexdata,$i,2)));
-    }
-   return $bindata;
+if (!function_exists('hex2bin')){
+	function hex2bin($hexdata) {
+		for ($i=0;$i<strlen($hexdata);$i+=2) {
+			$bindata.=chr(hexdec(substr($hexdata,$i,2)));
+		}
+	   return $bindata;
+	}
 }
 
 function err($msg){
