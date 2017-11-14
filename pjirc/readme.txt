@@ -1,3 +1,8 @@
+MAYBE OUTDATED!!!
+https://sourceforge.net/projects/pjirc/
+https://sourceforge.net/projects/pjirc/
+https://sourceforge.net/projects/pjirc/
+
 Plouf's Java IRC Client Applet
 ------------------------------
 
