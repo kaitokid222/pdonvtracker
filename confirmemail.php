@@ -53,7 +53,7 @@ if (preg_match('/^ *$/s', $sec))
 if ($md5 != md5($sec . $email . $sec))
 	httperr();
 
-$qry = $GLOBALS['DB']->prepare('UPDATE users SET editsecret='', email= :email WHERE id= :id AND editsecret= :esec');
+$qry = $GLOBALS['DB']->prepare("UPDATE users SET editsecret='', email= :email WHERE id= :id AND editsecret= :esec");
 $qry->bindParam(':email', $email, PDO::PARAM_STR);
 $qry->bindParam(':id', $id, PDO::PARAM_INT);
 $qry->bindParam(':esec', $row["editsecret"], PDO::PARAM_STR);
@@ -61,5 +61,5 @@ $qry->execute();
 if(!$qry->rowCount())
 	httperr();
 
-header("Refresh: 0; url=" . $BASEURL . "my.php?emailch=1");
+header("Refresh: 0; url=" . $BASEURL . "/my.php?emailch=1");
 ?>

@@ -28,26 +28,25 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
-$id = 0 + $_GET["id"];
-$md5 = $_GET["secret"];
-
-if (!$id)
+if(!isset($_GET['id']) || !isset($_GET["secret"]))
 	httperr();
+else{
+	$id = 0 + $_GET["id"];
+	$md5 = $_GET["secret"];
+}
 
-dbconn();
+userlogin();
 
-hit_count();
-
-$res = mysql_query("SELECT passhash, editsecret, status FROM users WHERE id = $id");
-$row = mysql_fetch_array($res);
-
-if (!$row)
+$qry = $GLOBALS['DB']->prepare('SELECT passhash, editsecret, status FROM users WHERE id = :id');
+$qry->bindParam(':id', $id, PDO::PARAM_INT);
+$qry->execute();
+if($qry->rowCount() > 0){
+	$row = $qry->FetchAll();
+else
 	httperr();
 
 if ($row["status"] != "pending") {
-	header("Refresh: 0; url=../../ok.php?type=confirmed");
+	header("Refresh: 0; url=" . $BASEURL . "/ok.php?type=confirmed");
 	exit();
 }
 
@@ -55,15 +54,13 @@ $sec = hash_pad($row["editsecret"]);
 if ($md5 != md5($sec))
 	httperr();
 
-mysql_query("UPDATE users SET status='confirmed', editsecret='' WHERE id=$id AND status='pending'");
-
-if (!mysql_affected_rows())
+$qry = $GLOBALS['DB']->prepare("UPDATE users SET status='confirmed', editsecret='' WHERE id= :id AND status='pending'");
+$qry->bindParam(':id', $id, PDO::PARAM_INT);
+$qry->execute();
+if(!$qry->rowCount())
 	httperr();
 
 logincookie($id, $row["passhash"]);
 
-header("Refresh: 0; url=../../ok.php?type=confirm");
-
-hit_end();
-
+header("Refresh: 0; url=" . $BASEURL . "/ok.php?type=confirm");
 ?>
