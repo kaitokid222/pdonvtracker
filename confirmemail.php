@@ -28,38 +28,38 @@
 
 require_once("include/bittorrent.php");
 
-hit_start();
-
-$id = 0 + $_GET["id"];
-$md5 = $_GET["secret"];
-$email = urldecode($_GET["email"]);
-
-if (!$id)
+if (!isset($_GET["id"]) OR !isset($_GET["secret"]) OR !isset($_GET["email"]))
 	httperr();
+else{
+	$id = 0 + $_GET["id"];
+	$md5 = $_GET["secret"];
+	$email = urldecode($_GET["email"]);
+}
 
-dbconn();
+userlogin();
 
-hit_count();
-
-$res = mysql_query("SELECT editsecret FROM users WHERE id = $id");
-$row = mysql_fetch_array($res);
-
-if (!$row)
+$qry = $GLOBALS['DB']->prepare('SELECT editsecret FROM users WHERE id = :id');
+$qry->bindParam(':id', $id, PDO::PARAM_INT);
+$qry->execute();
+if($qry->rowCount() > 0){
+	$row = $qry->FetchAll();
+else
 	httperr();
 
 $sec = hash_pad($row["editsecret"]);
+
 if (preg_match('/^ *$/s', $sec))
 	httperr();
 if ($md5 != md5($sec . $email . $sec))
 	httperr();
 
-mysql_query("UPDATE users SET editsecret='', email=" . sqlesc($email) . " WHERE id=$id AND editsecret=" . sqlesc($row["editsecret"]));
-
-if (!mysql_affected_rows())
+$qry = $GLOBALS['DB']->prepare('UPDATE users SET editsecret='', email= :email WHERE id= :id AND editsecret= :esec');
+$qry->bindParam(':email', $email, PDO::PARAM_STR);
+$qry->bindParam(':id', $id, PDO::PARAM_INT);
+$qry->bindParam(':esec', $row["editsecret"], PDO::PARAM_STR);
+$qry->execute();
+if(!$qry->rowCount())
 	httperr();
 
-header("Refresh: 0; url=../../../my.php?emailch=1");
-
-hit_end();
-
+header("Refresh: 0; url=" . $BASEURL . "my.php?emailch=1");
 ?>
