@@ -751,3 +751,6 @@ CREATE TABLE `users` (
   KEY `enabled` (`enabled`),
   KEY `warned` (`warned`)
 ) ;
+
+ALTER TABLE torrents ENGINE = MyISAM;
+ALTER TABLE posts ENGINE = MyISAM;
