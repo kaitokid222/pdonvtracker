@@ -183,7 +183,7 @@ $GLOBALS["PIC_BASE_URL"] = "pic/";
 
 // Relative or absolute URL to the portal, if it exists. Leave blank
 // to hide the portal links.
-$GLOBALS["PORTAL_LINK"] = "board/";
+$GLOBALS["PORTAL_LINK"] = "forums.php";
 
 // Valid tracker announce URLs
 // The first entry will be displayed on the upload page

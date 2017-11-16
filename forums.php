@@ -34,7 +34,10 @@
 
   loggedinorreturn();
 
-  $action = $_GET["action"];
+  if(isset($_GET["action"]))
+    $action = $_GET["action"];
+  else
+    $action = "";
 
   function catch_up()
   {
@@ -1065,7 +1068,10 @@
     if (!is_valid_id($forumid))
       die;
 
-    $page = $_GET["page"];
+	if(isset($_GET['page']))
+		$page = $_GET["page"];
+	else
+		$page = 0;
 
     $userid = $CURUSER["id"];
 
@@ -1274,7 +1280,7 @@
         encodehtml($topicarr["subject"]) . "</b></a>$topicpages";
 
         print("<tr><td align=left><table border=0 cellspacing=0 cellpadding=0><tr>" .
-        "<td class=embedded style='padding-right: 5px'><img src=\""$GLOBALS["PIC_BASE_URL"].$topicpic.".gif\">" .
+        "<td class=embedded style='padding-right: 5px'><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $topicpic . ".gif\">" .
         "</td><td class=embedded align=left>\n" .
         "$subject</td></tr></table></td><td align=right>$replies</td>\n" .
         "<td align=right>$views</td><td align=left>$lpauthor</td>\n" .
