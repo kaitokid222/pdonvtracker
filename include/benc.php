@@ -1,5 +1,10 @@
 <?php
 
+// ich muss zugeben, dass ich respekt vor dieser datei habe und nur
+// auskommentieren werde, bis ich sicherstellen kann, dass alle änderungen
+// erfolgreich waren
+
+
 /*
 // +--------------------------------------------------------------------------+
 // | Project:    NVTracker - NetVision BitTorrent Tracker                     |
@@ -209,7 +214,8 @@ function bdec($s) {
 		$ss = substr($s, 0, $pl + $l);
 		if (strlen($v) != $l)
 			return;
-		return array(type => "string", value => $v, strlen => strlen($ss), string => $ss);
+		//return array(type => "string", value => $v, strlen => strlen($ss), string => $ss);
+		return array('type' => "string", 'value' => $v, 'strlen' => strlen($ss), 'string' => $ss);
 	}
 	if (preg_match('/^i(\d+)e/', $s, $m)) {
 		$v = $m[1];
@@ -218,7 +224,8 @@ function bdec($s) {
 			return;
 		if ($v[0] == "0" && strlen($v) != 1)
 			return;
-		return array(type => "integer", value => $v, strlen => strlen($ss), string => $ss);
+		//return array(type => "integer", value => $v, strlen => strlen($ss), string => $ss);
+		return array('type' => "integer", 'value' => $v, 'strlen' => strlen($ss), 'string' => $ss);
 	}
 	switch ($s[0]) {
 		case "l":
@@ -250,7 +257,8 @@ function bdec_list($s) {
 		$ss .= $ret["string"];
 	}
 	$ss .= "e";
-	return array(type => "list", value => $v, strlen => strlen($ss), string => $ss);
+	//return array(type => "list", value => $v, strlen => strlen($ss), string => $ss);
+	return array('type' => "list", 'value' => $v, 'strlen' => strlen($ss), 'string' => $ss);
 }
 
 function bdec_dict($s) {
@@ -281,7 +289,8 @@ function bdec_dict($s) {
 		$ss .= $ret["string"];
 	}
 	$ss .= "e";
-	return array(type => "dictionary", value => $v, strlen => strlen($ss), string => $ss);
+	//return array(type => "dictionary", value => $v, strlen => strlen($ss), string => $ss);
+	return array('type' => "dictionary", 'value' => $v, 'strlen' => strlen($ss), 'string' => $ss);
 }
 
 ?>

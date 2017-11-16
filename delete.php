@@ -39,12 +39,13 @@ function bark($msg) {
   exit;
 }
 
-if (!mkglobal("id"))
+//if (!mkglobal("id"))
+if (!isset($_POST['id']))
 	bark("Fehlenden Formulardaten");
 
-$id = 0 + $id;
+$id = 0 + $_POST['id'];
 if (!$id)
-	die();
+	bark("Fehlende Torrent-Id");
 
 dbconn();
 
@@ -52,23 +53,35 @@ hit_count();
 
 loggedinorreturn();
 
-$res = mysql_query("SELECT torrents.name,torrents.owner,torrents.seeders,torrents.activated,users.class FROM torrents LEFT JOIN users ON torrents.owner=users.id WHERE torrents.id = $id");
+
+$qry = $GLOBALS['DB']->prepare('SELECT torrents.name,torrents.owner,torrents.seeders,torrents.activated,users.class FROM torrents LEFT JOIN users ON torrents.owner=users.id WHERE torrents.id = :id');
+$qry->bindParam(':id', $id, PDO::PARAM_STR);
+$qry->execute();
+if(!$qry->rowCount())
+	bark("Ungültiger Query oder es gibt keinen Torrent mit der angegebenen Id");
+else
+	$row = $qry->FetchAll()[0];
+
+/*$res = mysql_query("SELECT torrents.name,torrents.owner,torrents.seeders,torrents.activated,users.class FROM torrents LEFT JOIN users ON torrents.owner=users.id WHERE torrents.id = $id");
 $row = mysql_fetch_array($res);
 if (!$row)
-	die();
+	die();*/
 
 if ($CURUSER["id"] != $row["owner"] && !(get_user_class() >= UC_MODERATOR || ($row["activated"] == "no" && get_user_class() == UC_GUTEAM && $row["class"] < UC_UPLOADER)))
 	bark("Dir gehört der Torrent nicht! Wie konnte das passieren?\n");
 
-$rt = 0 + $_POST["reasontype"];
+if(isset($_POST["reasontype"]))
+	$rt = 0 + $_POST["reasontype"];
+else
+	$rt = false;
 
 if (!is_int($rt) || $rt < 1 || $rt > 5)
 	bark("Ungültiger Grund (" . $rt . ").");
-/*
-Notice: Undefined index: r in C:\xampp\htdocs\delete.php on line 66 (jetzt 70)
-*/
-//$r = $_POST["r"]; // ?
-$reason = $_POST["reason"];
+
+if(!isset($_POST["reason"]) && $rt > 1)
+	bark("Es wurde kein Grund angegeben");
+else
+	$reason = $_POST["reason"];
 
 if ($rt == 1)
 	$reasonstr = "Tot: 0 Seeder, 0 Leecher = 0 Peers gesamt";

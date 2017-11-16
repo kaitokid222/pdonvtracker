@@ -766,7 +766,7 @@ function deletetorrent($id, $owner = 0, $comment = "")
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
 //	$torrent = $qry->execute()->fetchAll();
 	$qry->execute();
-	$torrent = $qry->fetchAll();
+	$torrent = $qry->fetchAll()[0];
 	
     if (isset($torrent["numpics"]) && $torrent["numpics"] > 0) {
         for ($I = 1; $I <= $torrent["numpics"]; $I++) {
@@ -774,7 +774,7 @@ function deletetorrent($id, $owner = 0, $comment = "")
             @unlink($GLOBALS["BITBUCKET_DIR"] . "/f-" . $id . "-" . $I . ".jpg");
         } 
     } 
-    @unlink($GLOBALS["BITBUCKET_DIR"] . "/nfo-$id.png");
+    @unlink($GLOBALS["BITBUCKET_DIR"] . "/nfo-" . $id . ".png");
 	$qry = $GLOBALS['DB']->prepare('DELETE FROM torrents WHERE id = :id');
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
 	$qry->execute();
@@ -859,10 +859,10 @@ function pager($rpp, $count, $href, $opts = array())
                 $pagerarr[] = "<b>$text</b>";
         } 
         $pagerstr = join(" | ", $pagerarr);
-        $pagertop = '<p align=\"center\">' . $pager . '<br />$pagerstr</p>\n';
-        $pagerbottom = '<p align=\"center\">' . $pagerstr . '<br />$pager</p>\n';
+        $pagertop = '<p align=\"center\">' . $pager . '<br />' . $pagerstr . '</p>';
+        $pagerbottom = '<p align=\"center\">' . $pagerstr . '<br />' . $pager . '</p>';
     } else {
-        $pagertop = '<p align=\"center\">' . $pager . '</p>\n';
+        $pagertop = '<p align=\"center\">' . $pager . '</p>';
         $pagerbottom = $pagertop;
     } 
 

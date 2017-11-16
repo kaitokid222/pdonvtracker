@@ -260,7 +260,7 @@ if ($count) {
     $query = "
 	SELECT torrents.id, torrents.category, torrents.leechers, 
 	torrents.seeders, torrents.name, torrents.times_completed, 
-	torrents.size, torrents.added, torrents.last_action, 
+	torrents.size, torrents.added, torrents.type, torrents.last_action, torrents.visible,
 	torrents.comments,torrents.numfiles,torrents.filename,torrents.owner,
 	IF(torrents.nfo <> '', 1, 0) as nfoav," . 
     //"IF(torrents.numratings < ".$GLOBALS["MINVOTES"].", NULL, ROUND(torrents.ratingsum / torrents.numratings, 1)) AS rating, categories.name AS cat_name, categories.image AS cat_pic, users.username FROM torrents LEFT JOIN categories ON category = categories.id LEFT JOIN users ON torrents.owner = users.id $where $orderby $limit";
