@@ -32,6 +32,7 @@ require_once("include/bittorrent.php");
 require_once("include/benc.php");
 
 hit_start();
+
 if (!function_exists('hex2bin')){
 	function hex2bin($hexdata) {
 		for ($i=0;$i<strlen($hexdata);$i+=2) {
@@ -154,7 +155,7 @@ if (preg_match("/^Mozilla\\/", $agent) || preg_match("/^Opera\\/", $agent) || pr
     err("Dieser Torrent ist dem Tracker nicht bekannt");
 
 if (!$port || $port > 0xffff)
-    err("Ungueltiges TCP-Port");
+    err("Ungueltiger TCP-Port");
 
 if (!isset($event))
     $event = "";
@@ -172,7 +173,7 @@ if (!$torrent)
     err("Dieser Torrent ist dem Tracker nicht bekannt");
 
 if ($torrent["activated"] != "yes")
-    err("Dieser Torrent ist dem Tracker nicht bekannt");
+    err("Dieser Torrent ist nicht aktiviert");
 
 $torrentid = $torrent["id"];
 

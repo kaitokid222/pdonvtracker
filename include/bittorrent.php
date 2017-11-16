@@ -764,9 +764,11 @@ function deletetorrent($id, $owner = 0, $comment = "")
 
 	$qry = $GLOBALS['DB']->prepare('SELECT name,numpics FROM torrents WHERE id = :id');
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
-	$torrent = $qry->execute()->fetchAll();
+//	$torrent = $qry->execute()->fetchAll();
+	$qry->execute();
+	$torrent = $qry->fetchAll();
 	
-    if ($torrent["numpics"] > 0) {
+    if (isset($torrent["numpics"]) && $torrent["numpics"] > 0) {
         for ($I = 1; $I <= $torrent["numpics"]; $I++) {
             @unlink($GLOBALS["BITBUCKET_DIR"] . "/t-" . $id . "-" . $I . ".jpg");
             @unlink($GLOBALS["BITBUCKET_DIR"] . "/f-" . $id . "-" . $I . ".jpg");

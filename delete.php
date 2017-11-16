@@ -30,6 +30,8 @@ require_once("include/bittorrent.php");
 
 hit_start();
 
+
+
 function bark($msg) {
   stdhead();
   stdmsg("Löschen fehlgeschlagen!", $msg);
@@ -61,9 +63,11 @@ if ($CURUSER["id"] != $row["owner"] && !(get_user_class() >= UC_MODERATOR || ($r
 $rt = 0 + $_POST["reasontype"];
 
 if (!is_int($rt) || $rt < 1 || $rt > 5)
-	bark("Ungültiger Grund ($rt).");
-
-$r = $_POST["r"];
+	bark("Ungültiger Grund (" . $rt . ").");
+/*
+Notice: Undefined index: r in C:\xampp\htdocs\delete.php on line 66 (jetzt 70)
+*/
+//$r = $_POST["r"]; // ?
 $reason = $_POST["reason"];
 
 if ($rt == 1)
@@ -87,7 +91,7 @@ else
 
 deletetorrent($id, $row["owner"], $reasonstr);
 
-write_log("torrentdelete","Der Torrent $id ($row[name]) wurde von '<a href=\"userdetails.php?id=$CURUSER[id]\">$CURUSER[username]</a>' gelöscht ($reasonstr)\n");
+write_log("torrentdelete","Der Torrent " . $id . " (" . $row['name'] . ") wurde von '<a href=\"userdetails.php?id=" . $CURUSER['id'] . "\">" . $CURUSER['username'] . "</a>' gelöscht (" . $reasonstr . ")\n");
 
 stdhead("Torrent gelöscht!");
 

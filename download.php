@@ -63,8 +63,8 @@ if ($GLOBALS["MEMBERSONLY"]) {
     // Wartezeit prüfen
     $wait = get_wait_time($CURUSER["id"], $id);
     if ($wait > 0) {
-	header("Content-Type: text/plain");
-	die("Du hast für diesen Torrent noch Wartezeit abzuwarten.\nDu kannst erst Torrent-Dateien herunterladen, wenn die\nWartezeit abgelaufen ist!");
+		header("Content-Type: text/plain");
+		die("Du hast für diesen Torrent noch Wartezeit abzuwarten.\nDu kannst erst Torrent-Dateien herunterladen, wenn die\nWartezeit abgelaufen ist!");
     }
 }
 

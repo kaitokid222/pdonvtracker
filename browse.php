@@ -48,13 +48,13 @@ if (empty($cleansearchstr))
     unset($cleansearchstr);
 
 $addparam = "";
-$wherea = array("`activated`='yes'");
+$wherea = array("activated = 'yes'");
 $wherecatina = array();
 
 if(isset($_GET["incldead"])){
 	if ($_GET["incldead"] == 1) {
 		$addparam .= "incldead=1&amp;";
-		if (!isset($CURUSER) || get_user_class < UC_ADMINISTRATOR)
+		if (!isset($CURUSER) || get_user_class() < UC_ADMINISTRATOR)
 			$wherea[] = "banned != 'yes'";
 	} elseif ($_GET["incldead"] == 2) {
 		$addparam .= "incldead=2&amp;";
@@ -331,12 +331,16 @@ else
       Suchen:&nbsp;<input type="text" name="search" size="30" value="<?= htmlspecialchars($searchstr) ?>" />
        in <select name="incldead">
 <option value="0">aktiven</option>
-<option value="1"<?php print($_GET["incldead"] == 1 ? " selected" : "");
-
-    ?>>allen</option>
-<option value="2"<?php print($_GET["incldead"] == 2 ? " selected" : "");
-
-    ?>>toten</option>
+<?php
+if(isset($_GET["incldead"]) && $_GET["incldead"] == 1)
+	$inkdeadall == " selected";
+?>
+<option value="1"<?php !isset($inkdeadall) ?: $inkdeadall = ""; ?>>allen</option>
+<?php
+if(isset($_GET["incldead"]) && $_GET["incldead"] == 2)
+	$inkdead == " selected";
+?>
+<option value="2"<?php !isset($inkdead) ?: $inkdead = ""; ?>>toten</option>
 		</select> Torrents
      </td>
   </tr>
