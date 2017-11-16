@@ -8,11 +8,11 @@ Das Ziel dieses Repos ist es, eine Version des beliebten nvtrackers zu erstellen
 ### Hauptmission
 
 Alte mysql_ Calls durch neue, nicht veraltete, pdo-calls zu ersetzen.
-```
+```php
 $res = mysql_query("SELECT userid,torrent,UNIX_TIMESTAMP(started) AS started,finishedat,uploaded,downloaded FROM peers");
 ```
 wird zu
-```
+```php
 $qry = $GLOBALS['DB']->prepare('SELECT userid,torrent,UNIX_TIMESTAMP(started) AS started,finishedat,uploaded,downloaded FROM peers');
 $qry->execute();
 ```
