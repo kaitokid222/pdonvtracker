@@ -27,7 +27,8 @@
  */
 
 require_once("include/bittorrent.php");
-require_once("include/benc.php");
+//require_once("include/benc.php");
+require_once("include/bencnew.php");
 
 dbconn();
 
@@ -52,7 +53,7 @@ hit_count();
 $res = mysql_query("SELECT name,activated FROM torrents WHERE id = $id") or sqlerr(__FILE__, __LINE__);
 $row = mysql_fetch_assoc($res);
 
-$fn = $GLOBALS["TORRENT_DIR"] ."/$id.torrent";
+$fn = $GLOBALS["TORRENT_DIR"] ."/" . $id . ".torrent";
 
 if (!$row || !is_file($fn) || !is_readable($fn) || $row["activated"] != "yes")
     httperr();
@@ -89,12 +90,13 @@ if ($GLOBALS["CLIENT_AUTH"] == CLIENT_AUTH_PASSKEY && $GLOBALS["MEMBERSONLY"]) {
     $announce_url = preg_replace("/\\{KEY\\}/", $passkey, $GLOBALS["PASSKEY_ANNOUNCE_URL"]);
 
     // Load torrent
-    $torrent = bdec_file($fn, filesize($fn));
+    $torrent = bdec_file($fn);
     
-    // Replace announce URL with bencoded string
-    $torrent["value"]["announce"] = array("type" => "string", "value" => $announce_url);
+    // Replace announce URL with pk-url
+	$torrent['announce'] =  $announce_url;
+
     // Save user id
-    $torrent["value"]["nvuserid"] = array("type" => "integer", "value" => $CURUSER["id"]);
+    $torrent["nvuserid"] = $CURUSER["id"];
     
     $torrentdata = benc($torrent);
     header("Content-Length: ".strlen($torrentdata));

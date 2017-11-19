@@ -1,5 +1,17 @@
 <?php
 
+/*
+// +--------------------------------------------------------------------------+
+// | Project:    pdonvtracker - NetVision BitTorrent Tracker 2017             |
+// +--------------------------------------------------------------------------+
+// | This file is part of pdonvtracker. NVTracker is based on BTSource,       |
+// | originally by RedBeard of TorrentBits, extensively modified by           |
+// | Gartenzwerg.                                                             |
+// +--------------------------------------------------------------------------+
+// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// +--------------------------------------------------------------------------+
+ */
+
 class BEncode
 {
 
@@ -98,7 +110,6 @@ function numberdecode($wholefile, $start){
 	$ret[0] = 0;
 	$offset = $start;
 
-	// Funky handling of negative numbers and zero
 	$negative = false;
 	if ($wholefile[$offset] == '-'){
 		$negative = true;
@@ -229,5 +240,20 @@ function bdec($wholefile){
 	$decoder = new BDecode;
 	$return = $decoder->decodeEntry($wholefile);
 	return $return[0];
+}
+
+// aus der NV-benc.php
+/*function bdec_file($f, $ms) {
+	$fp = fopen($f, "rb");
+	if (!$fp)
+		return;
+	$e = fread($fp, $ms);
+	fclose($fp);
+	return bdec($e);
+}*/
+function bdec_file($f) {
+	$nf = file_get_contents($f);
+	$decoded = bdec($nf);
+	return $decoded;
 }
 ?>
