@@ -105,15 +105,16 @@ if (!empty($_GET["returnto"])) {
 			<center><p>Hinweis: Du musst Deinen Browser so eingestellt haben, dass er Cookies akzeptiert, damit Du Dich einloggen kannst.</p>
 				<table border="0" cellspacing="1" cellpadding="4" class="tableinborder">
 					<tr>
-						<td class=tableb align=left>Benutzername:</td>
-						<td class=tablea align=left><input type="text" size=40 name="username" /></td>
+						<td class="tableb" align="left">Benutzername:</td>
+						<td class="tablea" align="left"><input type="text" size="40" name="username" /></td>
 					</tr>
 					<tr>
-						<td class=tableb align=left>Passwort:</td>
-						<td class=tablea align=left><input type="password" size=40 name="password" /></td>
+						<td class="tableb" align="left">Passwort:</td>
+						<td class="tablea" align="left"><input type="password" size="40" name="password" /></td>
 					</tr>
 					<tr>
-						<td class=tablea colspan="2" align="center"><input type="submit" value="Log in!" class=btn></td>
+						<td class="tablea" colspan="2" align="center"><input type="submit" value="Log in!" class="btn"></td>
+						<!-- align "center" bugged -->
 					</tr>
 				</table>
 <?php
