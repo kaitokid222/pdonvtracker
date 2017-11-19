@@ -26,7 +26,8 @@
 // +--------------------------------------------------------------------------+
 */
 
-require_once("include/benc.php");
+//require_once("include/benc.php");
+require_once("include/bencnew.php");
 require_once("include/bittorrent.php");
 
 hit_start();
@@ -182,67 +183,19 @@ $shortfname = $torrent = $matches[1];
 if (!empty($_POST["name"]))
     $torrent = unesc($_POST["name"]);
 
-tr_msg("Torrent-Metadatei dekodieren");
-$dict = bdec_file($tmpname, $GLOBALS["MAX_TORRENT_SIZE"]);
+	
+tr_msg("Torrent-Metadatei dekodieren und prüfen");
+$dict = bdec_file($tmpname);
 if (!isset($dict)) {
     tr_status("err");
     abort("Was zum Teufel hast du da hochgeladen? Das ist jedenfalls keine gültige Torrent-Datei!");
 }
 tr_status("ok");
 
-function dict_check($d, $s, $type = "")
-{
-    if ($type != "")
-        tr_msg("Integritätsprüfung der Metadaten ($type)");
-    if ($d["type"] != "dictionary") {
-        tr_status("err");
-        abort("Die Datei ist kein BEnc-Dictionary.");
-    }
-    $a = explode(":", $s);
-    $dd = $d["value"];
-    $ret = array();
-    foreach ($a as $k) {
-        unset($t);
-        if (preg_match('/^(.*)\((.*)\)$/', $k, $m)) {
-            $k = $m[1];
-            $t = $m[2];
-        } 
-        if (!isset($dd[$k])) {
-            tr_status("err");
-            abort("Es fehlt ein benötigter Schlüssel im Dictionary!");
-        }
-        if (isset($t)) {
-            if ($dd[$k]["type"] != $t) {
-                tr_status("err");
-                abort("Das Dictionary enthält einen ungültigen Eintrag (Tatsächlicher Datentyp entspricht nicht dem erwarteten)!");
-            }
-            $ret[] = $dd[$k]["value"];
-        } else
-            $ret[] = $dd[$k];
-    }
-    if ($type != "")
-        tr_status("ok");
-    return $ret;
-} 
-
-function dict_get($d, $k, $t)
-{
-    if ($d["type"] != "dictionary")
-        abort("Unerwarteter Fehler beim Dekodieren der Metadaten: Das ist kein Dictionary (".$d["type"].")!");
-    $dd = $d["value"];
-    if (!isset($dd[$k]))
-        return;
-    $v = $dd[$k];
-    if ($v["type"] != $t)
-        abort("Unerwarteter Fehler beim Dekodieren der Metadaten: Der Datentyp des Eintrags (".$v["type"].") enspricht nicht dem erwarteten Typ ($t)!");
-    return $v["value"];
-} 
-
-list($ann, $info) = dict_check($dict, "announce(string):info", "Globales Dictionary");
-list($dname, $plen, $pieces) = dict_check($info, "name(string):piece length(integer):pieces(string)", "Info-Dictionary");
+$dname = $dict['info']['name'];
 
 tr_msg("Announce-URL");
-if (!in_array($ann, $GLOBALS["ANNOUNCE_URLS"], 1)) {
+if (!in_array($dict['announce'], $GLOBALS["ANNOUNCE_URLS"], 1)) {
     tr_status("err");
     $errstr = "Ungültige Announce-URL! Muss eine der Folgenden sein:</p><ul>";
     sort($GLOBALS["ANNOUNCE_URLS"]);
@@ -254,13 +207,17 @@ tr_status("ok");
 
 
 tr_msg("Plausibilitätsprüfung und Einlesen der Dateiliste");
-$totallen = dict_get($info, "length", "integer");
+if(isset($dict['info']['length']))
+	$totallen = $dict['info']['length'];
+else
+	$totallen = 0;
+	
 $filelist = array();
 if ($totallen > 0) {
     $filelist[] = array($dname, $totallen);
     $type = "single";
 } else {
-    $flist = dict_get($info, "files", "list");
+    $flist = $dict['info']['files'];
     if (!isset($flist)) {
         tr_status("err");
         abort("Es fehlen sowohl der \"length\"- als auch der \"files\"-Schlüssel im Info-Dictionary!");
@@ -271,23 +228,10 @@ if ($totallen > 0) {
     }
     $totallen = 0;
     foreach ($flist as $fn) {
-        list($ll, $ff) = dict_check($fn, "length(integer):path(list)");
+        $ll = $fn['length'];
+		$ff = $fn['path'];
         $totallen += $ll;
-        $ffa = array();
-        foreach ($ff as $ffe) {
-            if ($ffe["type"] != "string") {
-                tr_status("err");
-                abort("Ein Eintrag in der Dateinamen-Liste hat einen ungültigen Datentyp (".$ffe["type"].")");
-            }
-            if (preg_match('/^[.\\/^~][\/\^]*/', $ffe["value"])) {
-                tr_status("err");
-                abort("Eine Datei in der Torrent-Metadatei hat einen ungültigen Namen (".$ffe["value"].")");
-            }
-            $ffa[] = $ffe["value"];
-        } 
-        if (!count($ffa))
-            bark("filename error");
-        $ffe = implode("/", $ffa);
+        $ffe = implode("/", $ff);
         $filelist[] = array($ffe, $ll);
     } 
     $type = "multi";
@@ -295,27 +239,20 @@ if ($totallen > 0) {
 tr_status("ok");
 
 tr_msg("Plausibilitätsprüfung der Piece-Hashes");
-if (strlen($pieces) % 20 != 0) {
+if (strlen($dict['info']['pieces']) % 20 != 0) {
     tr_status("err");
     abort("Die Länge der Piece-Hashes ist kein Vielfaches von 20!");
 }
-$numpieces = strlen($pieces)/20;
-if ($numpieces != ceil($totallen/$plen)) {
+$numpieces = strlen($dict['info']['pieces'])/20;
+if ($numpieces != ceil($totallen/$dict['info']['piece length'])) {
     tr_status("err");
-    abort("Die Anzahl Piecehashes stimmt nicht mit der Torrentlänge überein (".$numpieces." ungleich ".ceil($totallen/$plen).")!");
+    abort("Die Anzahl Piecehashes stimmt nicht mit der Torrentlänge überein (".$numpieces." ungleich ".ceil($totallen/$dict['info']['piece length']).")!");
 }
 tr_status("ok");
 
-// Add private flag to prevent Azureus 2.3.0.0+ from sharing the peers with other clients.
-// The array equals to the return value of bdec("7:privatei1e").
-$dict["value"]["info"]["value"]["private"] = array("type" => "integer", "value" => "1");
-// Adding another random ID will prevent every other peer-sharing client
-// (e.g. BitComet) from finding other peers for this torrent, since the infohash
-// is unique.
-$dict["value"]["info"]["value"]["unique id"] = array("type" => "string", "value" => mksecret());
-// Use the new info string to calculate the hash
-$infohash = pack("H*", sha1(benc($dict["value"]["info"])));
-// Replace punctuation characters with spaces
+$dict["private"] = 1;
+$dict["info"]["unique id"] = mksecret();
+$infohash = pack("H*", sha1(benc($dict["info"])));
 $torrent = str_replace("_", " ", $torrent);
 
 tr_msg("Torrent-Informationen in die Datenbank schreiben");
