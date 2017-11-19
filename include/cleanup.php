@@ -110,7 +110,7 @@ function docleanup()
         $delids = array();
         while ($row = mysql_fetch_array($res)) {
             $id = $row[0];
-            if ($all_torrents[$id])
+            if (isset($all_torrents[$id]))
                 continue;
             $delids[] = $id;
         }

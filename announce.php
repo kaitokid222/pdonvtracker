@@ -29,9 +29,10 @@
 ob_start("ob_gzhandler");
 
 require_once("include/bittorrent.php");
-require_once("include/benc.php");
+//require_once("include/benc.php");
+require_once("include/bencnew.php");
 
-hit_start();
+//hit_start();
 
 if (!function_exists('hex2bin')){
 	function hex2bin($hexdata) {
@@ -42,14 +43,20 @@ if (!function_exists('hex2bin')){
 	}
 }
 
-function err($msg){
-    benc_resp(array("failure reason" => array(type => "string", value => $msg)));
-    hit_end();
+/*function err($msg){
+    //benc_resp(array("failure reason" => array(type => "string", value => $msg)));
+    benc_resp(array("failure reason" => array("type" => "string", "value" => $msg)));
+    //hit_end();
     exit();
+}*/
+
+function err($msg) {
+   return benc_resp_raw("d".benc_str("failure reason").benc_str($msg)."e");
 }
 
 function benc_resp($d){
-    benc_resp_raw(benc(array(type => "dictionary", value => $d)));
+    //benc_resp_raw(benc(array(type => "dictionary", value => $d)));
+    benc_resp_raw(benc(array("type" => "dictionary", "value" => $d)));
 }
 
 function benc_resp_raw($x){
@@ -147,12 +154,8 @@ foreach(array("num want", "numwant", "num_want") as $k)
 }
 
 $agent = $_SERVER["HTTP_USER_AGENT"];
-
-// Deny access made with a browser...
-//if (ereg("^Mozilla\\/", $agent) || ereg("^Opera\\/", $agent) || ereg("^Links ", $agent) || ereg("^Lynx\\/", $agent))
-// ereg is removed in php 7+
-if (preg_match("/^Mozilla\\/", $agent) || preg_match("/^Opera\\/", $agent) || preg_match("/^Links/ ", $agent) || preg_match("/^Lynx\\/", $agent))
-    err("Dieser Torrent ist dem Tracker nicht bekannt");
+if (preg_match("/^Mozilla|^Opera|^Links|^Lynx/i", $agent))
+    err("Browserzugriff verboten!");
 
 if (!$port || $port > 0xffff)
     err("Ungueltiger TCP-Port");
@@ -164,7 +167,7 @@ $seeder = ($left == 0) ? "yes" : "no";
 
 dbconn(false);
 
-hit_count();
+//hit_count();
 
 $res = mysql_query("SELECT id, name, category, banned, activated, seeders + leechers AS numpeers, UNIX_TIMESTAMP(added) AS ts FROM torrents WHERE " . hash_where("info_hash", $info_hash));
 
@@ -377,25 +380,26 @@ if ($event == "stopped")
     mysql_query("INSERT INTO startstoplog (userid,event,`datetime`,torrent,ip,peerid,useragent) VALUES ($userid,'stop',NOW(),$torrentid,".sqlesc($_SERVER["REMOTE_ADDR"]).",".sqlesc($peer_id).",".sqlesc($agent).")");
 
 
-	$qry = $GLOBALS['DB']->prepare("SELECT * FROM `announcedelay` WHERE `peer_id`= :id");
+	/*$qry = $GLOBALS['DB']->prepare("SELECT * FROM `announcedelay` WHERE `peer_id`= :id");
 	$qry->bindParam(':id', $peer_id, PDO::PARAM_STR);
 	$qry->execute();
 	if($qry->rowCount() > 0){
-		$announcedelay = $qry->fetchObject();
-	}
-    //$announcedelay = @mysql_fetch_assoc(@mysql_query("SELECT * FROM `announcedelay` WHERE `peer_id`=".sqlesc($peer_id)));
-    //if (is_array($announcedelay)) {
-    if (is_object($announcedelay)) {
-        if ($announcedelay->first && $announcedelay->second && $announcedelay->quantity) {
-            $duration1 = $announcedelay->second-$announcedelay->first;
-            $duration2 = time() - $announcedelay->second;
-            if ($duration1 < 310 && $duration2 < 10 && $uploaded - $announcedelay->quantity == 0) {
+		$announcedelay = $qry->fetchAll()[0];
+		//$announcedelay = $qry->fetchObj();
+	}*/
+    $announcedelay = @mysql_fetch_assoc(@mysql_query("SELECT * FROM `announcedelay` WHERE `peer_id`=".sqlesc($peer_id)));
+    if (is_array($announcedelay)) {
+    //if (is_object($announcedelay)) {
+        if ($announcedelay['first'] && $announcedelay['second'] && $announcedelay['quantity']) {
+            $duration1 = $announcedelay['second']-$announcedelay['first'];
+            $duration2 = time() - $announcedelay['second'];
+            if ($duration1 < 310 && $duration2 < 10 && $uploaded - $announcedelay['quantity'] == 0) {
                 write_modcomment($userid, 0, "announce.php: Evtl. Ratiomaker 0.5+ benutzt: ".mksize($uploaded)." Upload / ".mksize($downloaded)." Download, Fake Rate: ".mksize($uploaded / $duration1)."/sek, Delays: {$duration1}s / {$duration2}s");
             }
         }
     }
     
-    $resp = benc_resp(array("failure reason" => array(type => "string", value => "Kein Fehler - Torrent gestoppt.")));
+    //$resp = benc_resp(array("failure reason" => array("type" => "string", "value" => "Kein Fehler - Torrent gestoppt.")));
 }
 else
 {
@@ -470,6 +474,6 @@ if (count($updateset))
 
 benc_resp_raw($resp);
 
-hit_end();
+//hit_end();
 
 ?>

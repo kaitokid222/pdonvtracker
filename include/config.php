@@ -208,8 +208,7 @@ $GLOBALS["DEFAULTBASEURL"] = "http://localhost";
 // Do not add "http://" in front of the domain, and no trailing slash
 $GLOBALS["TRACKERDOMAINS"] = array();
 $GLOBALS["TRACKERDOMAINS"][] = "localhost";
-$GLOBALS["TRACKERDOMAINS"][] = "mytracker2.example.com";
-$GLOBALS["TRACKERDOMAINS"][] = "123.123.123.123";
+$GLOBALS["TRACKERDOMAINS"][] = "127.0.0.1";
 
 // Set this to true to make this a tracker that only registered users may use
 // Setting this to FALSE is currently not supported, sorry!
