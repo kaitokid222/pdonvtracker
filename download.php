@@ -27,8 +27,7 @@
  */
 
 require_once("include/bittorrent.php");
-//require_once("include/benc.php");
-require_once("include/bencnew.php");
+require_once("include/benc.php");
 
 dbconn();
 

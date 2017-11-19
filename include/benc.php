@@ -1,296 +1,250 @@
 <?php
 
-// ich muss zugeben, dass ich respekt vor dieser datei habe und nur
-// auskommentieren werde, bis ich sicherstellen kann, dass alle änderungen
-// erfolgreich waren
-
-
 /*
 // +--------------------------------------------------------------------------+
-// | Project:    NVTracker - NetVision BitTorrent Tracker                     |
+// | Project:    pdonvtracker - NetVision BitTorrent Tracker 2017             |
 // +--------------------------------------------------------------------------+
-// | This file is part of NVTracker. NVTracker is based on BTSource,          |
+// | This file is part of pdonvtracker. NVTracker is based on BTSource,       |
 // | originally by RedBeard of TorrentBits, extensively modified by           |
 // | Gartenzwerg.                                                             |
-// |                                                                          |
-// | NVTracker is free software; you can redistribute it and/or modify        |
-// | it under the terms of the GNU General Public License as published by     |
-// | the Free Software Foundation; either version 2 of the License, or        |
-// | (at your option) any later version.                                      |
-// |                                                                          |
-// | NVTracker is distributed in the hope that it will be useful,             |
-// | but WITHOUT ANY WARRANTY; without even the implied warranty of           |
-// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            |
-// | GNU General Public License for more details.                             |
-// |                                                                          |
-// | You should have received a copy of the GNU General Public License        |
-// | along with NVTracker; if not, write to the Free Software Foundation,     |
-// | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
-/*
+class BEncode
+{
 
-Basic knowledge of how bencoding works is assumed. Details can be found
-at <http://bitconjurer.org/BitTorrent/protocol.html>.
+function makeSorted($array){
+	$i = 0;
 
+	if (empty($array))
+		return $array;
 
+	foreach($array as $key => $value)
+		$keys[$i++] = stripslashes($key);
+	sort($keys);
+	for ($i=0 ; isset($keys[$i]); $i++)
+		$return[addslashes($keys[$i])] = $array[addslashes($keys[$i])];
+	return $return;
+}
 
-How to use these functions:
-
-An "object" is defined to be an associative array with at least the keys
-"type" and "value" present. The "type" key contains a string which is
-one of "string", "integer", "list" or "dictionary". The "value" key
-contains the appropriate thing, either a string, an integer, a list which
-is just a flat array, or a dictionary, which is an associative array. In
-the case of "list" and "dictionary", the values of the contained array
-are agaib "objects".
-
-
-
-Description of the functions:
-
-
-
-string benc($obj);
-
-Takes an object as argument and returns the bencoded form of it as string.
-Returns the undefined/unset value on failure.
-
-Examples:
-
-benc(array(type => "string", value => "spam"))		returns "4:spam".
-benc(array(type => "integer", value => 3))		returns "i3e".
-benc(array(type => "list", value => array(
-	array(type => "string", value => "spam"),
-	array(type => "string", value => "eggs")
-)))
-						returns "l4:spam4:eggse"
-
-benc(array(type => "dictionary", value => array(
-	cow => array(type => "string", value => "moo"),
-	spam => array(type => "string", value => "eggs"),
-)))
-					returns "d3:cow3:moo4:spam4:eggse"
-
-
-
-
-object bdec($str);
-
-Returns the object that results from bdecoding the given string. Note
-that those aren't real php objects, but merely "objects" as described
-above. The returned objects have two additional keys: "string" and
-"strlen". They represent the bencoded form of the returned objects, as
-it was given in the original bencoded string. Use this to extract
-certain portions of a bencoded string without having to re-encode it
-(and avoiding possible re-ordering of dictionary keys). $x["strlen"]
-is always equivalent to strlen($x["string"]). The "string" attribute
-of the top-level returned object will be the same as the original
-bencoded string, unless there's trailing garbage at the end of the
-string.
-
-This function returns the undefined/unset value on failure.
-
-Example:
-
-bdec("d4:spaml11:spiced pork3:hamee")
-	returns this monster:
-
-Array
-(
-    [type] => dictionary
-    [value] => Array
-        (
-            [spam] => Array
-                (
-                    [type] => list
-                    [value] => Array
-                        (
-                            [0] => Array
-                                (
-                                    [type] => string
-                                    [value] => spiced pork
-                                    [strlen] => 14
-                                    [string] => 11:spiced pork
-                                )
-
-                            [1] => Array
-                                (
-                                    [type] => string
-                                    [value] => ham
-                                    [strlen] => 5
-                                    [string] => 3:ham
-                                )
-
-                        )
-
-                    [strlen] => 21
-                    [string] => l11:spiced pork3:hame
-                )
-
-        )
-
-    [strlen] => 29
-    [string] => d4:spaml11:spiced pork3:hamee
-)
-
-
-
-
-
-object bdec_file($filename, $maxsize);
-
-Opens the specified file, reads its contents (up to the specified length),
-and returns whatever bdec() returns for those contents. This is a simple
-convenience function.
-
-*/
-
-function benc($obj) {
-	if (!is_array($obj) || !isset($obj["type"]) || !isset($obj["value"]))
+function encodeEntry($entry, &$fd, $unstrip = false){
+	if (is_bool($entry)){
+		$fd .= "de";
 		return;
-	$c = $obj["value"];
-	switch ($obj["type"]) {
-		case "string":
-			return benc_str($c);
-		case "integer":
-			return benc_int($c);
-		case "list":
-			return benc_list($c);
-		case "dictionary":
-			return benc_dict($c);
-		default:
-			return;
 	}
+	if (is_int($entry) || is_float($entry)){
+		$fd .= "i".$entry."e";
+		return;
+	}
+	if ($unstrip)
+		$myentry = stripslashes($entry);
+	else
+		$myentry = $entry;
+	$length = strlen($myentry);
+	$fd .= $length.":".$myentry;
+	return;
 }
 
-function benc_str($s) {
-	return strlen($s) . ":" . $s;
+function encodeList($array, &$fd){
+	$fd .= "l";
+
+	if (empty($array)){
+		$fd .= "e";
+		return;
+	}
+	for ($i = 0; isset($array[$i]); $i++)
+		$this->decideEncode($array[$i], $fd);
+	$fd .= "e";
 }
 
-function benc_int($i) {
+function decideEncode($unknown, &$fd){
+	if (is_array($unknown)){
+		if (isset($unknown[0]) || empty($unknown))
+			return $this->encodeList($unknown, $fd);
+		else
+			return $this->encodeDict($unknown, $fd);
+	}
+	$this->encodeEntry($unknown, $fd);
+}
+
+function encodeDict($array, &$fd){
+	$fd .= "d";
+	if (is_bool($array)){
+		$fd .= "e";
+		return;
+	}
+
+	$newarray = $this->makeSorted($array);
+	foreach($newarray as $left => $right){
+		$this->encodeEntry($left, $fd, true);
+		$this->decideEncode($right, $fd);
+	}
+	$fd .= "e";
+	return;
+}
+
+} // eof BEncode
+
+function benc($array){
+	$string = "";
+	$encoder = new BEncode;
+	$encoder->decideEncode($array, $string);
+	return $string;
+}
+
+function benc_str($s){
+	return strlen($s) . ":$s";
+}
+
+function benc_int($i){
 	return "i" . $i . "e";
 }
 
-function benc_list($a) {
-	$s = "l";
-	foreach ($a as $e) {
-		$s .= benc($e);
+
+class BDecode
+{
+
+function numberdecode($wholefile, $start){
+	$ret[0] = 0;
+	$offset = $start;
+
+	$negative = false;
+	if ($wholefile[$offset] == '-'){
+		$negative = true;
+		$offset++;
 	}
-	$s .= "e";
-	return $s;
+	
+	if ($wholefile[$offset] == '0'){
+		$offset++;
+		if ($negative)
+			return array(false);
+		if ($wholefile[$offset] == ':' || $wholefile[$offset] == 'e'){
+			$offset++;
+			$ret[0] = 0;
+			$ret[1] = $offset;
+			return $ret;
+		}
+		return array(false);
+	}
+	
+	while (true){
+		if ($wholefile[$offset] >= '0' && $wholefile[$offset] <= '9'){
+			$ret[0] *= 10;
+			$ret[0] += ord($wholefile[$offset]) - ord("0");
+			$offset++;
+		}else if ($wholefile[$offset] == 'e' || $wholefile[$offset] == ':'){
+			$ret[1] = $offset+1;
+			if ($negative){
+				if ($ret[0] == 0)
+					return array(false);
+				$ret[0] = - $ret[0];
+			}
+			return $ret;
+		}else
+			return array(false);
+	}
+
 }
 
-function benc_dict($d) {
-	$s = "d";
-	$keys = array_keys($d);
-	sort($keys);
-	foreach ($keys as $k) {
-		$v = $d[$k];
-		$s .= benc_str($k);
-		$s .= benc($v);
+function decodeEntry($wholefile, $offset=0)
+{
+	if ($wholefile[$offset] == 'd')
+		return $this->decodeDict($wholefile, $offset);
+	if ($wholefile[$offset] == 'l')
+		return $this->decodelist($wholefile, $offset);
+	if ($wholefile[$offset] == "i"){
+		$offset++;
+		return $this->numberdecode($wholefile, $offset);
 	}
-	$s .= "e";
-	return $s;
+	$info = $this->numberdecode($wholefile, $offset);
+	if ($info[0] === false)
+		return array(false);
+	$ret[0] = substr($wholefile, $info[1], $info[0]);
+	$ret[1] = $info[1]+strlen($ret[0]);
+	return $ret;
 }
 
-function bdec_file($f, $ms) {
-	$fp = fopen($f, "rb");
-	if (!$fp)
-		return;
-	$e = fread($fp, $ms);
-	fclose($fp);
-	return bdec($e);
-}
-
-function bdec($s) {
-	if (preg_match('/^(\d+):/', $s, $m)) {
-		$l = $m[1];
-		$pl = strlen($l) + 1;
-		$v = substr($s, $pl, $l);
-		$ss = substr($s, 0, $pl + $l);
-		if (strlen($v) != $l)
-			return;
-		//return array(type => "string", value => $v, strlen => strlen($ss), string => $ss);
-		return array("type" => "string", "value" => $v, "strlen" => strlen($ss), "string" => $ss);
-	}
-	if (preg_match('/^i(\d+)e/', $s, $m)) {
-		$v = $m[1];
-		$ss = "i" . $v . "e";
-		if ($v === "-0")
-			return;
-		if ($v[0] == "0" && strlen($v) != 1)
-			return;
-		//return array(type => "integer", value => $v, strlen => strlen($ss), string => $ss);
-		return array("type" => "integer", "value" => $v, "strlen" => strlen($ss), "string" => $ss);
-	}
-	switch ($s[0]) {
-		case "l":
-			return bdec_list($s);
-		case "d":
-			return bdec_dict($s);
-		default:
-			return;
-	}
-}
-
-function bdec_list($s) {
-	if ($s[0] != "l")
-		return;
-	$sl = strlen($s);
-	$i = 1;
-	$v = array();
-	$ss = "l";
-	for (;;) {
-		if ($i >= $sl)
-			return;
-		if ($s[$i] == "e")
+function decodeList($wholefile, $start){
+	$offset = $start+1;
+	$i = 0;
+	if ($wholefile[$start] != 'l')
+		return array(false);
+	$ret = array();
+	while (true){
+		if ($wholefile[$offset] == 'e')
 			break;
-		$ret = bdec(substr($s, $i));
-		if (!isset($ret) || !is_array($ret))
-			return;
-		$v[] = $ret;
-		$i += $ret["strlen"];
-		$ss .= $ret["string"];
+		$value = $this->decodeEntry($wholefile, $offset);
+		if ($value[0] === false)
+			return array(false);
+		$ret[$i] = $value[0];
+		$offset = $value[1];
+		$i ++;
 	}
-	$ss .= "e";
-	//return array(type => "list", value => $v, strlen => strlen($ss), string => $ss);
-	return array("type" => "list", "value" => $v, "strlen" => strlen($ss), "string" => $ss);
+
+	$final[0] = $ret;
+	$final[1] = $offset+1;
+	return $final;
 }
 
-function bdec_dict($s) {
-	if ($s[0] != "d")
-		return;
-	$sl = strlen($s);
-	$i = 1;
-	$v = array();
-	$ss = "d";
-	for (;;) {
-		if ($i >= $sl)
-			return;
-		if ($s[$i] == "e")
+function decodeDict($wholefile, $start=0){
+	$offset = $start;
+	if ($wholefile[$offset] == 'l')
+		return $this->decodeList($wholefile, $start);
+	if ($wholefile[$offset] != 'd')
+		return false;
+	$ret = array();
+	$offset++;
+	while (true){	
+		if ($wholefile[$offset] == 'e'){
+			$offset++;
 			break;
-		$ret = bdec(substr($s, $i));
-		if (!isset($ret) || !is_array($ret) || $ret["type"] != "string")
-			return;
-		$k = $ret["value"];
-		$i += $ret["strlen"];
-		$ss .= $ret["string"];
-		if ($i >= $sl)
-			return;
-		$ret = bdec(substr($s, $i));
-		if (!isset($ret) || !is_array($ret))
-			return;
-		$v[$k] = $ret;
-		$i += $ret["strlen"];
-		$ss .= $ret["string"];
+		}
+		$left = $this->decodeEntry($wholefile, $offset);
+		if (!$left[0])
+			return false;
+		$offset = $left[1];
+		if ($wholefile[$offset] == 'd'){
+			$value = $this->decodedict($wholefile, $offset);
+			if (!$value[0])
+				return false;
+			$ret[addslashes($left[0])] = $value[0];
+			$offset= $value[1];
+			continue;
+		}else if ($wholefile[$offset] == 'l'){
+			$value = $this->decodeList($wholefile, $offset);
+			if (!$value[0] && is_bool($value[0]))
+				return false;
+			$ret[addslashes($left[0])] = $value[0];
+			$offset = $value[1];
+		}else{
+ 			$value = $this->decodeEntry($wholefile, $offset);
+			if ($value[0] === false)
+				return false;
+			$ret[addslashes($left[0])] = $value[0];
+			$offset = $value[1];
+		}
 	}
-	$ss .= "e";
-	//return array(type => "dictionary", value => $v, strlen => strlen($ss), string => $ss);
-	return array("type" => "dictionary", "value" => $v, "strlen" => strlen($ss), "string" => $ss);
+	if (empty($ret))
+		$final[0] = true;
+	else
+		$final[0] = $ret;
+	$final[1] = $offset;
+   	return $final;
 }
 
+} // eof BDecode
+
+function bdec($wholefile){
+	$decoder = new BDecode;
+	$return = $decoder->decodeEntry($wholefile);
+	return $return[0];
+}
+
+function bdec_file($f) {
+	$nf = file_get_contents($f);
+	$decoded = bdec($nf);
+	return $decoded;
+}
 ?>

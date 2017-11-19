@@ -29,8 +29,7 @@
 ob_start("ob_gzhandler");
 
 require_once("include/bittorrent.php");
-//require_once("include/benc.php");
-require_once("include/bencnew.php");
+require_once("include/benc.php");
 
 //hit_start();
 
