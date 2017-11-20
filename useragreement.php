@@ -27,7 +27,7 @@
  */
 
 require "include/bittorrent.php";
-dbconn();
+userlogin();
 stdhead();
 begin_main_frame();
 begin_frame("NetVision user agreement");

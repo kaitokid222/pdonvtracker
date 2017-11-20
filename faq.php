@@ -29,7 +29,7 @@
 ob_start("ob_gzhandler");
 
 require "include/bittorrent.php";
-dbconn(false);
+
 stdhead("FAQ");
 ?>
 
@@ -180,9 +180,7 @@ Es sind nicht viele Regeln zu beachten, aber die Einhaltung dieser setzen wir zw
 
 <table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
 <tr><td class="tableb"><b>Woher bekomme ich eine Kopie der Tracker-Source?<a name="site3" id="site3"></a></b></td></tr>
-<tr><td class="tablea">Alles rund um die TB-Source gibts <b><a class=altlink href="redir.php?url=http://www.tbsource.org/">hier</a></b>.<br>
-<br>
-Ein Tutorial zur Installation gibts hier --><a href=http://www.geocities.com/themisterofmisters/tbsourcetut-v0.1.txt>http://www.geocities.com/themisterofmisters/tbsourcetut-v0.1.txt</a>.</td></tr>
+<tr><td class="tablea">Alles rund um die pdonv-Source gibts <b><a class=altlink href="redir.php?url=http://www.netvision-technik.de/">hier</a></b>.</td></tr>
 </table>
 
 <br>
@@ -831,7 +829,7 @@ Diese Wartezeit betrifft nur User mit geringer Ratio und geringem Upload.<br>
 <p>"<b>und/oder</b>" meint eines oder beide. "<b>und</b>" meint alle vorhergehenden Regeln und diese Regel.
 Die Wartezeit ist immer der <b>höchste</b> Wert aus allen passenden Regeln.</p>
 
-<p><?
+<p><?php
 if ($CURUSER)
 {
   // ratio as a string
@@ -1111,7 +1109,7 @@ auf "Unlimited"</b><a name="dlsp3"></a></td></tr>
 Der Uploadspeed beeinflusst Deinen Downloadspeed auf zwei Arten:<br>
 <ul>
     <li>Die Clients bevorzugen andere Clients, von denen Daten kommen. Beispielsweise laden A und B den gleichen 
-    Torrent. Wenn A viel zu B hochlädt, versucht sich B zu revangieren und lädt zu B hoch. Das bedeutet, dass 
+    Torrent. Wenn A viel zu B hochlädt, versucht sich B zu revangieren und lädt zu A hoch. Das bedeutet, dass 
     Dein hoher Upload Dir meist mit einem hohen Download gedankt wird.</li>
 
     <li>Auf der anderen Seite steht das TCP Protokoll. Wenn B etwas erfolgreich empfangen hat, teilt er das A mit. 
@@ -1209,7 +1207,7 @@ Dir die Daten. Es gibt mehrere Arten von Proxys:<br>
  <tr>
     <td class="inposttable" valign="top" width="100">&nbsp;Transparent</td>
     <td width="10">&nbsp;</td>
-    <td valign="top">Bei einem transparenten Proxy musst Du bei Dir am PC nicht konfigurieren.
+    <td valign="top">Bei einem transparenten Proxy musst Du bei Dir am PC nichts konfigurieren.
                                     Der gesamte Traffic über Port 80 (http) wird über den Proxy abgewickelt.</td>
  </tr>
  <tr>
@@ -1429,7 +1427,6 @@ Je mehr Infos Du uns geben kannst, desto einfacher ist es für uns, Dir zu helfen
   FAQ zuletzt editiert am 08.02.2005 von Gartenzwerg (0:05 CET)</center></span></td> 
  </tr></table>
 
-
-<?
+<?php
 stdfoot();
 ?>

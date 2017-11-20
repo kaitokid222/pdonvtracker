@@ -40,7 +40,7 @@ if (get_user_class() < UC_MODERATOR)
 stdhead("Administrative Benutzersuche");
 begin_frame("Administrative Benutzersuche", false, "650px");
 
-if ($_GET['h']) {
+if (isset($_GET['h'])) {
     begin_table(true);
 
     echo "<tr><td class=tablea><div align=left>\n
@@ -76,36 +76,77 @@ $nohighlight = " class=tablea";
 ?>
 
 <form method=get action=<?=$_SERVER["PHP_SELF"]?>>
-<?php begin_table(true);
+<?php
+begin_table(true);
 ?>
 <tr>
+	<td valign="middle" class="tableb">Name:</td>
+<?php
+if(isset($_GET['n'])){
+	$namefield_h = $highlight;
+	$namefield_v = $_GET['n'];
+}else{
+	$namefield_h = $nohighlight;
+	$namefield_v = "";
+}
+?>
+	<td<?=$namefield_h?>><input name="n" type="text" value="<?=$namefield_v?>" size="35"></td>
+	<td valign="middle" class="tableb">Ratio:</td>
+<?php
+if(isset($_GET['r'])){
+	$ratiofield_h = $highlight;
+	$ratiofield_v = $_GET['r'];
+}else{
+	$ratiofield_h = $nohighlight;
+	$ratiofield_v = "";
+}
 
-  <td valign="middle" class="tableb">Name:</td>
-  <td<?=$_GET['n']?$highlight:$nohighlight?>><input name="n" type="text" value="<?=$_GET['n']?>" size=35></td>
+if(isset($_GET['r2'])){
+	$ratiofield2_v = $_GET['r2'];
+}else{
+	$ratiofield2_v = "";
+}
 
-  <td valign="middle" class="tableb">Ratio:</td>
-  <td<?=$_GET['r']?$highlight:$nohighlight?>><select name="rt">
-    <?php
+if(isset($_GET['rt'])){
+	$ratiofieldt_v = $_GET['rt'];
+}else{
+	$ratiofieldt_v = 0;
+}
+?>
+	<td<?=$ratiofield_h?>>
+		<select name="rt">
+<?php
 $options = array("equal", "above", "below", "between");
-for ($i = 0; $i < count($options); $i++) {
-    echo "<option value=$i " . (($_GET['rt'] == "$i")?"selected":"") . ">" . $options[$i] . "</option>\n";
-} 
-
+for ($i = 0; $i < count($options); $i++){
+	echo "<option value=" . $i . " " . (($ratiofieldt_v == $i)?"selected":"") . ">" . $options[$i] . "</option>\n";
+}
 ?>
-    </select>
-    <input name="r" type="text" value="<?=$_GET['r']?>" size="5" maxlength="4">
-    <input name="r2" type="text" value="<?=$_GET['r2']?>" size="5" maxlength="4"></td>
+		</select>
+		<input name="r" type="text" value="<?=$ratiofield_v?>" size="5" maxlength="4">
+		<input name="r2" type="text" value="<?=$ratiofield2_v?>" size="5" maxlength="4">
+	</td>
 
-  <td valign="middle" class="tableb">Mitglieds-Status:</td>
-  <td<?=$_GET['st']?$highlight:$nohighlight?>><select name="st">
-    <?php
-$options = array("(Beliebig)", "Bestätigt", "Unbestätigt");
-for ($i = 0; $i < count($options); $i++) {
-    echo "<option value=$i " . (($_GET['st'] == "$i")?"selected":"") . ">" . $options[$i] . "</option>\n";
-} 
-
+	<td valign="middle" class="tableb">Mitglieds-Status:</td>
+<?php
+if(isset($_GET['st'])){
+	$userstatefield_h = $highlight;
+	$userstatefield_v = $_GET['st'];
+}else{
+	$userstatefield_h = $nohighlight;
+	$userstatefield_v = 0;
+}
 ?>
-    </select></td></tr>
+	<td<?=$userstatefield_h?>>
+		<select name="st">
+<?php
+$options = array("Beliebig", "Bestätigt", "Unbestätigt");
+for ($i = 0; $i < count($options); $i++){
+	echo "<option value=" . $i . " " . (($userstatefield_v == "$i")?"selected":"") . ">" . $options[$i] . "</option>\n";
+} 
+?>
+		</select>
+	</td>
+</tr>
 <tr><td valign="middle" class="tableb">E-Mail:</td>
   <td<?=$_GET['em']?$highlight:$nohighlight?>><input name="em" type="text" value="<?=$_GET['em']?>" size="35"></td>
   <td valign="middle" class="tableb">IP:</td>

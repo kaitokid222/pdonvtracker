@@ -114,15 +114,19 @@ if ($action == 'edit') {
         $returnto = $_GET['returnto'];
         stdhead();
 		begin_frame("News-Beitrag bearbeiten", false, "600px;");
-		if ($warning)
-			echo "<p><font size=-3>($warning)</font></p>";
-		echo "<form method='post' action='news.php?action=edit&newsid=$newsid'><input type='hidden' name='returnto' value='$returnto'>";
-		begin_table("TRUE");
-		echo "<tr><td class='tableb'>Titel:</td><td class='tablea'><input type='text' name='title' size='80'  maxlength='255' value='". (stripslashes($arr["title"]))  ."'></td></tr>
-			<tr><td class='tableb'>Text:</td><td class='tablea'><textarea id='newseditor' name='body' cols='80' rows='10' style='width:600px;height:400px;'>" . (stripslashes($arr["body"])) .  "</textarea><br>(<b>HTML</b> ist  erlaubt)</td></tr>
-			<tr><td class='tableb' colspan='2'><div align=center><input type=submit value='Okay' class=btn></div></td></tr>";
-		end_table();
-		echo "</form>";
+		if (isset($warning))
+			echo "<p><font size=-3>(" . $warning . ")</font></p>";
+		if (isset($padding))
+			$padding = $padding;
+		else
+			$padding = 5;
+    
+		echo "<form method='post' action='news.php?action=edit&newsid=" . $newsid . "'><input type='hidden' name='returnto' value='" . $returnto . "'>
+			<table class='tableinborder' width='100%' border='0' cellspacing='1' cellpadding='" . $padding . "'>
+			<tr><td class='tableb'>Titel:</td><td class='tablea'><input type='text' name='title' size='80' maxlength='255' value='" . (stripslashes($arr["title"])) . "'></td></tr>
+			<tr><td class='tableb'>Text:</td><td class='tablea'><textarea id='newseditor' name='body' cols='80' rows='10' style='width:600px;height:400px;'>" . (stripslashes($arr["body"])) . "</textarea><br>(<b>HTML</b> ist erlaubt)</td></tr>
+			<tr><td class='tableb' colspan='2'><div align=center><input type='submit' value='Okay' class='btn'></div></td></tr>
+			</table></form>";
 		end_frame();
 		/*        begin_frame("News-Beitrag bearbeiten", false, "600px;");
         if ($warning)
@@ -135,20 +139,7 @@ if ($action == 'edit') {
         end_table();
         print("</form>\n");
         end_frame();*/
-        
-        if (file_exists("/htmlarea/htmlarea.js")) {
-?>
-<script type="text/javascript">
-_editor_url = "/htmlarea/";
-_editor_lang = "de";
-</script>
-<script type="text/javascript" src="/htmlarea/htmlarea.js"></script>
-<script type="text/javascript">
-HTMLArea.replace("newseditor")
-</script>
-<?php	
-        }
-        stdfoot();
+		stdfoot();
         die;
     } 
 } 
@@ -164,18 +155,6 @@ print("<tr><td class=\"tableb\">Text:</td><td class=\"tablea\"><textarea id=\"ne
 print("<tr><td class=\"tableb\" colspan=\"2\"><div align=center><input type=submit value='Okay' class=btn></div></td></tr>\n");
 end_table();
 print("</form>\n");
-if (file_exists("/htmlarea/htmlarea.js")) {
-?>
-<script type="text/javascript">
-_editor_url = "/htmlarea/";
-_editor_lang = "de";
-</script>
-<script type="text/javascript" src="/htmlarea/htmlarea.js"></script>
-<script type="text/javascript">
-HTMLArea.replace("newseditor")
-</script>
-<?php
-}
 end_frame();
 
 $res = mysql_query("SELECT * FROM news ORDER BY added DESC") or sqlerr(__FILE__, __LINE__);
