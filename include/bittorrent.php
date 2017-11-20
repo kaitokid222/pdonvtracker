@@ -510,7 +510,7 @@ function ratiostatbox()
 
 function stdhead($title = "", $msgalert = true)
 {
-    global $CURUSER, $_SERVER, $PHP_SELF;
+    global $CURUSER, $_SERVER, $PHP_SELF, $BASEURL;
 
     if (!$GLOBALS["SITE_ONLINE"])
         die("Die Seite ist momentan aufgrund von Wartungsarbeiten nicht verfügbar.<br>");
@@ -576,14 +576,16 @@ function stdhead($title = "", $msgalert = true)
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="MSSmartTagsPreventParsing" content="true">
 <link rel="stylesheet" href="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/" . $GLOBALS["ss_uri"]?>.css" type="text/css">
-<?php if ($GLOBALS["DYNAMIC_RSS"]) {
-        ?>
+<?php 
+if ($GLOBALS["DYNAMIC_RSS"]) {
+?>
 <link rel="alternate" title="NetVision RSS" href="<?=$BASEURL?>/rss.php" type="application/rss+xml">
 <link rel="alternate" title="NetVision RSS (Direktdownload)" href="<?=$BASEURL?>/rss.php?type=directdl" type="application/rss+xml">
 <link rel="alternate" title="NetVision RSS (Benutzerkategorien)" href="<?=$BASEURL?>/rss.php?categories=profile" type="application/rss+xml">
 <link rel="alternate" title="NetVision RSS (Benutzerkategorien, Direktdownload)" href="<?=$BASEURL?>/rss.php?categories=profile&type=directdl" type="application/rss+xml">
-<?php } 
-    ?>
+<?php
+} 
+?>
 </head>
 <body>
 
@@ -710,13 +712,12 @@ function stdhead($title = "", $msgalert = true)
 } // stdhead
 function stdfoot()
 {
-
-    ?>
-          </td>
-        </tr>
-      </table>
-    </td>
-  </tr>  
+?>
+					</td>
+				</tr>
+			</table>
+		</td>
+	</tr>  
 </table>
 </body>
 </html>

@@ -147,6 +147,9 @@ $GLOBALS["THREAD_LOCK_TIMEOUT"] = 7;
 // from high load, consider setting this to a higher value.
 $GLOBALS["AUTOCLEAN_INTERVAL"] = 3000 * 60;
 
+// How long a Client has to wait before scraping again. default 15 Seconds
+$GLOBALS["SCRAPE_INTERVAL"] = 15;
+
 // Maximum personal message prune time (days, 0=disabled)
 // Personal messages are getting deleted after this number of days,
 // regardless of any user setting for PM folders.

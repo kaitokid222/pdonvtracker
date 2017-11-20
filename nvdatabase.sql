@@ -754,3 +754,4 @@ CREATE TABLE `users` (
 
 ALTER TABLE torrents ENGINE = MyISAM;
 ALTER TABLE posts ENGINE = MyISAM;
+create table scrape_lastlog (ipAddress char(15),lastAccess timestamp);
