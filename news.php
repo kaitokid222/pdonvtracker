@@ -33,8 +33,17 @@ loggedinorreturn();
 
 if (get_user_class() < UC_ADMINISTRATOR)
     stderr("Error", "Permission denied.");
+?>
+<script type="text/javascript" src="<?=$BASEURL?>/js/nicEdit.js"></script>
+<script type="text/javascript">
+	bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
+</script>
+<?php
 
-$action = $_GET["action"];
+if(isset($_GET["action"]))
+	$action = $_GET["action"];
+else
+	$action = "";
 // Delete News Item    //////////////////////////////////////////////////////
 if ($action == 'delete') {
     $newsid = $_GET["newsid"];
@@ -116,29 +125,14 @@ if ($action == 'edit') {
 		begin_frame("News-Beitrag bearbeiten", false, "600px;");
 		if (isset($warning))
 			echo "<p><font size=-3>(" . $warning . ")</font></p>";
-		if (isset($padding))
-			$padding = $padding;
-		else
-			$padding = 5;
     
 		echo "<form method='post' action='news.php?action=edit&newsid=" . $newsid . "'><input type='hidden' name='returnto' value='" . $returnto . "'>
-			<table class='tableinborder' width='100%' border='0' cellspacing='1' cellpadding='" . $padding . "'>
+			<table class='tableinborder' width='100%' border='0' cellspacing='1' cellpadding='4'>
 			<tr><td class='tableb'>Titel:</td><td class='tablea'><input type='text' name='title' size='80' maxlength='255' value='" . (stripslashes($arr["title"])) . "'></td></tr>
 			<tr><td class='tableb'>Text:</td><td class='tablea'><textarea id='newseditor' name='body' cols='80' rows='10' style='width:600px;height:400px;'>" . (stripslashes($arr["body"])) . "</textarea><br>(<b>HTML</b> ist erlaubt)</td></tr>
 			<tr><td class='tableb' colspan='2'><div align=center><input type='submit' value='Okay' class='btn'></div></td></tr>
 			</table></form>";
 		end_frame();
-		/*        begin_frame("News-Beitrag bearbeiten", false, "600px;");
-        if ($warning)
-            print("<p><font size=-3>($warning)</font></p>");
-        print("<form method=\"post\" action=\"news.php?action=edit&newsid=$newsid\"><input type=\"hidden\" name=\"returnto\" value=\"$returnto\">\n");
-        begin_table("TRUE");
-        print("<tr><td class=\"tableb\">Titel:</td><td class=\"tablea\"><input type=\"text\" name=\"title\" size=\"80\" maxlength=\"255\" value=\"". htmlspecialchars(stripslashes($arr["title"])) ."\"></td></tr>\n");
-        print("<tr><td class=\"tableb\">Text:</td><td class=\"tablea\"><textarea id=\"newseditor\" name=\"body\" cols=\"80\" rows=\"10\" style=\"width:600px;height:400px;\">" . htmlspecialchars(stripslashes($arr["body"])) . "</textarea><br>(<b>HTML</b> ist erlaubt)</td></tr>\n");
-        print("<tr><td class=\"tableb\" colspan=\"2\"><div align=center><input type=submit value='Okay' class=btn></div></td></tr>\n");
-        end_table();
-        print("</form>\n");
-        end_frame();*/
 		stdfoot();
         die;
     } 
@@ -146,29 +140,25 @@ if ($action == 'edit') {
 // Other Actions and followup    ////////////////////////////////////////////
 stdhead("Site news");
 begin_frame("<img src=\"".$GLOBALS["PIC_BASE_URL"]."news_add.png\" width=\"22\" height=\"22\" alt=\"News hinzufügen\" title=\"News hinzufügen\" style=\"vertical-align: middle;border:none\"> Neuen News-Beitrag schreiben", false, "600px;");
-if ($warning)
-    print("<p><font size=-3>($warning)</font></p>");
+if (isset($warning))
+	echo "<p><font size=-3>(" . $warning . ")</font></p>";
 print("<form method=\"post\" action=\"news.php?action=add\">\n");
-begin_table("TRUE");
+print("<table class='tableinborder' width='100%' border='0' cellspacing='1' cellpadding='4'>");
 print("<tr><td class=\"tableb\">Titel:</td><td class=\"tablea\"><input type=\"text\" name=\"title\"  size=\"80\" maxlength=\"255\"></td></tr>\n");
 print("<tr><td class=\"tableb\">Text:</td><td class=\"tablea\"><textarea id=\"newseditor\" name=\"body\" cols=\"80\" rows=\"10\" style=\"width:600px;height:400px;\"></textarea><br>(<b>HTML</b> ist erlaubt)</td></tr>\n");
 print("<tr><td class=\"tableb\" colspan=\"2\"><div align=center><input type=submit value='Okay' class=btn></div></td></tr>\n");
-end_table();
-print("</form>\n");
+print("</table></form>\n");
 end_frame();
 
 $res = mysql_query("SELECT * FROM news ORDER BY added DESC") or sqlerr(__FILE__, __LINE__);
-
 if (mysql_num_rows($res) > 0) {
     begin_frame("News bearbeiten", false, "650px;");
-
     while ($arr = mysql_fetch_array($res)) {
         $newsid = $arr["id"];
         $title = htmlspecialchars($arr["title"]);
         $body = $arr["body"];
         $userid = $arr["userid"];
         $added = $arr["added"] . " (vor " . (get_elapsed_time(sql_timestamp_to_unix_timestamp($arr["added"]))) . ")";
-
         $res2 = mysql_query("SELECT username, donor FROM users WHERE id = $userid") or sqlerr(__FILE__, __LINE__);
         $arr2 = mysql_fetch_array($res2);
 
