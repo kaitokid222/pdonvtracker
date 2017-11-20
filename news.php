@@ -113,7 +113,18 @@ if ($action == 'edit') {
     } else {
         $returnto = $_GET['returnto'];
         stdhead();
-        begin_frame("News-Beitrag bearbeiten", false, "600px;");
+		begin_frame("News-Beitrag bearbeiten", false, "600px;");
+		if ($warning)
+			echo "<p><font size=-3>($warning)</font></p>";
+		echo "<form method='post' action='news.php?action=edit&newsid=$newsid'><input type='hidden' name='returnto' value='$returnto'>";
+		begin_table("TRUE");
+		echo "<tr><td class='tableb'>Titel:</td><td class='tablea'><input type='text' name='title' size='80'  maxlength='255' value='". (stripslashes($arr["title"]))  ."'></td></tr>
+			<tr><td class='tableb'>Text:</td><td class='tablea'><textarea id='newseditor' name='body' cols='80' rows='10' style='width:600px;height:400px;'>" . (stripslashes($arr["body"])) .  "</textarea><br>(<b>HTML</b> ist  erlaubt)</td></tr>
+			<tr><td class='tableb' colspan='2'><div align=center><input type=submit value='Okay' class=btn></div></td></tr>";
+		end_table();
+		echo "</form>";
+		end_frame();
+		/*        begin_frame("News-Beitrag bearbeiten", false, "600px;");
         if ($warning)
             print("<p><font size=-3>($warning)</font></p>");
         print("<form method=\"post\" action=\"news.php?action=edit&newsid=$newsid\"><input type=\"hidden\" name=\"returnto\" value=\"$returnto\">\n");
@@ -123,7 +134,7 @@ if ($action == 'edit') {
         print("<tr><td class=\"tableb\" colspan=\"2\"><div align=center><input type=submit value='Okay' class=btn></div></td></tr>\n");
         end_table();
         print("</form>\n");
-        end_frame();
+        end_frame();*/
         
         if (file_exists("/htmlarea/htmlarea.js")) {
 ?>
