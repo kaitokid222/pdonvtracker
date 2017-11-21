@@ -26,17 +26,19 @@
 // +--------------------------------------------------------------------------+
 */
 
-require "include/bittorrent.php";
+require_once "include/bittorrent.php";
 
-dbconn();
+userlogin();
 loggedinorreturn();
 
 if (get_user_class() < UC_ADMINISTRATOR)
     stderr("Error", "Permission denied.");
 ?>
-<script type="text/javascript" src="<?=$BASEURL?>/js/nicEdit.js"></script>
+<script type="text/javascript" src="js/nicEdit.js"></script>
 <script type="text/javascript">
-	bkLib.onDomLoaded(function() { nicEditors.allTextAreas() });
+		bkLib.onDomLoaded(function() {
+			nicEditors.allTextAreas()
+		});
 </script>
 <?php
 
@@ -50,36 +52,51 @@ if ($action == 'delete') {
     if (!is_valid_id($newsid))
         stderr("Error", "Ungültige News-ID - Code 1.");
 
-    $returnto = $_GET["returnto"];
+    if (isset($_GET["returnto"])){
+		$returnto_str = "&returnto=" . str_replace("/", "", $_GET["returnto"]);
+		$returnto = $_GET["returnto"];
+	}else{
+		$returnto_str = "";
+		$returnto = "";
+	}
 
-    $sure = $_GET["sure"];
-    if (!$sure)
-        stderr("News-Eintrag löschen", "Willst Du wirklich einen News-Eintrag löschen? Klicke\n" . "<a href=\"news.php?action=delete&newsid=$newsid&returnto=$returnto&sure=1\">hier</a>, wenn Du Dir sicher bist.");
+    if (!isset($_GET["sure"]))
+        stderr("News-Eintrag löschen", "Willst Du wirklich einen News-Eintrag löschen? Klicke\n" . "<a href=\"news.php?action=delete&newsid=" . $newsid . $returnto_str . "&sure=1\">hier</a>, wenn Du Dir sicher bist.");
 
-    mysql_query("DELETE FROM news WHERE id=$newsid") or sqlerr(__FILE__, __LINE__);
+	$qry = $GLOBALS['DB']->prepare('DELETE FROM news WHERE id= :id');
+	$qry->bindParam(':id', $newsid, PDO::PARAM_INT);
+	$qry->execute();
 
     if ($returnto != "")
-        header("Location: $returnto");
+        header("Location: " . $returnto);
     else
         $warning = "Der News-Eintrag wurde erfolgreich gelöscht.";
 } 
 // Add News Item    /////////////////////////////////////////////////////////
 if ($action == 'add') {
-    $title = $_POST["title"];
-    if (!$title)
+    if (!isset($_POST["title"]) || $_POST["title"] == "")
         stderr("Fehler", "Der Titel darf nicht leer sein!");
+	else
+		$title = stripslashes($_POST["title"]);
 
-    $body = $_POST["body"];
-    if (!$body)
+    if (!isset($_POST["body"]) || $_POST["body"] == "")
         stderr("Fehler", "Der Beitrag darf nicht leer sein!");
+	else
+		$body = stripslashes($_POST["body"]);
 
-    $added = $_POST["added"];
-    if (!$added)
-        $added = sqlesc(get_date_time());
+	if(!isset($_POST["added"]) || $_POST["added"] == "")
+		$added = get_date_time();
+	else
+		$added = $_POST["added"];
 
-    mysql_query("INSERT INTO news (userid, added, title, body) VALUES (" . $CURUSER['id'] . ", $added, " . sqlesc(stripslashes($title)) . ", " . sqlesc(stripslashes($body)) . ")") or sqlerr(__FILE__, __LINE__);
-    if (mysql_affected_rows() == 1)
-        $warning = "News-Beitrag erfolgreich hinzugefügt.";
+	$qry = $GLOBALS['DB']->prepare('INSERT INTO news (userid, added, title, body) VALUES (:uid, :added, :title, :body)');
+	$qry->bindParam(':uid', $CURUSER["id"], PDO::PARAM_INT);
+	$qry->bindParam(':added', $added, PDO::PARAM_STR);
+	$qry->bindParam(':title', $title, PDO::PARAM_STR);
+	$qry->bindParam(':body', $body, PDO::PARAM_STR);
+	$qry->execute();
+	if($qry->rowCount())
+		$warning = "News-Beitrag erfolgreich hinzugefügt.";
     else
         stderr("Fehler", "Gerade ist irgendetwas merkwürdiges passiert.");
 } 
@@ -90,52 +107,62 @@ if ($action == 'edit') {
     if (!is_valid_id($newsid))
         stderr("Fehler", "Ungültige News-ID - Code 2.");
 
-    $res = mysql_query("SELECT * FROM news WHERE id=$newsid") or sqlerr(__FILE__, __LINE__);
-
-    if (mysql_num_rows($res) != 1)
-        stderr("Fehler", "Kein News-Eintrag mit der ID $newsid vorhanden.");
-
-    $arr = mysql_fetch_array($res);
-
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $title = $_POST["title"];
-        if (!$title)
-            stderr("Fehler", "Der Titel darf nicht leer sein!");
-    
-        $body = $_POST['body'];
-        if ($body == "")
-            stderr("Fehler", "Der Beitrag darf nicht leer sein!");
+		if (!isset($_POST["title"]) || $_POST["title"] == "")
+			stderr("Fehler", "Der Titel darf nicht leer sein!");
+		else
+			$title = stripslashes($_POST["title"]);
 
-        $title = sqlesc(stripslashes($title));
-        $body = sqlesc(stripslashes($body));
+		if (!isset($_POST["body"]) || $_POST["body"] == "")
+			stderr("Fehler", "Der Beitrag darf nicht leer sein!");
+		else
+			$body = stripslashes($_POST["body"]);
 
-        $editedat = sqlesc(get_date_time());
+		$qry = $GLOBALS['DB']->prepare('UPDATE news SET title= :title,body= :body WHERE id= :id');
+		$qry->bindParam(':title', $title, PDO::PARAM_STR);
+		$qry->bindParam(':body', $body, PDO::PARAM_STR);
+		$qry->bindParam(':id', $newsid, PDO::PARAM_INT);
+		$qry->execute();
 
-        mysql_query("UPDATE news SET title=$title,body=$body WHERE id=$newsid") or sqlerr(__FILE__, __LINE__);
-
-        $returnto = $_POST['returnto'];
+		if (isset($_GET["returnto"]))
+			$returnto = $_GET["returnto"];
+		else
+			$returnto = "";
 
         if ($returnto != "")
-            header("Location: $returnto");
+            header("Location: " . $returnto);
         else
             $warning = "Der News-Beitrag wurde erfolgreich geändert.";
     } else {
-        $returnto = $_GET['returnto'];
-        stdhead();
+		if (isset($_GET["returnto"]))
+			$returnto = $_GET["returnto"];
+		else
+			$returnto = "";
+
+		$qry = $GLOBALS['DB']->prepare('SELECT title, body FROM news WHERE id= :id');
+		$qry->bindParam(':id', $newsid, PDO::PARAM_INT);
+		$qry->execute();
+		if($qry->rowCount())
+			$arr = $qry->fetchAll()[0];
+		else
+			stderr("Fehler", "Kein News-Eintrag mit der ID " . $newsid . " vorhanden.");
+			
+	    stdhead();
 		begin_frame("News-Beitrag bearbeiten", false, "600px;");
+			
 		if (isset($warning))
 			echo "<p><font size=-3>(" . $warning . ")</font></p>";
     
 		echo "<form method='post' action='news.php?action=edit&newsid=" . $newsid . "'><input type='hidden' name='returnto' value='" . $returnto . "'>
 			<table class='tableinborder' width='100%' border='0' cellspacing='1' cellpadding='4'>
-			<tr><td class='tableb'>Titel:</td><td class='tablea'><input type='text' name='title' size='80' maxlength='255' value='" . (stripslashes($arr["title"])) . "'></td></tr>
-			<tr><td class='tableb'>Text:</td><td class='tablea'><textarea id='newseditor' name='body' cols='80' rows='10' style='width:600px;height:400px;'>" . (stripslashes($arr["body"])) . "</textarea><br>(<b>HTML</b> ist erlaubt)</td></tr>
+			<tr><td class='tableb'>Titel:</td><td class='tablea'><input type='text' name='title' size='80' maxlength='255' value='" . stripslashes($arr["title"]) . "'></td></tr>
+			<tr><td class='tableb'>Text:</td><td class='tablea'><textarea id='newseditor' name='body' cols='80' rows='10' style='width:600px;height:400px;'>" . stripslashes($arr["body"]) . "</textarea><br>(<b>HTML</b> ist erlaubt)</td></tr>
 			<tr><td class='tableb' colspan='2'><div align=center><input type='submit' value='Okay' class='btn'></div></td></tr>
 			</table></form>";
 		end_frame();
 		stdfoot();
         die;
-    } 
+    }
 } 
 // Other Actions and followup    ////////////////////////////////////////////
 stdhead("Site news");
@@ -150,40 +177,33 @@ print("<tr><td class=\"tableb\" colspan=\"2\"><div align=center><input type=subm
 print("</table></form>\n");
 end_frame();
 
-$res = mysql_query("SELECT * FROM news ORDER BY added DESC") or sqlerr(__FILE__, __LINE__);
-if (mysql_num_rows($res) > 0) {
+$qry = $GLOBALS['DB']->prepare('SELECT news.*, users.username as postername FROM news LEFT JOIN users ON news.userid = users.id ORDER BY added DESC');
+$qry->execute();
+if($qry->rowCount()){
+	$arr = $qry->fetchAll();
     begin_frame("News bearbeiten", false, "650px;");
-    while ($arr = mysql_fetch_array($res)) {
-        $newsid = $arr["id"];
-        $title = htmlspecialchars($arr["title"]);
-        $body = $arr["body"];
-        $userid = $arr["userid"];
-        $added = $arr["added"] . " (vor " . (get_elapsed_time(sql_timestamp_to_unix_timestamp($arr["added"]))) . ")";
-        $res2 = mysql_query("SELECT username, donor FROM users WHERE id = $userid") or sqlerr(__FILE__, __LINE__);
-        $arr2 = mysql_fetch_array($res2);
+    foreach($arr as $news){
+        $added = $news["added"] . " (vor " . (get_elapsed_time(sql_timestamp_to_unix_timestamp($news["added"]))) . ")";
 
-        $postername = $arr2["username"];
-
-        if ($postername == "")
-            $by = "unknown[$userid]";
+        if (!isset($news["postername"]) || $news["postername"] == "")
+            $by = "unknown[" . $news["userid"] . "]";
         else
-            $by = "<a href=userdetails.php?id=$userid><b>$postername</b></a>" .
-            ($arr2["donor"] == "yes" ? "<img src=\"".$GLOBALS["PIC_BASE_URL"]."donor.png\" alt='Donor'>" : "");
+            $by = "<a href=userdetails.php?id=" . $news["userid"] . "><b>" . $news["postername"] . "</b></a>";
 
         begin_table(TRUE);
         print("<tr><td class=tablecat>");
-        print("<b>$title</b><br>");
-        print("$added&nbsp;---&nbsp;by&nbsp$by");
-        print(" - [<a href=?action=edit&newsid=$newsid><b>Edit</b></a>]");
-        print(" - [<a href=?action=delete&newsid=$newsid><b>Delete</b></a>]");
+        print("<b>" . htmlspecialchars($news["title"]) . "</b><br>");
+        print($added . "&nbsp;---&nbsp;by&nbsp" . $by);
+        print(" - [<a href=?action=edit&newsid=" . $news["id"] . "><b>Edit</b></a>]");
+        print(" - [<a href=?action=delete&newsid=" . $news["id"] . "><b>Delete</b></a>]");
         print("</td></tr>\n");
-        print("<tr valign=top><td class=tablea>$body</td></tr>\n");
+        print("<tr valign=top><td class=tablea>" . $news["body"] . "</td></tr>\n");
         end_table();
     } 
     end_frame();
-} else
-    stdmsg("Sorry", "No news available!");
+}else
+	stdmsg("Fehler", "Kein News-Eintrag vorhanden.");
+
 stdfoot();
 die;
-
 ?>
