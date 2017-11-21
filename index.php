@@ -114,6 +114,14 @@ stdhead();
   <td colspan="10" width="100%"><span class="normalfont"><center><b> <img src="<?=$GLOBALS["PIC_BASE_URL"]?>star16.gif"> <a href="donate.php">Spende, um den Tracker zu erhalten!</a> <img src="<?=$GLOBALS["PIC_BASE_URL"]?>star16.gif"></b></center></span></td> 
  </tr></table>
 <br>
+<?php
+	$pollsnew = new polls(false);
+	$pollsnew->getData();
+	//print("<pre>");
+	//var_dump($pollsnew->data);
+	highlight_string("<?php\n\$pollsnew->data =\n" . var_export($pollsnew->data, true) . ";\n?>");
+?>
+
 <script type="text/javascript">
 
 function expandCollapse(newsId)

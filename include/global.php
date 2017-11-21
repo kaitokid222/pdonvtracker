@@ -605,9 +605,8 @@ function begin_table($fullwidth = false, $padding = 4)
     print("<table class=\"tableinborder\" $width border=\"0\" cellspacing=\"1\" cellpadding=\"$padding\">\n");
 } 
 
-function end_table()
-{
-    print("</table><br>\n");
+function end_table(){
+	print("</table><br>\n");
 } 
 // -------- Inserts a smilies frame
 // (move to globals)

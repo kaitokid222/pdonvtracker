@@ -442,48 +442,24 @@ CREATE TABLE `pmfolders` (
 -- Table structure for table `pollanswers`
 --
 
-CREATE TABLE `pollanswers` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `pollid` int(10) unsigned NOT NULL default '0',
-  `userid` int(10) unsigned NOT NULL default '0',
-  `selection` tinyint(3) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `pollid` (`pollid`),
-  KEY `selection` (`selection`),
-  KEY `userid` (`userid`)
-) ;
+-- Exportiere Struktur von Tabelle nvtracker.pollanswers
+CREATE TABLE IF NOT EXISTS `pollanswers` (
+  `pollid` int(11) NOT NULL,
+  `answers` text NOT NULL,
+  PRIMARY KEY (`pollid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
---
--- Table structure for table `polls`
---
+-- Daten Export vom Benutzer nicht ausgewählt
 
-CREATE TABLE `polls` (
-  `id` int(10) unsigned NOT NULL auto_increment,
-  `added` datetime NOT NULL default '0000-00-00 00:00:00',
-  `question` varchar(255) NOT NULL default '',
-  `option0` varchar(150) NOT NULL default '',
-  `option1` varchar(150) NOT NULL default '',
-  `option2` varchar(150) NOT NULL default '',
-  `option3` varchar(150) NOT NULL default '',
-  `option4` varchar(150) NOT NULL default '',
-  `option5` varchar(150) NOT NULL default '',
-  `option6` varchar(150) NOT NULL default '',
-  `option7` varchar(150) NOT NULL default '',
-  `option8` varchar(150) NOT NULL default '',
-  `option9` varchar(150) NOT NULL default '',
-  `option10` varchar(150) NOT NULL default '',
-  `option11` varchar(150) NOT NULL default '',
-  `option12` varchar(150) NOT NULL default '',
-  `option13` varchar(150) NOT NULL default '',
-  `option14` varchar(150) NOT NULL default '',
-  `option15` varchar(150) NOT NULL default '',
-  `option16` varchar(150) NOT NULL default '',
-  `option17` varchar(150) NOT NULL default '',
-  `option18` varchar(150) NOT NULL default '',
-  `option19` varchar(150) NOT NULL default '',
-  `sort` enum('yes','no') NOT NULL default 'yes',
-  PRIMARY KEY  (`id`)
-) ;
+
+-- Exportiere Struktur von Tabelle nvtracker.polls
+CREATE TABLE IF NOT EXISTS `polls` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `added` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `question` varchar(255) NOT NULL DEFAULT '',
+  `answers` text NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Table structure for table `posts`

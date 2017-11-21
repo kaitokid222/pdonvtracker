@@ -42,6 +42,7 @@ require_once("include/secrets.php");
 require_once("include/config.php");
 require_once("include/cleanup.php");
 
+
 require_once("include/shoutcast.php");
 
 // NEU PDO!
@@ -49,6 +50,8 @@ require_once("include/shoutcast.php");
 	$GLOBALS['DB']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
 	$GLOBALS['DB']->query('SET NAMES utf8');
 
+require_once("include/class/polls.php");
+	
 // SQL-funktionen OUTSOURCEN!!!
 function pdo_row_count($table,$condition = '1=1'){
 	$sql = "SELECT COUNT(*) FROM ";
@@ -765,7 +768,6 @@ function deletetorrent($id, $owner = 0, $comment = "")
 
 	$qry = $GLOBALS['DB']->prepare('SELECT name,numpics FROM torrents WHERE id = :id');
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
-//	$torrent = $qry->execute()->fetchAll();
 	$qry->execute();
 	$torrent = $qry->fetchAll()[0];
 	
@@ -1420,11 +1422,13 @@ function expandCollapse(torrentId)
 
             ?>
 </table>
-<table cellspacing="0" cellpadding="0" border="0" style="width:100%"><tr>
-        <td align="left"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/untenlinks.gif" alt="" title="" /></td>
-<td style="width:100%" class="untenmitte" align="center"></td>
-        <td align="right"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/untenrechts.gif" alt="" title="" /></td>
-</tr></table>
+<table cellspacing="0" cellpadding="0" border="0" style="width:100%">
+	<tr>
+		<td align="left"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/untenlinks.gif" alt="" title="" /></td>
+		<td style="width:100%" class="untenmitte" align="center"></td>
+		<td align="right"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/untenrechts.gif" alt="" title="" /></td>
+	</tr>
+</table>
 <?php
             return $rows;
         } 

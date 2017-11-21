@@ -29,7 +29,7 @@
 ob_start("ob_gzhandler");
 
 require "include/bittorrent.php";
-
+userlogin();
 stdhead("FAQ");
 ?>
 
