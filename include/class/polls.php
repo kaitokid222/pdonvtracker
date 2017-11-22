@@ -128,8 +128,24 @@ class polls
 	
 	}
 
-	public function add_answer(){
-		
+	public function add_answer($poll,$answer,$user){
+		if($this->data[$poll]['result'][$answer][0] == "")
+			$this->data[$poll]['result'][$answer][0] = strval($user);
+		else
+			$this->data[$poll]['result'][$answer][] = strval($user);
+		$arr = array();
+		foreach($this->data[$poll]['result'] as $uarr){
+			//if(isset($uarr[1]) && $uarr[0] != "")
+				$arr[] = implode(";",$uarr);
+			//else
+			//	$arr[] = "";
+		}
+		$all = json_encode($arr, JSON_FORCE_OBJECT);
+
+		$qry = $this->con->prepare('UPDATE pollanswers SET answers= :a WHERE pollid= :id');
+		$qry->bindParam(':a', $all, PDO::PARAM_STR);
+		$qry->bindParam(':id', $poll, PDO::PARAM_INT);
+		$qry->execute();
 	}
 
 	public function edit_answer(){

@@ -52,10 +52,10 @@ function deletePersonalMessages($delids, $userid = 0)
     if ($userid == 0)
         $userid = $CURUSER["id"];
 	$sql = array();
-	$sql[] = ['DELETE FROM `messages` WHERE `id` IN (:delids) AND `folder_in`=0 AND `folder_out`=' . $GLOBALS["FOLDER"] . ' AND `sender`= :userid'];
-	$sql[] = ['DELETE FROM `messages` WHERE `id` IN (:delids) AND `folder_out`=0 AND `folder_in`=' . $GLOBALS["FOLDER"] . ' AND `receiver`= :userid'];
-	$sql[] = ['UPDATE `messages` SET `folder_in`=0 WHERE `id` IN (:delids) AND `folder_in`=' . $GLOBALS["FOLDER"] . ' AND `receiver`= :userid'];
-	$sql[] = ['UPDATE `messages` SET `folder_out`=0 WHERE `id` IN (:delids) AND `folder_out`=' . $GLOBALS["FOLDER"] . ' AND `sender`= :userid'];
+	$sql[] = 'DELETE FROM `messages` WHERE `id` IN (:delids) AND `folder_in`=0 AND `folder_out`=' . $GLOBALS["FOLDER"] . ' AND `sender`= :userid';
+	$sql[] = 'DELETE FROM `messages` WHERE `id` IN (:delids) AND `folder_out`=0 AND `folder_in`=' . $GLOBALS["FOLDER"] . ' AND `receiver`= :userid';
+	$sql[] = 'UPDATE `messages` SET `folder_in`=0 WHERE `id` IN (:delids) AND `folder_in`=' . $GLOBALS["FOLDER"] . ' AND `receiver`= :userid';
+	$sql[] = 'UPDATE `messages` SET `folder_out`=0 WHERE `id` IN (:delids) AND `folder_out`=' . $GLOBALS["FOLDER"] . ' AND `sender`= :userid';
 	foreach($sql as $s){
 		$qry = $GLOBALS['DB']->prepare($s);
 		$qry->bindParam(':userid', $userid, PDO::PARAM_INT);
