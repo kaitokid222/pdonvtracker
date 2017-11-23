@@ -12,36 +12,12 @@
 // +--------------------------------------------------------------------------+
  */
 
-/*
-\\	polls		id			int pk
-//				added		date
-\\				question	varchar
-//				answers		text
-\\	pollanswers	pollid (polls.id)
-//				answers text
-\\
-// dekodierte daten in $this->data
-\\ $this->data all polls array
-\\ $this->data[id] single poll array
-// $this->data[id][id] poll id
-\\ $this->data[id][added] poll datetime
-// $this->data[id][question] poll question
-\\ $this->data[id][answers] poll answers array
-// $this->data[id][answers][i] poll answer
-\\ $this->data[id][result] poll result array
-// $this->data[id][result][i] poll answer result array
-\\ $this->data[id][result][i][i] poll answer result userid
-*/
-
 class polls
 {
 	private $con;
 	private $onlyLast;
 
 	public $data = array();
-	
-	public $tmp = array();
-	
 
 	public function __construct($last = true) {
 		$this->con = $GLOBALS['DB'];
@@ -93,9 +69,6 @@ class polls
 		$qry->bindParam(':question', $question, PDO::PARAM_STR);
 		$qry->bindParam(':answers', $answers_str, PDO::PARAM_STR);
 		$qry->execute();
-		// struktur sichern
-		// bestimmt nicht die schönste art.
-		// GOOGLE insert into multiple tables in one query
 		$pollid = $this->con->lastInsertId();
 		$empty_array = $this->clean_answers_array($answers);
 		$answers_str = json_encode($empty_array, JSON_FORCE_OBJECT);
@@ -112,15 +85,11 @@ class polls
 		$qry->execute();
 	}
 	
-	public function edit_poll(){
-	
-	}
-	
-	public function delete_answer($poll, $user){ // eine Antwort
+	public function delete_answer($poll, $user){
 		foreach($this->data[$poll]['result'] as $question => $uarr){
 			$k = array_search($user, $uarr);
-			if($k == 0 && $k !== false) // "int (1) 0 schein auch == false zu sein aber nicht === false 
-				$k = strval($k); // und "0" ist true
+			if($k == 0 && $k !== false)
+				$k = strval($k);
 			if($k !== false){
 				if($k == "0" && !isset($this->data[$poll]['result'][$question][1]))
 					$this->data[$poll]['result'][$question][$k] = "";
@@ -130,11 +99,10 @@ class polls
 			}
 		}
 		$this->data[$poll]['result'][$question] = array_values($this->data[$poll]['result'][$question]);
-		// neu indexieren. die key des nutzerid-arrays sind eh uninteressant.
 		$this->update_pollanswers($poll, $this->data[$poll]['result']);
 	}
 	
-	public function delete_answers($poll){ // alle antworten einer umfrage
+	public function delete_answers($poll){
 		$c = $this->data[$poll]['answers'];
 		$empty_array = $this->clean_answers_array($c);
 		$this->update_pollanswers($poll, $empty_array);
@@ -149,9 +117,6 @@ class polls
 	}
 
 	public function cheat($poll,$answer){
-		// wenn sich die Nutzerzahl der halben
-		// Million nähert wird langsam ein fix nötig
-		// möglicherweise eine spalte in pollanswers "cheated votes"
 		$cheatid = rand(888888,989999);
 		if(in_array($cheatid, $this->data[$poll]['result'][$answer]))
 			$cheatid += rand(999,9999);

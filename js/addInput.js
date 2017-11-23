@@ -3,13 +3,13 @@
  */
 var counter = 1;
 var limit = 20;
-function addInput(divName){
+function addPollQuestionInput(divName){
      if (counter == limit)  {
           alert("Du hast das Limit von " + counter + " Antworten erreicht.");
      }
      else {
           var newdiv = document.createElement('div');
-          newdiv.innerHTML = "Entry " + (counter + 1) + " <br><input type='text' name='myInputs[]'>";
+          newdiv.innerHTML = "<br><input type='text' name='answers[]' size='40'>";
           document.getElementById(divName).appendChild(newdiv);
           counter++;
      }
