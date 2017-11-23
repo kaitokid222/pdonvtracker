@@ -220,6 +220,76 @@ if ($CURUSER)
         sc_infobox();
         echo "</td>\n";
     }
+// start umfragemodul
+if (get_user_class() >= UC_MODERATOR){
+    $mod_str = "<font class=middle>".
+    " - [<a class=altlink href=" . $_SERVER['PHP_SELF'] . "?action=create><b>Neu</b></a>]\n".
+    " - [<a class=altlink href=" . $_SERVER['PHP_SELF'] . "?action=edit&pollid=id&returnto=main><b>&Auml;ndern</b></a>]\n".
+    " - [<a class=altlink href=" . $_SERVER['PHP_SELF'] . "?action=delete&pollid=id&returnto=main><b>L&ouml;schen</b></a>]".
+    "</font>";
+}else
+	$mod_str = "";
+
+$polls = new polls();
+$polls->getData();
+$latest = $polls->data;
+
+foreach($latest as $p){
+	$poll = $p;
+}
+$check = $polls->has_answered($poll['id'],$CURUSER['id']);
+$tvotes = $polls->get_answer_count($poll['id']);
+begin_table(); 
+echo "<table cellspacing=\"5\" cellpadding=\"0\" border=\"0\" style=\"width:100%\">\n".
+	"    <tr>\n".
+	"        <td valign=\"top\" width=\"50%\">\n".
+	"            <table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+	"                <tr class=\"tabletitle\" width=\"100%\">\n".
+	"                    <td colspan=\"10\" width=\"100%\"><span class=\"normalfont\">\n".
+	"                        <center><b> Aktuelle Umfrage " . $mod_str . "</b></center></span>\n".
+	"                    </td>\n".
+	"                </tr>\n".
+	"                <tr>\n".
+	"                    <td width=\"100%\" class=\"tablea\">\n".
+	"                    <p align=center><b>" . $poll['question'] . "</b></p>\n";
+if($check){
+	echo "<center><table border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n";
+	foreach($poll['result'] as $questionid => $users){
+		if($users[0] == "")
+			$count = 0;
+		else
+			$count = count($users);
+		if($count == 0)
+			$p = 0;
+		else
+			$p = round($count / $tvotes * 100);
+
+		echo "<tr>".
+			"    <td nowrap align=\"left\">" . $poll['answers'][$questionid] . "&nbsp;&nbsp;</td>".
+			"    <td align=\"left\">".
+			"        <img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_left" . (($questionid%5)+1) . ".gif\">".
+			"        <img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_middle" . (($questionid%5)+1) . ".gif\" height=9 width=" . (($p * 5)+1) .">".
+			"        <img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_right" . (($questionid%5)+1) . ".gif\"> " . $p . "%".
+			"    </td>".
+			"</tr>\n";
+	}
+	echo "<p align=\"center\">Abgebene Stimmen: " . $tvotes . "</p>\n";
+	echo "</table></center>\n";
+}else{
+	echo "<form method=\"post\" action=\"index.php?action=vote\"><center>\n";
+	foreach($poll['answers'] as $aid => $a){
+		echo "<input type=radio name=choice value=" . $aid . ">" . $a . "<br>\n";
+	}
+	echo "<br><p align=\"center\"><input type=\"submit\" value=\"'Vote!'\" class=\"btn\"></p></center>\n";
+}
+if ($check)
+    echo "<p align=center><a href=\"polls.php\">Ältere Umfragen</a></p>\n";
+echo "        </td>\n".
+	"    </tr>\n".
+	"</table>\n";
+end_table();
+// eof umfrage
+	
     //echo "</tr></table><br>";
 }
 

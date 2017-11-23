@@ -151,6 +151,17 @@ class polls
 	public function edit_answer(){
 	
 	}
+
+	public function get_answer_count($poll){
+		$tc = 0;
+		foreach($this->data[$poll]['result'] as $uarr){
+			if($uarr[0] != ""){
+				$c = count($uarr);
+				$tc += $c;
+			}
+		}
+		return $tc;
+	}
 	
 	private function clean_answers_array($answers){
 		$c = count($answers);
