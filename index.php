@@ -278,7 +278,7 @@ if ($CURUSER)
 			"<br><p align=\"center\"><input type=\"submit\" value=\"'Vote!'\" class=\"btn\"></p></center>\n";
 	}
 	if ($check)
-		echo "<p align=center><a href=\"polls.php\">Ältere Umfragen</a> <a href=\"polls.php?action=revoke&pollid=" . $poll['id'] . "\">Stimme zurückziehen</a></p>\n";
+		echo "<p align=center><a href=\"polls.php\">Alle Umfragen</a> <a href=\"polls.php?action=revoke&pollid=" . $poll['id'] . "\">Stimme zurückziehen</a></p>\n";
 	echo "        </td>\n".
 		"    </tr>\n".
 		"</table>\n";

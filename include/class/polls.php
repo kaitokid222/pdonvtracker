@@ -152,15 +152,10 @@ class polls
 		// wenn sich die Nutzerzahl der halben
 		// Million nähert wird langsam ein fix nötig
 		// möglicherweise eine spalte in pollanswers "cheated votes"
-		$cheatid = rand(888888,999999);
+		$cheatid = rand(888888,989999);
 		if(in_array($cheatid, $this->data[$poll]['result'][$answer]))
-			$cheatid = $cheatid+rand(999,9999);
-			
-		if($this->data[$poll]['result'][$answer][0] == "")
-			$this->data[$poll]['result'][$answer][0] = strval($cheatid);
-		else
-			$this->data[$poll]['result'][$answer][] = strval($cheatid);
-		$this->update_pollanswers($poll, $this->data[$poll]['result']);
+			$cheatid += rand(999,9999);
+		$this->add_answer($poll,$answer,$cheatid);
 	}
 
 	public function edit_answer(){

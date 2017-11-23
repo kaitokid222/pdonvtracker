@@ -27,10 +27,8 @@ else
 
 switch ($action) {
 	case "view":
-		echo "";
 		break;
 	case "edit":
-		echo "";
 		break;
 	case "vote":
 		if ($_SERVER["REQUEST_METHOD"] == "POST"){
@@ -55,11 +53,47 @@ switch ($action) {
 		}else
 			stderr("Error", "Es scheinen Daten zu fehlen!");
 		break;
-	case "":
-		echo "";
+	case "create":
+		if(get_user_class() >= UC_MODERATOR){
+			echo "<script language='JavaScript' src='js/addInput.js' type='text/javascript'></script>"; 
+		}else
+			stderr("Error", "Du hast dazu keine Berechtigung!");
 		break;
-	case "":
-		echo "";
+	case "delete":
+		if(get_user_class() < UC_MODERATOR){
+			if(isset($_GET['sure']) && $_GET['sure'] == 1){
+				if(isset($_GET['pollid'])){
+					$polls->delete_poll($_GET['pollid']);
+					header("Refresh:0; url=". $_SERVER['PHP_SELF'] . "");
+				}else
+					stderr("Error", "Es scheinen Daten zu fehlen!");
+			}else
+				stderr("Umfrage löschen", "Willst Du die Umfrage löschen? Klicke\n" . "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=delete&pollid=" . $_GET['pollid'] . "&sure=1\">hier</a>, wenn Du Dir sicher bist.");
+		}else
+			stderr("Error", "Du hast dazu keine Berechtigung!");
+		break;
+	case "wipevotes":
+		if(get_user_class() < UC_MODERATOR){
+			if(isset($_GET['sure']) && $_GET['sure'] == 1){
+				if(isset($_GET['pollid'])){
+					$polls->delete_answers($_GET['pollid']);
+					header("Refresh:0; url=". $_SERVER['PHP_SELF'] . "");
+				}else
+					stderr("Error", "Es scheinen Daten zu fehlen!");
+			}else
+				stderr("Votes löschen", "Willst Du das Abstimmungsergebnis löschen? Klicke\n" . "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=wipevotes&pollid=" . $_GET['pollid'] . "&sure=1\">hier</a>, wenn Du Dir sicher bist.");
+		}else
+			stderr("Error", "Du hast dazu keine Berechtigung!");
+		break;
+	case "cheat":
+		if(get_user_class() < UC_MODERATOR){
+			if(isset($_GET['pollid'],$_GET['aid'])){
+				$polls->cheat($_GET['pollid'],$_GET['aid']);
+				header("Refresh:0; url=". $_SERVER['PHP_SELF'] . "");
+			}else
+				stderr("Error", "Es scheinen Daten zu fehlen!");
+		}else
+			stderr("Error", "Du hast dazu keine Berechtigung!");
 		break;
 }
 
@@ -88,7 +122,7 @@ if($action == "view"){
 			"                    </td>".
 			"                </tr>".
 			"                <tr>\n".
-			"                    <td width=\"100%\" class=\"tablea\">\n".
+			"                    <td width=\"100%\" class=\"tablea\"><b>Insgesamt haben " . $tvotes . " Nutzer an der Umfrage teilgenommen</b>\n".
 			"";
 		foreach($poll['answers'] as $k => $a){
 			if($poll['result'][$k][0] != "")
@@ -101,41 +135,33 @@ if($action == "view"){
 			else
 				$p = 0;
 
-			echo "                    <p><b>" . $a . " - " . $c . " Stimmen - " . $p . "%</b></p>\n";
+			echo "                    <p><b>" . $a . " - " . $c . " Stimmen - " . $p . "%</b> <a href=\"" . $_SERVER['PHP_SELF'] . "?action=cheat&pollid=" . $poll['id'] . "&aid=" . $k . "\"><img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/plus.gif\"></a></p>\n";
 		}
 		echo "                    </td>".
-			"                </tr>".
-			"                <tr>\n".
-			"                    <td width=\"100%\" class=\"tablea\">\n".
-			"                    <p><b>Optionen:<br>".
-			"                        <a href=\"" . $_SERVER['PHP_SELF'] . "?delete=" . $poll['id'] . "\">Diese Umfrage löschen</a><br>\n".
-			"                        <a href=\"" . $_SERVER['PHP_SELF'] . "?wipevotes=" . $poll['id'] . "\">Alle Antworten löschen</a><br>\n".
-			"                        <a href=\"" . $_SERVER['PHP_SELF'] . "?edit=" . $poll['id'] . "\">Diese Umfrage bearbeiten</a\n>".
-			"                    </b></p>\n".
-			"                    </td>\n".
-			"                </tr>\n".
-			"            </table>\n".
+			"                </tr>";
+		if (get_user_class() >= UC_MODERATOR){
+			echo "                <tr>\n".
+				"                    <td width=\"100%\" class=\"tablea\">\n".
+				"                    <p><b>Optionen:<br>".
+				"                        <a href=\"" . $_SERVER['PHP_SELF'] . "?action=delete&pollid=" . $poll['id'] . "\">Diese Umfrage löschen</a><br>\n".
+				"                        <a href=\"" . $_SERVER['PHP_SELF'] . "?action=wipevotes&pollid=" . $poll['id'] . "\">Alle Antworten löschen</a><br>\n".
+				"                        <a href=\"" . $_SERVER['PHP_SELF'] . "?action=edit&pollid=" . $poll['id'] . "\">Diese Umfrage bearbeiten</a\n>".
+				"                    </b></p>\n".
+				"                    </td>\n".
+				"                </tr>\n";
+		}
+		echo "            </table>\n".
 			"        </td>\n".
 			"    </tr>\n".
 			"</table>\n";
 	}
-		// EXPERIMENT!
-		////////
-		/*$frage = "neuste testfrage 3 antworten";
-		$antwort = array();
-		for ($x = 0; $x <= 2; $x++) {
-			$antwort[] = "NEUE Antwort Nr. " . $x;
-		} 
-		$pollsnew->add_poll($frage,$antwort);*/
-		
-		//$pollsnew->add_answer(19,1,4);
-		//$pollsnew->add_answer(20,0,2);
-		//$pollsnew->add_answer(20,0,3);
-		//$pollsnew->delete_answer(20,3);
-		
-		////////
 	end_table();
 	end_frame();
+}elseif($action == "create"){
+	echo "<form method=\"POST\">\n".
+		"    <div id=\"dynamicInput\">Entry 1<br><input type=\"text\" name=\"myInputs[]\"></div>\n".
+		"    <input type=\"button\" value=\"Neue Antwort\" onClick=\"addInput('dynamicInput');\">\n".
+		"</form>\n";
 }
 stdfoot();
 ?>
