@@ -148,6 +148,21 @@ class polls
 		$this->update_pollanswers($poll, $this->data[$poll]['result']);
 	}
 
+	public function cheat($poll,$answer){
+		// wenn sich die Nutzerzahl der halben
+		// Million nähert wird langsam ein fix nötig
+		// möglicherweise eine spalte in pollanswers "cheated votes"
+		$cheatid = rand(888888,999999);
+		if(in_array($cheatid, $this->data[$poll]['result'][$answer]))
+			$cheatid = $cheatid+rand(999,9999);
+			
+		if($this->data[$poll]['result'][$answer][0] == "")
+			$this->data[$poll]['result'][$answer][0] = strval($cheatid);
+		else
+			$this->data[$poll]['result'][$answer][] = strval($cheatid);
+		$this->update_pollanswers($poll, $this->data[$poll]['result']);
+	}
+
 	public function edit_answer(){
 	
 	}
