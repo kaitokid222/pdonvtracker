@@ -13,19 +13,24 @@
  */
 
 /*
-\\	polls	id			int pk
-//			added		date
-\\			question	varchar
-//			answers		text
-\\						(json-string {"0":"Antwort 1","1":"Antwort 2"})
-//						$string = json_encode($array, JSON_FORCE_OBJECT);
-\\						$array = json_decode($string, true);
-*/
-
-/*
+\\	polls		id			int pk
+//				added		date
+\\				question	varchar
+//				answers		text
 \\	pollanswers	pollid (polls.id)
 //				answers text
-\\						(json-string {polls.answers.id:users.ids,polls.answers.id:users.ids})
+\\
+// dekodierte daten in $this->data
+\\ $this->data all polls array
+\\ $this->data[id] single poll array
+// $this->data[id][id] poll id
+\\ $this->data[id][added] poll datetime
+// $this->data[id][question] poll question
+\\ $this->data[id][answers] poll answers array
+// $this->data[id][answers][i] poll answer
+\\ $this->data[id][result] poll result array
+// $this->data[id][result][i] poll answer result array
+\\ $this->data[id][result][i][i] poll answer result userid
 */
 
 class polls
@@ -93,16 +98,6 @@ class polls
 		// GOOGLE insert into multiple tables in one query
 		$pollid = $this->con->lastInsertId();
 		$empty_array = $this->clean_answers_array($answers);
-		/*$c = count($answers);
-		$answer_arr = array();
-		$i = 0;
-		while($i < $c){
-			$answer_arr[$i] = NULL;
-			$i++;
-		}
-		$empty_array = array_map(function($value){
-			return $value === NULL ? "" : $value;
-		}, $answer_arr);*/
 		$answers_str = json_encode($empty_array, JSON_FORCE_OBJECT);
 		$qry = $this->con->prepare('INSERT INTO pollanswers (pollid, answers) VALUES (:pollid,:answers)');
 		$qry->bindParam(':pollid', $pollid, PDO::PARAM_INT);
@@ -124,32 +119,25 @@ class polls
 	public function delete_answer($poll, $user){ // eine Antwort
 		foreach($this->data[$poll]['result'] as $question => $uarr){
 			$k = array_search($user, $uarr);
-			if($k){
-				unset($this->data[$poll]['result'][$question][$k]);
+			if($k == 0 && $k !== false) // "int (1) 0 schein auch == false zu sein aber nicht === false 
+				$k = strval($k); // und "0" ist true
+			if($k !== false){
+				if($k == "0" && !isset($this->data[$poll]['result'][$question][1]))
+					$this->data[$poll]['result'][$question][$k] = "";
+				else
+					unset($this->data[$poll]['result'][$question][$k]);
 				break;
 			}
 		}
+		$this->data[$poll]['result'][$question] = array_values($this->data[$poll]['result'][$question]);
+		// neu indexieren. die key des nutzerid-arrays sind eh uninteressant.
 		$this->update_pollanswers($poll, $this->data[$poll]['result']);
-		/*foreach($this->data[$poll]['result'] as $uarr){
-			$arr[] = implode(";",$uarr);
-		}
-		
-		$all = json_encode($arr, JSON_FORCE_OBJECT);
-		$qry = $this->con->prepare('UPDATE pollanswers SET answers= :a WHERE pollid= :id');
-		$qry->bindParam(':a', $all, PDO::PARAM_STR);
-		$qry->bindParam(':id', $poll, PDO::PARAM_INT);
-		$qry->execute();*/
 	}
 	
 	public function delete_answers($poll){ // alle antworten einer umfrage
-		$c = $this->data['id']['answers'];
+		$c = $this->data[$poll]['answers'];
 		$empty_array = $this->clean_answers_array($c);
 		$this->update_pollanswers($poll, $empty_array);
-		/*$all = json_encode($empty_array, JSON_FORCE_OBJECT);
-		$qry = $this->con->prepare('UPDATE pollanswers SET answers= :a WHERE pollid= :id');
-		$qry->bindParam(':a', $all, PDO::PARAM_STR);
-		$qry->bindParam(':id', $poll, PDO::PARAM_INT);
-		$qry->execute();*/
 	}
 
 	public function add_answer($poll,$answer,$user){
@@ -158,16 +146,6 @@ class polls
 		else
 			$this->data[$poll]['result'][$answer][] = strval($user);
 		$this->update_pollanswers($poll, $this->data[$poll]['result']);
-		/*$arr = array();
-		foreach($this->data[$poll]['result'] as $uarr){
-			$arr[] = implode(";",$uarr);
-		}
-		$all = json_encode($arr, JSON_FORCE_OBJECT);
-
-		$qry = $this->con->prepare('UPDATE pollanswers SET answers= :a WHERE pollid= :id');
-		$qry->bindParam(':a', $all, PDO::PARAM_STR);
-		$qry->bindParam(':id', $poll, PDO::PARAM_INT);
-		$qry->execute();*/
 	}
 
 	public function edit_answer(){
@@ -190,8 +168,16 @@ class polls
 
 	private function update_pollanswers($poll, $resultsets){
 		$arr = array();
-		foreach($resultsets as $uarr){
-			$arr[] = implode(";",$uarr);
+		foreach($resultsets as $q => $uarr){
+			if(is_array($uarr)){
+				if($uarr[0] != "" && isset($uarr[1]))
+					$arr[$q] = implode(";",$uarr);
+				elseif($uarr[0] != "" && !isset($uarr[1]))
+					$arr[$q] = $uarr[0];
+				else
+					$arr[$q] = "";
+			}else
+				$arr[$q] = "";
 		}
 		$all = json_encode($arr, JSON_FORCE_OBJECT);
 		$qry = $this->con->prepare('UPDATE pollanswers SET answers= :a WHERE pollid= :id');

@@ -679,7 +679,7 @@ if ($GLOBALS["DYNAMIC_RSS"]) {
               <tr><td class="tabletitle" style="padding: 4px;"><b>Administration :.</b></td></tr>
               <tr><td class="tablea"><a style="display:block;padding:4px;" href="log.php" title="Tracker-Logbuch anzeigen">Site Log</a></td></tr>
               <tr><td class="tablea"><a style="display:block;padding:4px;" href="usersearch.php" title="Suche nach Benutzern &uuml;ber diverse Angaben">Benutzersuche</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="polls.php" title="Umfrageverwaltung">Umfragen</a></td></tr>
+              <tr><td class="tablea"><a style="display:block;padding:4px;" href="pollsnew.php" title="Umfrageverwaltung">Umfragen</a></td></tr>
               <tr><td class="tablea"><a style="display:block;padding:4px;" href="staff.php?act=last" title="Liste aller Benutzer, nach Anmeldedatum sortiert">Neueste Benutzer</a></td></tr>
               <tr><td class="tablea"><a style="display:block;padding:4px;" href="staff.php?act=ban" title="Hier kannst Du IP-Bereiche vom Tracker aussperren">IPs sperren</a></td></tr>
               <tr><td class="tablea"><a style="display:block;padding:4px;" href="staff.php?act=upstats" title="Schnelle &Uuml;bersicht &uuml;ber die Uploadaktivit&auml;ten">Uploader-Stats</a></td></tr>

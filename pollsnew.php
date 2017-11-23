@@ -23,6 +23,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
 stdhead("Umfrageverwaltung");
 begin_frame("Umfragen", FALSE, "100%");
 begin_table(TRUE); 
+
+$a = array();
+$a[] = "";
+$a[] = "";
+$a[] = "";
+$a[] = "";
+function clean_answers_array($answers){
+		$c = count($answers);
+		$answer_arr = array();
+		$i = 0;
+		while($i < $c){
+			$answer_arr[$i] = NULL;
+			$i++;
+		}
+		$empty_array = array_map(function($value){
+			return $value === NULL ? "" : $value;
+		}, $answer_arr);
+		return $empty_array;
+	}
+var_dump($a);
+
 $pollsnew = new polls(false);
 $pollsnew->getData();
 //$test = $pollsnew->has_answered(14,111);
@@ -36,6 +57,8 @@ foreach($pollsnew->data as $poll){
 	}*/
 	foreach($poll['result'] as $questionid => $users){
 		$c = count($users);
+		if($users[0] == "")
+			$c = 0;
 		$u = implode(", ", $users);
 		//foreach($users as $key => $value){
 			// die einzelne uid
@@ -51,28 +74,17 @@ foreach($pollsnew->data as $poll){
 }
 	// EXPERIMENT!
 	////////
-	$frage = "neuste testfrage 10 antworten";
-	/*$antwort = array();
-	for ($x = 0; $x <= 9; $x++) {
+	/*$frage = "neuste testfrage 3 antworten";
+	$antwort = array();
+	for ($x = 0; $x <= 2; $x++) {
 		$antwort[] = "NEUE Antwort Nr. " . $x;
 	} 
 	$pollsnew->add_poll($frage,$antwort);*/
-	/*$pollsnew->add_answer(18,0,1);
-	$pollsnew->add_answer(18,0,2);
-	$pollsnew->add_answer(18,0,3);
-	$pollsnew->add_answer(18,0,4);
-	$pollsnew->add_answer(18,0,5);
-	$pollsnew->add_answer(18,1,6);
-	$pollsnew->add_answer(18,1,7);
-	$pollsnew->add_answer(18,1,8);
-	$pollsnew->add_answer(18,1,9);
-	$pollsnew->add_answer(18,1,10);
-	$pollsnew->add_answer(18,2,11);
-	$pollsnew->add_answer(18,2,12);
-	$pollsnew->add_answer(18,2,13);
-	$pollsnew->add_answer(18,3,14);
-	$pollsnew->add_answer(18,3,15);
-	$pollsnew->add_answer(18,3,16);*/
+	
+	//$pollsnew->add_answer(19,1,4);
+	//$pollsnew->add_answer(20,0,2);
+	//$pollsnew->add_answer(20,0,3);
+	//$pollsnew->delete_answer(20,3);
 	
 	////////
 end_table();
