@@ -15,17 +15,22 @@
 require "include/bittorrent.php";
 userlogin();
 loggedinorreturn();
+// wichtige aufgabe für ggf rework:
+// wann ist es nötig $polls->data verfügbar zu haben?
+// welche internen methoden brauchen $this->data?
+// eventuell methode hinzufügen um präziser daten zu bekommen.
+// beispiel:
+// $action = vote
+// wie die frage lautet ist für diese methode irrelevant.
 $polls = new polls(false);
 $polls->getData();
-//if (get_user_class() < UC_ADMINISTRATOR)
-//	stderr("Error", "Access denied.");
 
 if(isset($_GET['action']))
 	$action = $_GET['action'];
 else
 	$action = "view";
 
-switch ($action) {
+switch($action){
 	case "view":
 		break;
 	case "vote":
@@ -102,9 +107,6 @@ switch ($action) {
 		break;
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST"){
-	
-}
 stdhead("Umfrageverwaltung");
 if($action == "view"){
 	begin_frame("Umfragen - <a href=\"" . $_SERVER['PHP_SELF'] . "?action=create\">[Neue Umfrage]</a>", FALSE, "100%");
@@ -127,8 +129,7 @@ if($action == "view"){
 			"                    </td>".
 			"                </tr>".
 			"                <tr>\n".
-			"                    <td width=\"100%\" class=\"tablea\"><b>Insgesamt haben " . $tvotes . " Nutzer an der Umfrage teilgenommen</b>\n".
-			"";
+			"                    <td width=\"100%\" class=\"tablea\"><b>Insgesamt haben " . $tvotes . " Nutzer an der Umfrage teilgenommen</b>\n";
 		foreach($poll['answers'] as $k => $a){
 			if($poll['result'][$k][0] != "")
 				$c = count($poll['result'][$k]);
@@ -180,8 +181,8 @@ if($action == "view"){
 		"                </tr>\n".
 		"                <tr>\n".
 		"                    <td class=\"tableb\" align=\"left\">Antworten:</td>\n".
-		"                    <td class=\"tablea\" align=\"left\"><div id=\"pollq\"><input type=\"text\" name=\"answers[]\" size=\"40\"></div><br>".
-		"                    <input type=\"button\" value=\"Neue Antwort\" onClick=\"addPollQuestionInput('pollq');\"></td>\n".
+		"                    <td class=\"tablea\" align=\"left\"><div id=\"polla\"><input type=\"text\" name=\"answers[]\" size=\"40\"></div><br>".
+		"                    <input type=\"button\" value=\"Neue Antwort\" onClick=\"addPollAnswerInput('polla');\"></td>\n".
 		"                </tr>\n".		
 		"                <tr>\n".
 		"                    <td class=\"tablea\" colspan=\"2\" align=\"center\"><input type=\"submit\" value=\"Add it!\" class=\"btn\"></td>\n".

@@ -123,10 +123,6 @@ class polls
 		$this->add_answer($poll,$answer,$cheatid);
 	}
 
-	public function edit_answer(){
-	
-	}
-
 	public function get_answer_count($poll){
 		$tc = 0;
 		foreach($this->data[$poll]['result'] as $uarr){
