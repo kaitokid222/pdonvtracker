@@ -951,7 +951,8 @@ function commenttable($rows)
 
 function searchfield($s)
 {
-    return preg_replace(array('/[^a-z0-9]/si', '/^\s*/s', '/\s*$/s', '/\s+/s'), array(" ", "", "", " "), $s);
+    //return preg_replace(array('/[^a-z0-9]/si', '/^\s*/s', '/\s*$/s', '/\s+/s'), array(" ", "", "", " "), $s);
+    return $s;
 } 
 
 function genrelist()

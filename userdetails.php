@@ -210,9 +210,6 @@ $baduser = $acctdata["baduser"];
 begin_frame("<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "personal.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\">  Benutzerprofil von " . $user["username"] . get_user_icons($user, true) . "&nbsp;" . $country, false, "750px");
 begin_table(true);
 
-?>
-<?php
-
 if (!$enabled)
     print("<tr><td colspan=\"2\" class=\"tablea\"><b>Dieser Account wurde gesperrt</b></td></tr>\n");
 elseif ($CURUSER["id"] <> $user["id"]) {
@@ -377,7 +374,7 @@ function togglediv()
     print("<input type=hidden name='userid' value='$id'>\n");
     print("<input type=hidden name='returnto' value='userdetails.php?id=$id&" . SID . "'>\n");
     print("<table class=tableinborder border=0 cellspacing=1 cellpadding=4 style=\"width:100%;\">\n");
-    print("<tr><td class=tableb>Titel</td><td class=tablea colspan=2 align=left><input type=text size=60 name=title value=\"" . htmlspecialchars($user[title]) . "\"></tr>\n");
+    print("<tr><td class=tableb>Titel</td><td class=tablea colspan=2 align=left><input type=text size=60 name=title value=\"" . htmlspecialchars($user['title']) . "\"></tr>\n");
     $avatar = htmlspecialchars($user["avatar"]);
     print("<tr><td class=tableb>Avatar&nbsp;URL</td><td class=tablea colspan=2 align=left><input type=text size=60 name=avatar value=\"$avatar\"></tr>\n");
     print("<tr><td class=tableb>Start/Stop&nbsp;Events</td><td class=tablea colspan=2 align=left><a href=\"startstoplog.php?op=user&amp;uid=" . $user["id"] . "\">Ereignisse anzeigen</a></td></tr>\n");

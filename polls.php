@@ -150,8 +150,7 @@ if($action == "view"){
 				"                    <td width=\"100%\" class=\"tablea\">\n".
 				"                    <p><b>Optionen:<br>".
 				"                        <a href=\"" . $_SERVER['PHP_SELF'] . "?action=delete&pollid=" . $poll['id'] . "\">Diese Umfrage löschen</a><br>\n".
-				"                        <a href=\"" . $_SERVER['PHP_SELF'] . "?action=wipevotes&pollid=" . $poll['id'] . "\">Alle Antworten löschen</a><br>\n".
-				"                        <a href=\"" . $_SERVER['PHP_SELF'] . "?action=edit&pollid=" . $poll['id'] . "\">Diese Umfrage bearbeiten</a\n>".
+				"                        <a href=\"" . $_SERVER['PHP_SELF'] . "?action=wipevotes&pollid=" . $poll['id'] . "\">Alle Antworten löschen</a>\n".
 				"                    </b></p>\n".
 				"                    </td>\n".
 				"                </tr>\n";

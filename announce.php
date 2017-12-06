@@ -42,19 +42,11 @@ if (!function_exists('hex2bin')){
 	}
 }
 
-/*function err($msg){
-    //benc_resp(array("failure reason" => array(type => "string", value => $msg)));
-    benc_resp(array("failure reason" => array("type" => "string", "value" => $msg)));
-    //hit_end();
-    exit();
-}*/
-
 function err($msg) {
    return benc_resp_raw("d".benc_str("failure reason").benc_str($msg)."e");
 }
 
 function benc_resp($d){
-    //benc_resp_raw(benc(array(type => "dictionary", value => $d)));
     benc_resp_raw(benc(array("type" => "dictionary", "value" => $d)));
 }
 
@@ -387,9 +379,8 @@ if ($event == "stopped")
 		//$announcedelay = $qry->fetchObj();
 	}*/
     $announcedelay = @mysql_fetch_assoc(@mysql_query("SELECT * FROM `announcedelay` WHERE `peer_id`=".sqlesc($peer_id)));
-    if (is_array($announcedelay)) {
-    //if (is_object($announcedelay)) {
-        if ($announcedelay['first'] && $announcedelay['second'] && $announcedelay['quantity']) {
+    if (is_array($announcedelay)){
+        if ($announcedelay['first'] && $announcedelay['second'] && $announcedelay['quantity']){
             $duration1 = $announcedelay['second']-$announcedelay['first'];
             $duration2 = time() - $announcedelay['second'];
             if ($duration1 < 310 && $duration2 < 10 && $uploaded - $announcedelay['quantity'] == 0) {
@@ -397,8 +388,7 @@ if ($event == "stopped")
             }
         }
     }
-    
-    //$resp = benc_resp(array("failure reason" => array("type" => "string", "value" => "Kein Fehler - Torrent gestoppt.")));
+    $resp = benc_resp(array("failure reason" => array("type" => "string", "value" => "Kein Fehler - Torrent gestoppt.")));
 }
 else
 {

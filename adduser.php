@@ -28,10 +28,11 @@
 
 require "include/bittorrent.php";
 userlogin();
-//dbconn();
 loggedinorreturn();
+
 if (get_user_class() < UC_ADMINISTRATOR)
 	stderr("Error", "Access denied.");
+
 if ($_SERVER["REQUEST_METHOD"] == "POST"){
     if ($_POST["username"] == "" || $_POST["password"] == "" || $_POST["email"] == "")
         stderr("Fehler", "Formulardaten unvollständig.");
@@ -59,21 +60,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
     header("Location: " . $BASEURL . "/userdetails.php?id=" . $GLOBALS['DB']->lastInsertId());
     die;
 }
+
 stdhead("Benutzer hinzufügen");
-
 begin_frame("Benutzeraccount anlegen", FALSE, "400px");
+begin_table(TRUE);
 ?>
-
 <form method="post" action="<?=$_SERVER['PHP_SELF'] ?>">
-<?php begin_table(TRUE); ?>
 <tr><td class="tableb">Benutzername:</td><td class="tablea"><input type="text" name="username" size="40"></td></tr>
 <tr><td class="tableb">Passwort:</td><td class="tablea"><input type="password" name="password" size="40"></td></tr>
 <tr><td class="tableb">Passwort wdh.:</td><td class="tablea"><input type="password" name="password2" size="40"></td></tr>
 <tr><td class="tableb">E-Mail:</td><td class="tablea"><input type="text" name="email" size="40"></td></tr>
 <tr><td class="tablea" colspan="2" style="text-align:center"><input type="submit" value="Okay" class="btn"></td></tr>
-<?php end_table(); ?>
 </form>
 <?php
+end_table();
 end_frame();
 stdfoot();
 ?>

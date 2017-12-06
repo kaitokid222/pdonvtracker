@@ -26,17 +26,32 @@
 // +--------------------------------------------------------------------------+
 */
 
-require "include/bittorrent.php";
-dbconn(false);
-loggedinorreturn();
-$id = $_GET["id"];
-if (!is_valid_id($id))
-    die("Ungültige NFO-ID!");
+require_once "include/bittorrent.php";
 
-if ($_GET["dl"]=="1") {
-    $r = mysql_query("SELECT nfo FROM torrents WHERE id=$id") or sqlerr();
+//dbconn(false);
+userlogin();
+loggedinorreturn();
+
+if(isset($_GET['id'])){
+	if(is_valid_id($_GET['id']))
+		$id = $_GET["id"];
+	else
+		die("Ungültige NFO-ID!");
+}else
+	die("ID nicht lesbar!");
+/*$id = $_GET["id"];
+if (!is_valid_id($id))
+    die("Ungültige NFO-ID!");*/
+
+if($_GET["dl"]=="1"){
+	$qry = $GLOBALS['DB']->prepare('SELECT nfo FROM torrents WHERE id = :id');
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$qry->execute();
+	$a = $qry->fetchAll()[0];
+	$nfo = $a["nfo"];
+    /*$r = mysql_query("SELECT nfo FROM torrents WHERE id=$id") or sqlerr();
     $a = mysql_fetch_assoc($r) or die("Puke");
-    $nfo = $a["nfo"];
+    $nfo = $a["nfo"];*/
     header("Pragma: private");
     header("Expires: 0");
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");            
@@ -47,16 +62,28 @@ if ($_GET["dl"]=="1") {
     die();
 }
 
-$r = mysql_query("SELECT name FROM torrents WHERE id=$id") or sqlerr();
-$a = mysql_fetch_assoc($r) or die("Puke");
+$qry = $GLOBALS['DB']->prepare('SELECT name FROM torrents WHERE id = :id');
+$qry->bindParam(':id', $id, PDO::PARAM_INT);
+$qry->execute();
+$a = $qry->fetchAll()[0];
+/*$r = mysql_query("SELECT name FROM torrents WHERE id=$id") or sqlerr();
+$a = mysql_fetch_assoc($r) or die("Puke");*/
 
 stdhead();
-begin_frame("NFO zu <a href=details.php?id=$id>$a[name]</a>\n", FALSE, "500px");
+begin_frame("NFO zu <a href=details.php?id=" . $id . ">" . $a['name'] . "</a>\n", FALSE, "500px");
 begin_table(TRUE);
-print("<tr><td class=tableb style=\"text-align: center\"><a href=\"viewnfo.php?id=$id&amp;dl=1\">Download NFO</a></td></tr>\n");
-print("<tr><td class=tablea style=\"text-align: center\">\n");
-print("<div style=\"padding:5px;background-color:white;\"><img src=\"".$GLOBALS["BITBUCKET_DIR"]."/nfo-$id.png\" alt=\"NFO zu $a[name]\"></div>\n");
-print("</td></tr>\n");
+print("<tr>\n".
+	"    <td class=tableb style=\"text-align: center\">\n".
+	"        <a href=\"viewnfo.php?id=" . $id . "&amp;dl=1\">Download NFO</a>\n".
+	"    </td>\n".
+	"</tr>\n".
+	"<tr>\n".
+	"    <td class=tablea style=\"text-align: center\">\n".
+	"        <div style=\"padding:5px;background-color:white;\">\n".
+	"            <img src=\"".$GLOBALS["BITBUCKET_DIR"]."/nfo-" . $id . ".png\" alt=\"NFO zu " . $a['name'] . "\">\n".
+	"        </div>\n".
+	"    </td>\n".
+	"</tr>\n");
 end_table();
 end_frame();
 stdfoot();
