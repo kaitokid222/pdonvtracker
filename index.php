@@ -286,34 +286,75 @@ if ($CURUSER)
 	// eof umfrage
 }
 
+// start stats
+$max = $GLOBALS["MAX_USERS"]/1000;
+echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+	"    <tr class=\"tabletitle\" width=\"100%\">\n".
+	"        <td colspan=\"10\" width=\"100%\"><span class=\"normalfont\"><center><b> Statistik (Tracker) </b></center></span></td>\n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td width=\"100%\" class=\"tablea\">\n".
+	"            <center>\n".
+	"                <table border=\"0\" cellspacing=\"1\" cellpadding=\"5\" class=\"tableinborder\">\n".
+	"                    <tr>\n".
+	"                        <td class=\"tableb\" align=\"left\">Max. Mitgliederzahl</td>\n".
+	"                        <td align=\"right\" class=\"tablea\">" . number_format($max,3) . "</td>\n".
+	"                    </tr>\n";
+if($CURUSER){
+	echo "                    <tr>\n".
+		"                        <td class=\"tableb\" align=\"left\">Registrierte Mitglieder</td>\n".
+		"                        <td align=\"right\" class=\"tablea\">" . $registered . "</td>\n".
+		"                    </tr>\n".
+		"                    <tr>\n".
+		"                        <td class=\"tableb\" align=\"left\">&nbsp;&nbsp;Unbest&auml;tigte Mitglieder</td>\n".
+		"                        <td align=\"right\" class=\"tablea\">" . $unverified . "</td>\n".
+		"                    </tr>\n".
+		"                    <tr>\n".
+		"                        <td class=\"tableb\" align=\"left\">&nbsp;&nbsp;Deaktivierte Accounts</td>\n".
+		"                        <td align=\"right\" class=\"tablea\">" . $inactive . "</td>\n".
+		"                    </tr>\n";
+}
+echo "                    <tr>\n".
+	"                        <td class=\"tableb\" align=\"left\">Torrents</td>\n".
+	"                        <td align=\"right\" class=\"tablea\">" . number_format($torrents) . "</td>\n".
+	"                    </tr>\n".
+	"                    <tr>\n".
+	"                        <td class=\"tableb\" align=\"left\">&nbsp;&nbsp;&nbsp;Aktive Torrents</td>\n".
+	"                        <td align=\"right\" class=\"tablea\">" . number_format($torrents-$dead) . "</td>\n".
+	"                    </tr>\n".
+	"                    <tr>\n".
+	"                        <td class=\"tableb\" align=\"left\">&nbsp;&nbsp;&nbsp;Inaktive Torrents</td>\n".
+	"                        <td align=\"right\" class=\"tablea\">" . number_format($dead) . "</td>\n".
+	"                    </tr>\n";
+if(isset($peers)){
+	echo "                    <tr>\n".
+		"                        <td class=\"tableb\" align=\"left\">Peers</td>\n".
+		"                        <td align=\"right\" class=\"tablea\">" . $peers . "</td>\n".
+		"                    </tr>\n".
+		"                    <tr>\n".
+		"                        <td class=\"tableb\" align=\"left\">&nbsp;&nbsp;&nbsp;Seeders</td>\n".
+		"                        <td align=\"right\" class=\"tablea\">" . $seeders . "</td></tr>\n".
+		"                    <tr>\n".
+		"                        <td class=\"tableb\" align=\"left\">&nbsp;&nbsp;&nbsp;Leechers</td>\n".
+		"                        <td align=\"right\" class=\"tablea\">" . $leechers . "</td></tr>\n".
+		"                    <tr>\n".
+		"                        <td class=\"tableb\" align=\"left\">&nbsp;&nbsp;&nbsp;Seeder/Leecher Ratio (%)</td>\n".
+		"                        <td align=\"right\" class=\"tablea\">" . $ratio . "</td></tr>\n".
+		"                    <tr>\n".
+		"                        <td class=\"tableb\" align=\"left\">Total Runtergeladen</td>\n".
+		"                        <td align=\"right\" class=\"tablea\">" . $totaldown . "</td></tr>\n".
+		"                    <tr>\n".
+		"                        <td class=\"tableb\" align=\"left\">Total Hochgeladen</td>\n".
+		"                        <td align=\"right\" class=\"tablea\">" . $totalup . "</td>\n".
+		"                    </tr>\n";
+}
+echo "                </table>\n".
+	"            </center>\n".
+	"        </td>\n".
+	"    </tr>\n".
+	"</table>\n".// eof stats
+	"<br>\n";
 ?>
-<table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
- <tr class="tabletitle" width="100%">
-  <td colspan="10" width="100%"><span class="normalfont"><center><b> Statistik (Tracker) </b></center></span></td> 
- </tr><tr><td width="100%" class="tablea">
-<center>
-<table border="0" cellspacing="1" cellpadding="5" class="tableinborder">
-        <tr><td class="tableb" align="left">Max. Mitgliederzahl</td><td align="right" class="tablea"><?php $max=$GLOBALS["MAX_USERS"]/1000; echo number_format($max,3); ?></td></tr>
-        <?php if ($CURUSER) { ?>
-<tr><td class="tableb" align="left">Registrierte Mitglieder</td><td align="right" class="tablea"><?=$registered?></td></tr>
-<tr><td class="tableb" align="left">&nbsp;&nbsp;Unbest&auml;tigte Mitglieder</td><td align="right" class="tablea"><?=$unverified?></td></tr>
-<tr><td class="tableb" align="left">&nbsp;&nbsp;Deaktivierte Accounts</td><td align="right" class="tablea"><?=$inactive?></td></tr>
-        <?php } ?>
-<tr><td class="tableb" align="left">Torrents</td><td align="right" class="tablea"><?=number_format($torrents)?></td></tr>
-<tr><td class="tableb" align="left">&nbsp;&nbsp;&nbsp;Aktive Torrents</td><td align="right" class="tablea"><?=number_format($torrents-$dead)?></td></tr>
-<tr><td class="tableb" align="left">&nbsp;&nbsp;&nbsp;Inaktive Torrents</td><td align="right" class="tablea"><?=number_format($dead)?></td></tr>
-<?php if (isset($peers)) { ?>
-<tr><td class="tableb" align="left">Peers</td><td align="right" class="tablea"><?=$peers?></td></tr>
-<tr><td class="tableb" align="left">&nbsp;&nbsp;&nbsp;Seeders</td><td align="right" class="tablea"><?=$seeders?></td></tr>
-<tr><td class="tableb" align="left">&nbsp;&nbsp;&nbsp;Leechers</td><td align="right" class="tablea"><?=$leechers?></td></tr>
-<tr><td class="tableb" align="left">&nbsp;&nbsp;&nbsp;Seeder/Leecher Ratio (%)</td><td align="right" class="tablea"><?=$ratio?></td></tr>
-<tr><td class="tableb" align="left">Total Runtergeladen</td><td align="right" class="tablea"><?=$totaldown?></td></tr>
-<tr><td class="tableb" align="left">Total Hochgeladen</td><td align="right" class="tablea"><?=$totalup?></td></tr>
-<?php } ?>
-</table>
-</center>
-</td></tr></table>
-<br>
 <table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
  <tr class="tabletitle" width="100%">
   <td colspan="10" width="100%"><span class="normalfont"><center><b> Serverauslastung </b></center></span></td> 
