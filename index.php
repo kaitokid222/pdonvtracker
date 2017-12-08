@@ -30,31 +30,6 @@ ob_start("ob_gzhandler");
 require "include/bittorrent.php";
 //userlogin();
 dbconn();
-
-$dt = time() - 200;
-$dt = sqlesc(get_date_time($dt));
-//$maxdt = get_date_time(time() - 21600*28);
-$res = mysql_query("SELECT id, username, class, donor, warned, added, enabled FROM users WHERE last_access >= $dt AND last_access <= NOW() ORDER BY class DESC,username") or print(mysql_error());
-$activeusers_no = mysql_num_rows($res);
-$activeusers = "";
-while ($arr = mysql_fetch_assoc($res))
-{
-	
-    if ($activeusers) $activeusers .= ",\n";
-    $arr["username"] = "<font class=".get_class_color($arr["class"]).">" . $arr["username"] . "</font>";
-    if ($CURUSER)
-        $activeusers .= "<a href=userdetails.php?id=" . $arr["id"] . "><b>" . $arr["username"] . "</b></a>";
-    else
-        $activeusers .= "<b>$arr[username]</b>";
-    
-    $activeusers .= "&nbsp;".get_user_icons($arr);
-}
-
-if (!$activeusers)
-    $activeusers = "Keine aktiven Mitglieder in den letzten 15 Minuten.";
-
-
-
 stdhead();
 ?>
 <table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
@@ -153,21 +128,59 @@ if (mysql_num_rows($res) > 0)
 
 ?>
 </td></tr></table>
-<br>
-<table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
- <tr class="tabletitle" width="100%">
-        <td colspan="10" width="100%"><span class="normalfont"><center><img src="<?=$GLOBALS["PIC_BASE_URL"]?>user.png" width="22" height="22" alt="" style="vertical-align: middle;"> <b>Momentan aktive Mitglieder (<?=$activeusers_no?>) </b></center></span></td> 
- </tr><tr><td width="100%" class="tablea"><?=$activeusers?></td></tr></table>
-<br>
 <?php
+// start active users
+$dt = time() - 200;
+$dt = get_date_time($dt);
+$qry = $GLOBALS['DB']->prepare('SELECT id, username, class, donor, warned, added, enabled FROM users WHERE last_access >= :dt AND last_access <= NOW() ORDER BY class DESC,username');
+$qry->bindParam(':dt', $dt, PDO::PARAM_INT);
+$qry->execute();
+if(!$qry->rowCount())
+	$activeusers_no = 0;
+else{
+	$activeusers_no = $qry->rowCount();
+	$data = $qry->FetchAll();
+}
 
-if ($CURUSER)
-{    
-    if ($GLOBALS["ENABLESHOUTCAST"]) {
-        echo "<td valign=\"top\" width=\"50%\">";
-        sc_infobox();
-        echo "</td>\n";
-    }
+$activeusers = "";
+if($activeusers_no > 0){
+	foreach($data as $arr){
+		if ($activeusers)
+			$activeusers .= ",\n";
+		$arr['username'] = "<font class=" . get_class_color($arr['class']) . ">" . $arr['username'] . "</font>";
+		if ($CURUSER)
+			$activeusers .= "<a href=userdetails.php?id=" . $arr['id'] . "><b>" . $arr['username'] . "</b></a>";
+		else
+			$activeusers .= "<b>" . $arr['username'] . "</b>";
+		$activeusers .= "&nbsp;".get_user_icons($arr);
+	}
+}else
+    $activeusers = "Keine aktiven Mitglieder in den letzten 15 Minuten.";
+
+echo "<br>\n".
+	"<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+	"    <tr class=\"tabletitle\" width=\"100%\">\n".
+	"        <td colspan=\"10\" width=\"100%\">\n".
+	"            <span class=\"normalfont\">\n".
+	"            <center>\n".
+	"                <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "user.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\"><b>Momentan aktive Mitglieder (" . $activeusers_no . ") </b>\n".
+	"            </center>\n".
+	"            </span>\n".
+	"        </td>\n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td width=\"100%\" class=\"tablea\">" . $activeusers . "</td>\n".
+	"    </tr>\n".
+	"</table>\n".
+	"<br>\n";
+// eof active users
+
+if($CURUSER){
+	if($GLOBALS["ENABLESHOUTCAST"]){
+		echo "<td valign=\"top\" width=\"50%\">";
+		sc_infobox();
+		echo "</td>\n";
+	}
 
 	// start umfragemodul
 	$polls = new polls();
