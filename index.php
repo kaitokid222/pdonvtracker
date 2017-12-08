@@ -28,107 +28,90 @@
 
 ob_start("ob_gzhandler");
 require "include/bittorrent.php";
-//userlogin();
-dbconn();
+userlogin();
+
 stdhead();
-?>
-<table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
- <tr class="tabletitle" width="100%">
-  <td colspan="10" width="100%"><span class="normalfont"><center><b> <img src="<?=$GLOBALS["PIC_BASE_URL"]?>star16.gif"> <a href="donate.php">Spende, um den Tracker zu erhalten!</a> <img src="<?=$GLOBALS["PIC_BASE_URL"]?>star16.gif"></b></center></span></td> 
- </tr></table>
-<br>
-<script type="text/javascript">
-function expandCollapse(newsId)
-{
-    var plusMinusImg = document.getElementById("plusminus"+newsId);
-    var detailRow = document.getElementById("details"+newsId);
+echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+	"    <tr class=\"tabletitle\" width=\"100%\">\n".
+	"        <td colspan=\"10\" width=\"100%\">\n".
+	"            <span class=\"normalfont\"><center>\n".
+	"            <b><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"> <a href=\"donate.php\">Spende, um den Tracker zu erhalten!</a> <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"></b>\n".
+	"            </center></span>\n".
+	"        </td>\n". 
+	"    </tr>\n".
+	"</table>\n".
+	"<br>\n". // Start Newsmodul
+	"<script language='JavaScript' src='js/expandCollapse.js' type='text/javascript'></script>".
+	"<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+	"    <tr class=\"tabletitle\" width=\"100%\">\n".
+	"        <td colspan=\"10\" width=\"100%\"><span class=\"normalfont\">\n".
+	"            <center>\n".
+	"            <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "newsticker.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\"> <b>Neuigkeiten\n";
+if(get_user_class() >= UC_ADMINISTRATOR)
+	echo " <a href=\"news.php\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "news_add.png\" width=\"22\" height=\"22\" alt=\"News hinzufügen\" title=\"News hinzufügen\" style=\"vertical-align: middle;border:none\"></a>";
+echo "            </b>\n".
+	"            </center>\n".
+	"        </span></td> \n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td width=\"100%\" class=\"tablea\">\n";
+$qry = $GLOBALS['DB']->prepare('SELECT news.*, users.username as pname FROM news LEFT JOIN users ON users.id = news.userid WHERE ADDDATE(news.added, INTERVAL 45 DAY) > NOW() ORDER BY added DESC LIMIT 10');
+$qry->execute();
+if($qry->rowCount() > 0){
+	$data = $qry->FetchAll();
+	$first = TRUE;
+	begin_table(TRUE);
+	foreach($data as $array){
+		$news_date=date("Y-m-d",strtotime($array['added']));
+		$news_year=substr($news_date,0,4);
+		$news_month=substr($news_date,5,2);
+		$news_day=substr($news_date,8,2);
+		$news_date=$news_day . "." . $news_month . "." . $news_year;
+		$news_day=date("l",mktime(0,0,0,$news_month,$news_day,$news_year));
+		if($news_day == "Monday")
+			$news_day="Montag";
+		if($news_day == "Tuesday")
+			$news_day="Dienstag";
+		if($news_day == "Wednesday")
+			$news_day="Mittwoch";
+		if($news_day == "Thursday")
+			$news_day="Donnerstag";
+		if($news_day == "Friday")
+			$news_day="Freitag";
+		if($news_day == "Saturday")
+			$news_day="Samstag";
+		if($news_day == "Sunday")
+			$news_day="Sonntag";
 
-    if (detailRow.style.display == "none") {
-        plusMinusImg.src = "<?=$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]?>/minus.gif";
-        detailRow.style.display = "table-row";
-    } else {
-        plusMinusImg.src = "<?=$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]?>/plus.gif";
-        detailRow.style.display = "none";
-    }
+		echo "<tr>\n".
+			"    <td class=tablecat align=left>\n";
+		if ($first)
+			echo "<a href=\"javascript:expandCollapse('" . $array['id'] . "');\"><img id=\"plusminus" . $array['id'] . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/minus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>\n";
+		else
+			echo "<a href=\"javascript:expandCollapse('" . $array['id'] . "');\"><img id=\"plusminus" . $array['id'] . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/plus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>\n";
+		echo "<b>".htmlspecialchars($array["title"])."</b> ".
+			"(Von <a class=\"altlink\" href=\"userdetails.php?id=" . $array['userid'] . "\">" . $array['pname'] . "</a>, " . $news_day . ", " . $news_date . ") ";
+		if (get_user_class() >= UC_ADMINISTRATOR){
+			echo " <font class=\"middle\"><a class=\"altlink\" href=\"news.php?action=edit&newsid=" . $array['id'] . "&returnto=" . urlencode($_SERVER['PHP_SELF']) . "\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."edit.png\" width=\"16\" height=\"16\" alt=\"Bearbeiten\" title=\"Bearbeiten\" border=\"0\" style=\"vertical-align:bottom\"></font>".
+				" <font class=\"middle\"><a class=\"altlink\" href=\"news.php?action=delete&newsid=" . $array['id'] . "&returnto=" . urlencode($_SERVER['PHP_SELF']) . "\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."editdelete.png\" width=\"16\" height=\"16\" alt=\"L&ouml;schen\" title=\"L&ouml;schen\" border=\"0\" style=\"vertical-align:bottom\"></a></font>";
+		}
+		if ($first)
+			echo "<tr id=\"details" . $array['id'] . "\" style=\"display:table-row;\">";
+		else
+			echo "<tr id=\"details" . $array['id'] . "\" style=\"display:none;\">";
+		echo "    <td class=\"tablea\" align=\"left\">\n".
+			"<div align=\"justify\">" . stripslashes($array['body']);
+		echo "    </td>".
+			"</tr>";
+		$first = FALSE;
+	}
+	end_table();
 }
+echo "        </td>\n".
+	"    </tr>\n".
+	"</table>\n";
+// eof newsmodul
 
-</script>
-<table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
- <tr  class="tabletitle" width="100%">
-        <td colspan="10" width="100%"><span class="normalfont"><center><img src="<?=$GLOBALS["PIC_BASE_URL"]?>newsticker.png" width="22" height="22" alt="" style="vertical-align: middle;"> <b>Neuigkeiten 
-<?php
-
-
-if (get_user_class() >= UC_ADMINISTRATOR)
-        print(" <a href=\"news.php\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."news_add.png\" width=\"22\" height=\"22\" alt=\"News hinzufügen\" title=\"News hinzufügen\" style=\"vertical-align: middle;border:none\"></a>");
-?>
-
-</b></center></span></td> 
- </tr><tr><td width="100%" class="tablea">
- <?php
-$res = mysql_query("SELECT * FROM news WHERE ADDDATE(added, INTERVAL 45 DAY) > NOW() ORDER BY added DESC LIMIT 10") or sqlerr(__FILE__, __LINE__);
-
-if (mysql_num_rows($res) > 0)
-{
-    $first = TRUE;
-    begin_table(TRUE);
-    while($array = mysql_fetch_array($res))
-    {
-        $user_id=$array['userid'];
-        $res_username=mysql_query("SELECT username FROM users WHERE id=$user_id") or sqlerr(__FILE__, __LINE__);
-        $username=mysql_fetch_array($res_username);
-    
-        $news_date=date("Y-m-d",strtotime($array['added']));
-        $news_year=substr($news_date,0,4);
-        $news_month=substr($news_date,5,2);
-        $news_day=substr($news_date,8,2);
-    
-        $news_date=$news_day . "." . $news_month . "." . $news_year;
-        $news_day=date("l",mktime(0,0,0,$news_month,$news_day,$news_year));
-    
-        if ($news_day == "Monday")
-            $news_day="Montag";
-        if ($news_day == "Tuesday")
-            $news_day="Dienstag";
-        if ($news_day == "Wednesday")
-            $news_day="Mittwoch";
-        if ($news_day == "Thursday")
-            $news_day="Donnerstag";
-        if ($news_day == "Friday")
-            $news_day="Freitag";
-        if ($news_day == "Saturday")
-            $news_day="Samstag";
-        if ($news_day == "Sunday")
-            $news_day="Sonntag";
-
-
-        echo "<tr><td class=tablecat align=left>";
-        if ($first)
-			print("<a href=\"javascript:expandCollapse('" . $array['id'] . "');\"><img id=\"plusminus" . $array['id'] . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/minus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>\n");
-        else
-			print("<a href=\"javascript:expandCollapse('" . $array['id'] . "');\"><img id=\"plusminus" . $array['id'] . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/plus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>\n");
-        print("<b>".htmlspecialchars($array["title"])."</b> ");
-        print("(Von <a class=altlink href=userdetails.php?id=$user_id>" . $username['username'] . "</a>, " . $news_day . ", " . $news_date . ") ");
-        if (get_user_class() >= UC_ADMINISTRATOR)
-        {
-    print(" <font class=middle><a class=altlink href=news.php?action=edit&newsid=" . $array['id'] . "&returnto=" . urlencode($_SERVER['PHP_SELF']) . "><img src=\"".$GLOBALS["PIC_BASE_URL"]."edit.png\" width=\"16\" height=\"16\" alt=\"Bearbeiten\" title=\"Bearbeiten\" border=\"0\" style=\"vertical-align:bottom\"></font>");
-            print(" <font class=middle><a class=altlink href=news.php?action=delete&newsid=" . $array['id'] . "&returnto=" . urlencode($_SERVER['PHP_SELF']) . "><img src=\"".$GLOBALS["PIC_BASE_URL"]."editdelete.png\" width=\"16\" height=\"16\" alt=\"L&ouml;schen\" title=\"L&ouml;schen\" border=\"0\" style=\"vertical-align:bottom\"></a></font>");
-        }
-    
-        if ($first)
-            print("<tr id=\"details" . $array['id'] . "\" style=\"display:table-row;\">");
-        else
-        print("<tr id=\"details" . $array['id'] . "\" style=\"display:none;\">");
-        print("<td class=\"tablea\" align=\"left\"><div align=\"justify\">" . stripslashes($array['body']));
-        print("</td></tr>");
-        $first = FALSE;
-    }
-    end_table();
-}
-
-?>
-</td></tr></table>
-<?php
 // start active users
 $dt = time() - 200;
 $dt = get_date_time($dt);
@@ -339,44 +322,41 @@ echo "                </table>\n".
 	"    </tr>\n".
 	"</table>\n".// eof stats
 	"<br>\n";
-?>
-<table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
- <tr class="tabletitle" width="100%">
-  <td colspan="10" width="100%"><span class="normalfont"><center><b> Serverauslastung </b></center></span></td> 
- </tr><tr><td width="100%" class="tablea">
- <center>
- <p>Webserver-Prozesse:</p>
- <table class="tableinborder" border="0" cellpadding="0" cellspacing="1" width="402">
-   <tr>
-        <td align="left" style="padding: 0px; background-image: url('<?=$GLOBALS["PIC_BASE_URL"]?>loadbarbg.gif'); background-repeat: repeat-x">
-
-<?php 
-
-    $percent = min(100, round(exec('ps ax | grep -c apache2') / 150 * 100));
-    if ($percent <= 70) $pic = "loadbargreen.gif";
-    elseif ($percent <= 90) $pic = "loadbaryellow.gif";
-    else $pic = "loadbarred.gif";
-    $width = $percent * 4;
-    print("<img height=15 width=$width src=\"".$GLOBALS["PIC_BASE_URL"].$pic."\" alt='$percent%'>");
-
-
-?>
-      </td>
-    </tr>
-  </table>
-  <p>Systemauslastung (Durchschnittswerte): <?php
-  $loadavg = explode(" ", exec("cat /proc/loadavg"));
-  echo $loadavg[0]*100, "% (1min) - ", $loadavg[1]*100, "% (5min) - ", $loadavg[2]*100, "% (15min)";
-  
-  ?></p>
-  <p>Diese Seite wurde in <?php
-    $now = gettimeofday();
-    $runtime = ($now["sec"] - $RUNTIME_START["sec"]) + ($now["usec"] - $RUNTIME_START["usec"]) / 1000000;
-    echo $runtime;
-  ?> Sekunden erstellt.</p>
-  </center>
-</td></tr></table>
-
-<?php
+// start serverload
+echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+	"    <tr class=\"tabletitle\" width=\"100%\">\n".
+	"        <td colspan=\"10\" width=\"100%\"><span class=\"normalfont\">\n".
+	"            <center><b>Serverauslastung</b></center></span>\n".
+	"        </td>\n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td width=\"100%\" class=\"tablea\">\n".
+	"            <center><p>Webserver-Prozesse:</p>\n".
+	"            <table class=\"tableinborder\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" width=\"402\">\n".
+	"                <tr>\n".
+	"                    <td align=\"left\" style=\"padding: 0px; background-image: url('" . $GLOBALS["PIC_BASE_URL"] . "loadbarbg.gif'); background-repeat: repeat-x\">";
+$percent = min(100, round(exec('ps ax | grep -c apache2') / 150 * 100));
+if($percent <= 70)
+	$pic = "loadbargreen.gif";
+elseif($percent <= 90)
+	$pic = "loadbaryellow.gif";
+else
+	$pic = "loadbarred.gif";
+$width = $percent * 4;
+echo "                        <img height=\"15\" width=\"" . $width . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$pic."\" alt=\"" . $percent . "%\">\n".
+	"                    </td>\n".
+	"                </tr>\n".
+	"            </table>\n".
+	"            <p>Systemauslastung (Durchschnittswerte): ";
+$loadavg = explode(" ", exec("cat /proc/loadavg"));
+$time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
+echo $loadavg[0]*100, "% (1min) - ", $loadavg[1]*100, "% (5min) - ", $loadavg[2]*100, "% (15min)".
+	"            </p>\n".
+	"            <p>Diese Seite wurde in " . round($time, 4) . " Sekunden erstellt.</p>\n".
+	"            </center>\n".
+	"        </td>\n".
+	"    </tr>\n".
+	"</table>\n";
+// eof serverload
 stdfoot();
 ?>
