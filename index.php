@@ -26,67 +26,14 @@
 // +--------------------------------------------------------------------------+
 */
 
-//ob_start("ob_gzhandler");
-
+ob_start("ob_gzhandler");
 require "include/bittorrent.php";
-//hit_start();
-
+//userlogin();
 dbconn();
-
-/*if ($_SERVER["REQUEST_METHOD"] == "POST")
-{
-    $choice = $_POST["choice"];
-    if ($CURUSER && $choice != "" && $choice < 256 && $choice == floor($choice))
-    {
-        $res = mysql_query("SELECT * FROM polls ORDER BY added DESC LIMIT 1") or sqlerr();
-        $arr = mysql_fetch_assoc($res) or die("No poll");
-        $pollid = $arr["id"];
-        $userid = $CURUSER["id"];
-        $res = mysql_query("SELECT * FROM pollanswers WHERE pollid=$pollid && userid=$userid") or sqlerr();
-        $arr = mysql_fetch_assoc($res);
-        if ($arr)
-            die("Dupe vote");
-        mysql_query("INSERT INTO pollanswers VALUES(0, $pollid, $userid, $choice)") or sqlerr();
-        if (mysql_affected_rows() != 1)
-            stderr("Error", "Ein Fehler ist passiert! Deine Stimme konnte nicht gez&auml;hlt werden.");
-        header("Location: $BASEURL/?".SID);
-        die;
-    }
-    else
-    stderr("Error", "Bitte w&auml;hle eine Option aus.");
-}    */
-
-$registered = number_format(pdo_row_count('users'));
-$unverified = number_format(pdo_row_count("users", "status='pending'"));
-$inactive = number_format(pdo_row_count("users", "enabled='no'"));
-$torrents = pdo_row_count("torrents");
-$dead = pdo_row_count("torrents", "visible='no'");
-
-$r = mysql_query("SELECT value_u FROM avps WHERE arg='seeders'") or sqlerr(__FILE__, __LINE__);
-$a = mysql_fetch_row($r);
-$seeders = 0 + $a[0];
-$r = mysql_query("SELECT value_u FROM avps WHERE arg='leechers'") or sqlerr(__FILE__, __LINE__);
-$a = mysql_fetch_row($r);
-$leechers = 0 + $a[0];
-$r = mysql_query("SELECT SUM(downloaded) FROM users WHERE enabled='yes'") or sqlerr(__FILE__, __LINE__);
-$a = mysql_fetch_row($r);
-$totaldown = mksize(0 + $a[0]);
-$r = mysql_query("SELECT SUM(uploaded) FROM users WHERE enabled='yes'") or sqlerr(__FILE__, __LINE__);
-$a = mysql_fetch_row($r);
-$totalup = mksize(0 + $a[0]);
-
-if ($leechers == 0)
-    $ratio = 0;
-else
-    $ratio = round($seeders / $leechers * 100);
-    
-$peers = number_format($seeders + $leechers);
-$seeders = number_format($seeders);
-$leechers = number_format($leechers);
 
 $dt = time() - 200;
 $dt = sqlesc(get_date_time($dt));
-$maxdt = get_date_time(time() - 21600*28);
+//$maxdt = get_date_time(time() - 21600*28);
 $res = mysql_query("SELECT id, username, class, donor, warned, added, enabled FROM users WHERE last_access >= $dt AND last_access <= NOW() ORDER BY class DESC,username") or print(mysql_error());
 $activeusers_no = mysql_num_rows($res);
 $activeusers = "";
@@ -106,8 +53,9 @@ while ($arr = mysql_fetch_assoc($res))
 if (!$activeusers)
     $activeusers = "Keine aktiven Mitglieder in den letzten 15 Minuten.";
 
-stdhead();
 
+
+stdhead();
 ?>
 <table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
  <tr class="tabletitle" width="100%">
@@ -167,7 +115,7 @@ if (mysql_num_rows($res) > 0)
             $news_day="Montag";
         if ($news_day == "Tuesday")
             $news_day="Dienstag";
-            if ($news_day == "Wednesday")
+        if ($news_day == "Wednesday")
             $news_day="Mittwoch";
         if ($news_day == "Thursday")
             $news_day="Donnerstag";
@@ -181,9 +129,9 @@ if (mysql_num_rows($res) > 0)
 
         echo "<tr><td class=tablecat align=left>";
         if ($first)
-        print("<a href=\"javascript:expandCollapse('" . $array['id'] . "');\"><img id=\"plusminus" . $array['id'] . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/minus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>\n");
+			print("<a href=\"javascript:expandCollapse('" . $array['id'] . "');\"><img id=\"plusminus" . $array['id'] . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/minus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>\n");
         else
-        print("<a href=\"javascript:expandCollapse('" . $array['id'] . "');\"><img id=\"plusminus" . $array['id'] . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/plus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>\n");
+			print("<a href=\"javascript:expandCollapse('" . $array['id'] . "');\"><img id=\"plusminus" . $array['id'] . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/plus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>\n");
         print("<b>".htmlspecialchars($array["title"])."</b> ");
         print("(Von <a class=altlink href=userdetails.php?id=$user_id>" . $username['username'] . "</a>, " . $news_day . ", " . $news_date . ") ");
         if (get_user_class() >= UC_ADMINISTRATOR)
@@ -287,6 +235,20 @@ if ($CURUSER)
 }
 
 // start stats
+$a = $GLOBALS['DB']->query("SELECT value_u FROM avps WHERE arg='seeders'")->fetchAll()[0];
+$seeders = 0 + $a['value_u'];
+$a = $GLOBALS['DB']->query("SELECT value_u FROM avps WHERE arg='leechers'")->fetchAll()[0];
+$leechers = 0 + $a['value_u'];
+
+if ($leechers == 0)
+	$ratio = 0;
+else
+	$ratio = round($seeders / $leechers * 100);
+    
+$peers = number_format($seeders + $leechers);
+$seeders = number_format($seeders);
+$leechers = number_format($leechers);
+
 $max = $GLOBALS["MAX_USERS"]/1000;
 echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
@@ -301,6 +263,9 @@ echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%
 	"                        <td align=\"right\" class=\"tablea\">" . number_format($max,3) . "</td>\n".
 	"                    </tr>\n";
 if($CURUSER){
+	$registered = number_format(pdo_row_count('users'));
+	$unverified = number_format(pdo_row_count("users", "status='pending'"));
+	$inactive = number_format(pdo_row_count("users", "enabled='no'"));
 	echo "                    <tr>\n".
 		"                        <td class=\"tableb\" align=\"left\">Registrierte Mitglieder</td>\n".
 		"                        <td align=\"right\" class=\"tablea\">" . $registered . "</td>\n".
@@ -314,6 +279,8 @@ if($CURUSER){
 		"                        <td align=\"right\" class=\"tablea\">" . $inactive . "</td>\n".
 		"                    </tr>\n";
 }
+$torrents = pdo_row_count("torrents");
+$dead = pdo_row_count("torrents", "visible='no'");
 echo "                    <tr>\n".
 	"                        <td class=\"tableb\" align=\"left\">Torrents</td>\n".
 	"                        <td align=\"right\" class=\"tablea\">" . number_format($torrents) . "</td>\n".
@@ -327,6 +294,11 @@ echo "                    <tr>\n".
 	"                        <td align=\"right\" class=\"tablea\">" . number_format($dead) . "</td>\n".
 	"                    </tr>\n";
 if(isset($peers)){
+	$a = $GLOBALS['DB']->query("SELECT SUM(downloaded) as res FROM users WHERE enabled='yes'")->fetchAll()[0];
+	$totaldown = mksize(0 + $a['res']);
+
+	$a = $GLOBALS['DB']->query("SELECT SUM(uploaded) as res FROM users WHERE enabled='yes'")->fetchAll()[0];
+	$totalup = mksize(0 + $a['res']);
 	echo "                    <tr>\n".
 		"                        <td class=\"tableb\" align=\"left\">Peers</td>\n".
 		"                        <td align=\"right\" class=\"tablea\">" . $peers . "</td>\n".
