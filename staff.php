@@ -174,8 +174,17 @@ echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:750p
 	"                </tr>\n";
 $staff_table_reverse = array_reverse($staff_table, true);
 foreach($staff_table_reverse as $userclass => $trow){
+	if($counters[$userclass] > 1){
+		if($userclass == 100)
+			$plural = "s";
+		elseif($userclass >= 25 && $userclass < 100)
+			$plural = "en";
+		else
+			$plural = "";
+	}else
+		$plural = "";
 	echo "                <tr>\n".
-		"                    <td class=\"tablecat\" colspan=\"14\"><b>" . get_user_class_name($userclass) . "</b></td>\n".
+		"                    <td class=\"tablecat\" colspan=\"14\"><b>" . get_user_class_name($userclass) . $plural . "</b></td>\n".
 		"                </tr>\n".
 		"                <tr height=\"15\">\n".
 		$staff_table[$userclass].
