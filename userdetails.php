@@ -400,7 +400,8 @@ function togglediv()
             $maxclass = get_user_class() - 1;
         for ($i = 0; $i <= $maxclass; ++$i)
         if (get_user_class_name($i) != "")
-            print("<option value=$i" . ($user["class"] == $i ? " selected" : "") . ">$prefix" . get_user_class_name($i) . "\n");
+            print("<option value=" . $i . ($user["class"] == $i ? " selected" : "") . ">" . get_user_class_name($i) . "\n");
+            //print("<option value=$i" . ($user["class"] == $i ? " selected" : "") . ">$prefix" . get_user_class_name($i) . "\n");
         print("</select></td></tr>\n");
     } 
 

@@ -325,8 +325,8 @@ echo "                </table>\n".
 // start serverload
 echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
-	"        <td colspan=\"10\" width=\"100%\"><span class=\"normalfont\">\n".
-	"            <center><b>Serverauslastung</b></center></span>\n".
+	"        <td colspan=\"10\" width=\"100%\">\n".
+	"            <span class=\"normalfont\"><center><b>Serverauslastung</b></center></span>\n".
 	"        </td>\n".
 	"    </tr>\n".
 	"    <tr>\n".

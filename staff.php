@@ -30,14 +30,19 @@ require "include/bittorrent.php";
 dbconn();
 loggedinorreturn();
 
-$act = $_GET["act"];
+
+if(isset($_GET["act"]))
+	$act = $_GET["act"];
+else
+	$act = false;
+
 // DELETE FORUM ACTION
-if ($_GET['action'] == "del") {
+if (isset($_GET['action']) && $_GET['action'] == "del") {
     if (get_user_class() < UC_MODERATOR)
         stderr("Error", "Permission denied.");
 
     if (!$id) {
-        header("Location: $PHP_SELF?act=forum&" . SID);
+        header("Location: " . $_SERVER['PHP_SELF'] . "?act=forum");
         die();
     } 
 
@@ -50,40 +55,40 @@ if ($_GET['action'] == "del") {
     mysql_query ("DELETE FROM topics where forumid = '" . $_GET['id'] . "'") or sqlerr(__FILE__, __LINE__);
     mysql_query ("DELETE FROM forums where id = '" . $_GET['id'] . "'") or sqlerr(__FILE__, __LINE__);
 
-    header("Location: $PHP_SELF?act=forum&" . SID);
+    header("Location: " . $_SERVER['PHP_SELF'] . "?act=forum");
     die();
 } 
 // EDIT FORUM ACTION
-if ($_POST['action'] == "editforum") {
+if (isset($_POST['action']) && $_POST['action'] == "editforum") {
     if (get_user_class() < UC_MODERATOR)
         stderr("Error", "Permission denied.");
 
     if (!$name && !$desc && !$id) {
-        header("Location: $PHP_SELF?act=forum&" . SID);
+        header("Location: " . $_SERVER['PHP_SELF'] . "?act=forum");
         die();
     } 
 
     mysql_query("UPDATE forums SET sort = '" . $_POST['sort'] . "', name = " . sqlesc($_POST['name']) . ", description = " . sqlesc($_POST['desc']) . ", minclassread = '" . $_POST['readclass'] . "', minclasswrite = '" . $_POST['writeclass'] . "', minclasscreate = '" . $_POST['createclass'] . "' where id = '" . $_POST['id'] . "'") or sqlerr(__FILE__, __LINE__);
-    header("Location: $PHP_SELF?act=forum&" . SID);
+    header("Location: " . $_SERVER['PHP_SELF'] . "?act=forum");
     die();
 } 
 // ADD FORUM ACTION
-if ($_POST['action'] == "addforum") {
+if(isset($_POST['action']) && $_POST['action'] == "addforum") {
     if (get_user_class() < UC_MODERATOR)
         stderr("Error", "Permission denied.");
 
     if (!$name && !$desc) {
-        header("Location: $PHP_SELF?act=forum&" . SID);
+        header("Location: " . $_SERVER['PHP_SELF'] . "?act=forum");
         die();
     } 
 
     mysql_query("INSERT INTO forums (sort, name,  description,  minclassread,  minclasswrite, minclasscreate) VALUES(" . $_POST['sort'] . ", " . sqlesc($_POST['name']) . ", " . sqlesc($_POST['desc']) . ", " . $_POST['readclass'] . ", " . $_POST['writeclass'] . ", " . $_POST['createclass'] . ")") or sqlerr(__FILE__, __LINE__);
 
-    header("Location: $PHP_SELF?act=forum&" . SID);
+    header("Location: " . $_SERVER['PHP_SELF'] . "?act=forum");
     die();
 } 
 // ADD IP TO BAN LIST ACTION
-if ($_POST['action'] == "ban") {
+if (isset($_POST['action']) && $_POST['action'] == "ban") {
     if (get_user_class() < UC_MODERATOR)
         stderr("Error", "Permission denied.");
 
@@ -94,10 +99,10 @@ if ($_POST['action'] == "ban") {
     $last = ip2long($_POST['last']);
     mysql_query("INSERT INTO bans (first, last, comment, added, addedby) VALUES(" . $first . ", " . $last . ", " . sqlesc($_POST['comment']) . ", '" . get_date_time() . "', " . $CURUSER["id"] . ")") or sqlerr(__FILE__, __LINE__);
 
-    stderr("IP (Bereich) gesperrt", "<p>Die angegebene IP bzw. der Bereich wurde gesperrt.</p><p><a href=\"staff.php?act=ban\">Zurück</a></p>");
+    stderr("IP (Bereich) gesperrt", "<p>Die angegebene IP bzw. der Bereich wurde gesperrt.</p><p><a href=\"" . $_SERVER['PHP_SELF'] . "?act=ban\">Zurück</a></p>");
 } 
 // DELETE IP FROM BAN LIST
-if ($_GET["action"] == "ipdel") {
+if (isset($_GET['action']) && $_GET["action"] == "ipdel") {
     if (get_user_class() < UC_MODERATOR)
         stderr("Error", "Permission denied.");
 
@@ -111,107 +116,87 @@ if ($_GET["action"] == "ipdel") {
     } else {
         mysql_query ("DELETE FROM bans where id = " . sqlesc($_GET['id'])) or sqlerr(__FILE__, __LINE__);
     } 
-    stderr("IPs (Bereiche) entsperrt", "<p>Die angegebenen IPs bzw. Bereiche wurde entsperrt.</p><p><a href=\"staff.php?act=ban\">Zurück</a></p>");
+    stderr("IPs (Bereiche) entsperrt", "<p>Die angegebenen IPs bzw. Bereiche wurde entsperrt.</p><p><a href=\"" . $_SERVER['PHP_SELF'] . "?act=ban\">Zurück</a></p>");
 } 
+
 
 stdhead("Staff");
-
-?>
-
-
-<?php
-if (!$act) {
+if(!$act){
     // LIST ALL ADMINISTRATORS AND MODERATORS
     $dt = time() - 180;
-    $dt = sqlesc(get_date_time($dt)); 
-    // Search User Database for Moderators and above and display in alphabetical order
-    $res = mysql_query("SELECT * FROM users WHERE class>=" . UC_UPLOADER . " AND status='confirmed' ORDER BY username") or sqlerr();
+    $dt = get_date_time($dt); 
 
-    while ($arr = mysql_fetch_assoc($res)) {
-        if ($col[$arr['class']] && $col[$arr['class']] % 3 == 0) {
+	$qry = $GLOBALS['DB']->prepare("SELECT users.id, users.username, users.last_access, users.class, countries.name as cname, countries.flagpic as cflag FROM users LEFT JOIN countries ON countries.id = users.country WHERE class >= '10' AND status='confirmed' ORDER BY username");
+	$qry->execute();
+	$data = $qry->fetchAll(PDO::FETCH_ASSOC);
+
+	$staff_table = array(10 => "", 20 => "" ,25 => "" ,50 => "" ,100 => "");
+	$counters = array(10 => 0, 20 => 0 ,25 => 0 ,50 => 0 ,100 => 0);
+	foreach($data as $arr){
+        if($counters[$arr['class']] && $counters[$arr['class']] % 3 == 0){
             $staff_table[$arr['class']] = $staff_table[$arr['class']] . "</tr><tr height=15>";
         } 
-
-        $land = mysql_query("SELECT name,flagpic FROM countries WHERE id=$arr[country]") or sqlerr();
-        $arr2 = mysql_fetch_assoc($land);
-        $staff_table[$arr['class']] = $staff_table[$arr['class']] . "<td class=tablea><a class=altlink href=userdetails.php?id=" . $arr['id'] . "><font class=" . get_class_color($arr['class']) . ">" . $arr['username'] . "</font></a></td>\n<td class=tableb> " . ("'" . $arr['last_access'] . "'" > $dt?"<img src=" . $GLOBALS["PIC_BASE_URL"] . "button_online2.gif border=0 alt=\"online\">":"<img src=" . $GLOBALS["PIC_BASE_URL"] . "button_offline2.gif border=0 alt=\"offline\">") . "</td>\n" . '<td class="tablea"><a href="messages.php?action=send&amp;receiver=' . $arr['id'] . '">' . "<img src=" . $GLOBALS["PIC_BASE_URL"] . "button_pm2.gif border=0></a></td>\n" . "<td class=tableb>" . ($arr2["flagpic"] != ""?"<img src=" . $GLOBALS["PIC_BASE_URL"] . "flag/$arr2[flagpic] border=0 width=19 height=12>":"") . "</td>\n" . " "; 
-        // Show 3 staff per row, separated by an empty column
-        $col[$arr['class']]++;
-
-        if (($col[$arr['class']] % 3) != 0)
+        $staff_table[$arr['class']] = $staff_table[$arr['class']] . 
+			"<td class=\"tablea\"><a class=\"altlink\" href=\"userdetails.php?id=" . $arr['id'] . "\"><font class=\"" . get_class_color($arr['class']) . "\">" . $arr['username'] . "</font></a></td>\n".
+			"<td class=\"tableb\">" . ($arr['last_access'] > $dt ? "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "button_online2.gif\" border=\"0\" alt=\"online\">" : "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "button_offline2.gif\" border=\"0\" alt=\"offline\">") . "</td>\n". 
+			"<td class=\"tablea\"><a href=\"messages.php?action=send&amp;receiver=" . $arr['id'] . "\">" . "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "button_pm2.gif\" border=\"0\"></a></td>\n" . 
+			"<td class=\"tableb\">" . ($arr["cflag"] != "" ? "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "flag/" . $arr['cflag'] . "\" alt=\"" . $arr['cname'] . "\" border=\"0\" width=\"19\" height=\"12\">" : "") . "</td>\n";
+        $counters[$arr['class']]++;
+        if (($counters[$arr['class']] % 3) != 0)
             $staff_table[$arr['class']] .= "<td class=inposttable>&nbsp;</td>";
+    }
+
+	$class_arr = array_keys($counters);
+	foreach($class_arr as $I){
+        if ($counters[$I] % 3)
+            $staff_table[$I] .= "<td class=\"inposttable\" colspan=\"" . ((3 - $counters[$I] % 3 + 1) * 5) . "\">&nbsp;</td>\n";
     } 
 
-    for ($I = UC_UPLOADER; $I <= UC_SYSOP; $I++) {
-        if ($col[$I] % 3)
-            $staff_table[$I] .= "<td class=\"inposttable\" colspan=\"" . ((3 - $col[$I] % 3 + 1) * 5) . "\">&nbsp;</td>\n";
-    } 
+    
+echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:750px\" class=\"tableinborder\">\n".
+	"    <tr class=\"tabletitle\" width=\"100%\">\n".
+	"        <td colspan=\"10\" width=\"100%\">\n".
+	"            <span class=\"smallfont\"><center><b>Tracker-Team</b></center></span>\n".
+	"        </td>\n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td width=\"100%\" class=\"tablea\"><center>\n".
+	"            <table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:725px\" class=\"tableinborder\">\n".
+	"                <colgroup>\n".
+	"                    <col width=\"125\"><col width=\"25\"><col width=\"35\"><col width=\"35\">\n".
+	"                    <col width=\"85\">\n".
+	"                    <col width=\"125\"><col width=\"25\"><col width=\"35\"><col width=\"35\">\n".
+	"                    <col width=\"85\">\n".
+	"                    <col width=\"125\"><col width=\"25\"><col width=\"35\"><col width=\"35\">\n".
+	"                </colgroup>\n".
+	"                <tr>\n".
+	"                    <td class=\"tablea\" colspan=\"14\">Alle Fragen &uuml;ber Client-Software sowie bereits im FAQ beantwortete Fragen werden stillschweigend ignoriert.</td>\n".
+	"                </tr>\n";
+$staff_table_reverse = array_reverse($staff_table, true);
+foreach($staff_table_reverse as $userclass => $trow){
+	echo "                <tr>\n".
+		"                    <td class=\"tablecat\" colspan=\"14\"><b>" . get_user_class_name($userclass) . "</b></td>\n".
+		"                </tr>\n".
+		"                <tr height=\"15\">\n".
+		$staff_table[$userclass].
+		"                </tr>\n";
+	if($userclass > 10){
+		echo "                <tr>\n".
+			"                    <td class=\"inposttable\" colspan=\"14\">&nbsp;</td>\n".
+			"                </tr>\n";
+	}
+}
+echo "</table>\n".
+	"</center></td>\n".
+	"</tr>\n".
+	"</table>\n".
+	"<br>\n";
+}
+// ende teamliste
 
-    ?>
-<table cellpadding="4" cellspacing="1" border="0" style="width:750px" class="tableinborder">
-<tr class="tabletitle" width="100%">
-<td colspan="10" width="100%"><span class="smallfont"><center>
-<b>Tracker-Team</b>
-</center></span></td></tr><tr><td width="100%" class="tablea">
-<center>
-<table cellpadding="4" cellspacing="1" border="0" style="width:725px" class="tableinborder">
-  <colgroup>
-   <col width="125">
-   <col width="25">
-   <col width="35">
-   <col width="35">
-   <col width="85">
-   <col width="125">
-   <col width="25">
-   <col width="35">
-   <col width="35">
-   <col width="85">
-   <col width="125">
-   <col width="25">
-   <col width="35">
-   <col width="35"> 
-  </colgroup>
- <tr><td class="tablea" colspan=14>Alle Fragen &uuml;ber Client-Software sowie bereits im FAQ beantwortete Fragen werden stillschweigend ignoriert.</td></tr>
- <!-- Define table column widths -->
-
- </tr>
- <tr><td class="tablecat" colspan="14"><b>Sysops</b></td></tr>
- <tr height=15>
-<?=$staff_table[UC_SYSOP]?>
- </tr>
- <tr><td class="inposttable" colspan="14">&nbsp;</td></tr>
- <tr><td class="tablecat" colspan="14"><b>Administratoren</b></td></tr>
- <tr height=15>
-<?=$staff_table[UC_ADMINISTRATOR]?>
- </tr>
- <tr><td class="inposttable" colspan="14">&nbsp;</td></tr>
- <tr><td class="tablecat" colspan="14"><b>Moderatoren</b></td></tr>
- <tr height=15>
-<?=$staff_table[UC_MODERATOR]?>
- </tr>
- <tr><td class="inposttable" colspan="14">&nbsp;</td></tr>
- <tr><td class="tablecat" colspan="14"><b>Gastuploader-Betreuer</b></td></tr>
- <tr height=15>
-<?=$staff_table[UC_GUTEAM]?>
- </tr>
- <tr><td class="inposttable" colspan="14">&nbsp;</td></tr>
- <tr><td class="tablecat" colspan="14"><b>Uploader</b></td></tr>
- <tr height=15>
-<?=$staff_table[UC_UPLOADER]?>
- </tr>
-</table>
-</center>
-</td></tr></table><br>
-<?php
-
-} 
-
-?>
-
-<?php if (get_user_class() >= UC_MODERATOR) {
+if(get_user_class() >= UC_MODERATOR){
     // LIST OF THE MOD TOOLS (ONLY VISIBLE WHEN YOU ARE MOD, ELSE YOU ONLY SEE LIST OF MODS
-
-    ?>
+?>
 
 <table cellpadding="4" cellspacing="1" border="0" style="width:750px" class="tableinborder">
 <tr class="tabletitle" width="100%">
@@ -224,36 +209,33 @@ if (!$act) {
   <col>
 </colgroup>
 <tr>
-        <td class=tableb><a class=altlink href=<?=$PHP_SELF;
-    ?>?act=upstats>Upload-Stats</a></td>
+        <td class=tableb><a class=altlink href=<?=$_SERVER['PHP_SELF']?>?act=upstats>Upload-Stats</a></td>
         <td class=tablea>Upload- und Kategorieaktivit&auml;t anzeigen</td>
 </tr>
 <tr>
         <td class=tableb><a class=altlink href=news.php>News-Seite</a></td>
         <td class=tablea>Newseintr&auml;ge auf der Startseite hinzuf&uuml;gen, &auml;ndern oder l&ouml;schen</td>
 </tr>
-<?php if (get_user_class() >= UC_ADMINISTRATOR) {
-        ?>
+<?php
+if(get_user_class() >= UC_ADMINISTRATOR){
+?>
 <tr>
-        <td class=tableb><a class=altlink href=<?=$PHP_SELF;
-        ?>?act=cleanaccs>Accountbereinigung</a></td>
+        <td class=tableb><a class=altlink href=<?=$_SERVER['PHP_SELF']?>?act=cleanaccs>Accountbereinigung</a></td>
         <td class=tablea>Accounts nach Inaktivit&auml;t und Transfer / Ratio bereinigen</td>
 </tr>
-<?php } 
-    ?>
+<?php
+} 
+?>
 <tr>
-        <td class=tableb><a class=altlink href=<?=$PHP_SELF;
-    ?>?act=last>Neueste Benutzer</a></td>
+        <td class=tableb><a class=altlink href=<?=$_SERVER['PHP_SELF']?>?act=last>Neueste Benutzer</a></td>
         <td class=tablea>Die 100 neuesten Benutzer</td>
 </tr>
 <tr>
-        <td class=tableb><a class=altlink href=<?=$PHP_SELF;
-    ?>?act=forum>Foren verwalten</a></td>
+        <td class=tableb><a class=altlink href=<?=$_SERVER['PHP_SELF']?>?act=forum>Foren verwalten</a></td>
         <td class=tablea>Foren hinzuf&uuml;gen, &auml;ndern oder l&ouml;schen</td>
 </tr>
 <tr>
-        <td class=tableb><a class=altlink href=<?=$PHP_SELF;
-    ?>?act=ban>IPs sperren</a></td>
+        <td class=tableb><a class=altlink href=<?=$_SERVER['PHP_SELF']?>?act=ban>IPs sperren</a></td>
         <td class=tablea>Eine IP oder einen IP-Bereich von der Seite ausschlie&szlig;en</td>
 </tr>
 <tr>
@@ -263,22 +245,18 @@ if (!$act) {
 </table>
 </td></tr></table>
 <script type="text/javascript">
-
-function selectall()
-{
+function selectall() {
     var myForm = document.getElementById('delform');
     
     for (I=0; I<=myForm.elements.length; I++) {
         eval("myForm.elements['delid" + I + "']").checked = true;
-    }    
+    } 
 }
-
 </script>
 
 <br>
 
 <?php
-
     if ($act == "cleanaccs" && get_user_class() >= UC_ADMINISTRATOR) {
         $since_arr = array(0 => "---",
             1 => "1 Woche",
@@ -644,8 +622,7 @@ function confirm_delete(id)
 
         ?>
 <br><br>
-<form method=post action="<?=$PHP_SELF;
-        ?>">
+<form method=post action="<?=$_SERVER['PHP_SELF']?>">
 <table width="600"  border="0" cellspacing="0" cellpadding="3" align="center">
 <tr align="center">
     <td colspan="2" class=tablecat>Make new forum</td>
@@ -731,7 +708,7 @@ function confirm_delete(id)
 
                 ?>
 
-<form method=post action="<?=$PHP_SELF;
+<form method=post action="<?=$_SERVER['PHP_SELF']?>
                 ?>">
 <table width="600"  border="0" cellspacing="0" cellpadding="3" align="center">
 <tr align="center">
@@ -823,8 +800,7 @@ function confirm_delete(id)
 
         ?>
 
-<form method=post action="<?=$PHP_SELF;
-        ?>">
+<form method=post action="<?=$_SERVER['PHP_SELF']?>">
 <table width="450"  border="0" cellspacing="1" cellpadding="3" align="center" class="tableinborder">
 <tr align="center">
     <td colspan="2" class=tablecat>IP bannen</td>
