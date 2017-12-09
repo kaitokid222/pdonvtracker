@@ -187,7 +187,7 @@ foreach($staff_table_reverse as $userclass => $trow){
 		"                    <td class=\"tablecat\" colspan=\"14\"><b>" . get_user_class_name($userclass) . $plural . "</b></td>\n".
 		"                </tr>\n".
 		"                <tr height=\"15\">\n".
-		$staff_table[$userclass].
+		$trow.
 		"                </tr>\n";
 	if($userclass > 10){
 		echo "                <tr>\n".
