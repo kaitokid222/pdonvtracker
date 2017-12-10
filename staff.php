@@ -568,7 +568,8 @@ function selectall() {
                     $acccnt += $ucntarr["cnt"];
                 } 
                 // These user are all n00bs, so do not show the pacifier.
-                $uicons = array("enabled" => $row["enabled"], "warned" => $row["warned"], "donor" => $row["donor"]);
+				// bullshit throws out errors.. readded schnuller
+                $uicons = array("enabled" => $row["enabled"], "warned" => $row["warned"], "donor" => $row["donor"], "added" => $row["added"]);
                 echo "<tr><td class=tablea><a href=userdetails.php?id=" . $row["id"] . "><b>" . $row["username"] . "</b></a>&nbsp;" . get_user_icons($uicons) . "</td>\n";
                 echo "<td class=tableb style=\"text-align:right;\"><strong>" . $ratio . "</strong></td>\n";
                 echo "<td class=tablea>" . $row["ip"] . "</td>\n";

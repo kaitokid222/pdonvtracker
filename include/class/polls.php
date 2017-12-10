@@ -46,6 +46,7 @@ class polls
 				}
 			}
 			$this->data = $pretty_data;
+			return $this;
 		}
 	}
 
@@ -60,8 +61,21 @@ class polls
 	}
 	
 	public function add_poll($question,$answers){
-		if(!isset($question,$answers) || $question == "" || !is_array($answers) || $answers[0] == "" || $answers[1] == "")
+		$e = false;
+		if(!isset($question,$answers) || $question == "" || !is_array($answers) || $answers[0] == "" || $answers[1] == ""){
 			return false;
+			break;
+		}
+		foreach($answers as $answer){
+			if($answer === false || $answer == "" || !isset($answer)){
+				$e = true;
+				break;
+			}
+		}
+		if($e){
+			return false;
+			break;
+		}
 		$now = date("Y-m-d H:i:s");
 		$answers_str = json_encode($answers, JSON_FORCE_OBJECT);
 		$qry = $this->con->prepare('INSERT INTO polls (id, added, question, answers) VALUES (NULL,:date,:question,:answers)');

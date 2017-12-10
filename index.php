@@ -166,8 +166,7 @@ if($CURUSER){
 	}
 
 	// start umfragemodul
-	$polls = new polls();
-	$polls->getData();
+	$polls = (new polls)->getData();
 	$latest = $polls->data;
 
 	foreach($latest as $p){
@@ -357,6 +356,8 @@ echo $loadavg[0]*100, "% (1min) - ", $loadavg[1]*100, "% (5min) - ", $loadavg[2]
 	"        </td>\n".
 	"    </tr>\n".
 	"</table>\n";
+	
+//phpinfo();
 // eof serverload
 stdfoot();
 ?>

@@ -22,8 +22,7 @@ loggedinorreturn();
 // beispiel:
 // $action = vote
 // wie die frage lautet ist für diese methode irrelevant.
-$polls = new polls(false);
-$polls->getData();
+$polls = (new polls(false))->getData();
 
 if(isset($_GET['action']))
 	$action = $_GET['action'];
