@@ -32,7 +32,7 @@ userlogin();
 
 function get_count($inactive_time)
 {
-    $arr['cnt'] = pdo_row_count('users','UNIX_TIMESTAMP(`last_access`)<'.$inactive_time);
+    $arr['cnt'] = $GLOBALS['database']->row_count('users','UNIX_TIMESTAMP(`last_access`)<'.$inactive_time);
     return $arr["cnt"];
 }
         
@@ -51,8 +51,7 @@ begin_table(TRUE);
 echo '<tr><td class="tablecat">Inakt. seit</td><td class="tablecat">Anzahl (prozentual von Gesamtbenutzern)</td></tr>', "\n";
 
 $curtime = time();
-$usercount = pdo_row_count('users');
-
+$usercount = $database->row_count('users');
 // 24h, stdl. --> 24x
 for ($I=0; $I<24; $I++) {
     stat_row($I."h", get_count($curtime-($I*3600)));

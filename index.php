@@ -258,9 +258,9 @@ echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%
 	"                        <td align=\"right\" class=\"tablea\">" . number_format($max,3) . "</td>\n".
 	"                    </tr>\n";
 if($CURUSER){
-	$registered = number_format(pdo_row_count('users'));
-	$unverified = number_format(pdo_row_count("users", "status='pending'"));
-	$inactive = number_format(pdo_row_count("users", "enabled='no'"));
+	$registered = number_format($database->row_count('users'));
+	$unverified = number_format($database->row_count("users", "status='pending'"));
+	$inactive = number_format($database->row_count("users", "enabled='no'"));
 	echo "                    <tr>\n".
 		"                        <td class=\"tableb\" align=\"left\">Registrierte Mitglieder</td>\n".
 		"                        <td align=\"right\" class=\"tablea\">" . $registered . "</td>\n".
@@ -274,8 +274,8 @@ if($CURUSER){
 		"                        <td align=\"right\" class=\"tablea\">" . $inactive . "</td>\n".
 		"                    </tr>\n";
 }
-$torrents = pdo_row_count("torrents");
-$dead = pdo_row_count("torrents", "visible='no'");
+$torrents = $database->row_count("torrents");
+$dead = $database->row_count("torrents", "visible='no'");
 echo "                    <tr>\n".
 	"                        <td class=\"tableb\" align=\"left\">Torrents</td>\n".
 	"                        <td align=\"right\" class=\"tablea\">" . number_format($torrents) . "</td>\n".

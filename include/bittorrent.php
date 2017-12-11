@@ -45,19 +45,12 @@ require_once("include/cleanup.php");
 
 require_once("include/shoutcast.php");
 
-// NEU PDO!
+
 require_once("include/class/db.php");
 $database = new db($dsn);
 $GLOBALS['DB'] = $database->getPDO();
 
 require_once("include/class/polls.php");
-
-	
-// SQL-funktionen OUTSOURCEN!!!
-// $db->row_count();
-function pdo_row_count($table,$condition = '1=1'){
-	return $GLOBALS['database']->row_count($table,$condition);
-}
 
 function set_last_access($id){
 	$latime = date("Y-m-d H:i:s");
@@ -456,8 +449,8 @@ function ratiostatbox()
 
     if ($CURUSER) {
         $ratio = ($CURUSER["downloaded"] > 0?number_format($CURUSER["uploaded"] / $CURUSER["downloaded"], 3, ",", "."):"Inf.");
-        $seeds = pdo_row_count('peers','`userid`=' . $CURUSER["id"] . ' AND `seeder`= yes') ?: 0;
-        $leeches = pdo_row_count('peers','`userid`=' . $CURUSER["id"] . ' AND `seeder`= no') ?: 0;
+        $seeds = $GLOBALS['database']->row_count('peers','`userid`=' . $CURUSER["id"] . ' AND `seeder`= yes') ?: 0;
+        $leeches = $GLOBALS['database']->row_count('peers','`userid`=' . $CURUSER["id"] . ' AND `seeder`= no') ?: 0;
         $tlimits = get_torrent_limits($CURUSER);
 
         if ($ratio < 0.5) {
@@ -542,11 +535,11 @@ function stdhead($title = "", $msgalert = true)
 	}
 
     if ($msgalert && $CURUSER) {
-		$unread = pdo_row_count('messages','`folder_in`<>0 AND `receiver`=' . $CURUSER["id"] . ' && `unread`= yes');
+		$unread = $GLOBALS['database']->row_count('messages','`folder_in`<>0 AND `receiver`=' . $CURUSER["id"] . ' && `unread`= yes');
 		if($unread < 1)
 			unset($unread);
         if ($CURUSER["class"] >= UC_MODERATOR) {
-            $unread_mod = pdo_row_count('messages','`sender`= 0 AND `receiver`= 0 && `mod_flag`= open');
+            $unread_mod = $GLOBALS['database']->row_count('messages','`sender`= 0 AND `receiver`= 0 && `mod_flag`= open');
 			if($unread_mod < 1)
 				unset($unread_mod);
         } 

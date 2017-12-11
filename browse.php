@@ -213,16 +213,14 @@ $where = implode(" AND ", $wherea);
 if (isset($wherecatin))
     $where .= ($where ? " AND " : "") . "category IN(" . $wherecatin . ")";
 
-//WHERE is in pdo_row_count();
 if ($where != ""){
 	$owhere = $where;
     $where = 'WHERE ' . $where;
 }
-//echo '<br><br>Condition: ' . $where;
-//$res = pdo_row_count('torrents',$owhere);
+
 $res = mysql_query("SELECT COUNT(*) FROM torrents LEFT JOIN users ON torrents.owner=users.id $where") or die(mysql_error());
 $row = mysql_fetch_array($res);
-//$count = $res;
+
 $count = $row[0];
 
 if (!$count && isset($cleansearchstr)) {

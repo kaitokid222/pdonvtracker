@@ -62,7 +62,7 @@ if ($userclass>=UC_UPLOADER) {
 if (isset($_GET["delete"]))
 {
     $file_id = intval($_GET["delete"]);
-    $numfiles = pdo_row_count('bitbucket','`id`='.$file_id.' AND `user`='.$userid);
+    $numfiles = $database->row_count('bitbucket','`id`='.$file_id.' AND `user`='.$userid);
     
     if ($numfiles==1) {
 		$qry = $GLOBALS['DB']->prepare('SELECT * FROM bitbucket WHERE `id`= :fid');
@@ -136,7 +136,6 @@ begin_table(TRUE);
   <col width="1*">
 </colgroup>  
 <?php
-$numfiles = pdo_row_count('bitbucket','`user`='.$userid);
 $qry = $GLOBALS['DB']->prepare('SELECT SUM(size) FROM bitbucket WHERE user= :id');
 $qry->bindParam(':id', $userid, PDO::PARAM_INT);
 $qry->execute();
@@ -147,7 +146,7 @@ $bfiles = $GLOBALS['DB']->prepare('SELECT * FROM bitbucket WHERE user= :id');
 $bfiles->bindParam(':id', $userid, PDO::PARAM_INT);
 $bfiles->execute();
 
-if ($numfiles==0) {
+if ($database->row_count('bitbucket','`user`='.$userid) == 0) {
     echo "<tr><td class=tablea colspan=4>Es sind zurzeit keine Dateien im BitBucket vorhanden.</td></tr>";
 } else {
     $imgline = "<tr>\n";

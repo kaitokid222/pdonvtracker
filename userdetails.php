@@ -167,8 +167,8 @@ else {
 }
 
 //SELECT COUNT(*) FROM comments WHERE user= {$user['id']}');
-$torrentcomments = pdo_row_count('comments', 'user = ' . $user['id']);
-$forumposts = pdo_row_count('posts', 'userid = ' . $user['id']);
+$torrentcomments = $database->row_count('comments', 'user = ' . $user['id']);
+$forumposts = $database->row_count('posts', 'userid = ' . $user['id']);
 
 
 // if ($user['donated'] > 0)
