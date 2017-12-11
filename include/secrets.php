@@ -14,4 +14,5 @@ $db_info = array(
 	"db_name" => "nvtracker",
 	"db_charset" => "UTF-8"
 );
+$dsn = ["mysql:host=".$db_info['db_host'].';port='.$db_info['db_port'].';dbname='.$db_info['db_name'],$db_info['db_user'], $db_info['db_pass']];
 ?>

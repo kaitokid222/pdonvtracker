@@ -19,7 +19,7 @@ class polls
 
 	public $data = array();
 
-	public function __construct($last = true) {
+	function __construct($last = true) {
 		$this->con = $GLOBALS['DB'];
 		$this->onlyLast = $last;
 	}

@@ -46,21 +46,17 @@ require_once("include/cleanup.php");
 require_once("include/shoutcast.php");
 
 // NEU PDO!
-	$GLOBALS['DB'] = new PDO("mysql:host=".$db_info['db_host'].';port='.$db_info['db_port'].';dbname='.$db_info['db_name'], $db_info['db_user'], $db_info['db_pass']);
-	$GLOBALS['DB']->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
-	$GLOBALS['DB']->query('SET NAMES utf8');
+require_once("include/class/db.php");
+$database = new db($dsn);
+$GLOBALS['DB'] = $database->getPDO();
 
 require_once("include/class/polls.php");
+
 	
 // SQL-funktionen OUTSOURCEN!!!
+// $db->row_count();
 function pdo_row_count($table,$condition = '1=1'){
-	$sql = "SELECT COUNT(*) FROM ";
-	$sql .= "" . $table . " ";
-	$sql .= "WHERE ";
-	$sql .= "" . $condition . "";
-	$qry = $GLOBALS['DB']->prepare($sql);
-	$qry->execute();
-	return $qry->fetchColumn(0);
+	return $GLOBALS['database']->row_count($table,$condition);
 }
 
 function set_last_access($id){
