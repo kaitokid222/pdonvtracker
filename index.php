@@ -256,9 +256,10 @@ $shoutbox = new shoutbox($database);
 echo "<br>\n".
 	"<table align=\"center\" width=\"100%\">\n".
 	"    <tr>\n".
-	"        <td>\n".
-	"            <script type=\"text/javascript\" src=\"/js/jquery-3.2.1.min.js\"></script>\n".
-	"            <script type=\"text/javascript\" src=\"/js/shoutbox.js\"></script>\n".
+	"        <td>\n";
+if(date('m') != 12 && date('m') != 1)
+	echo "            <script type=\"text/javascript\" src=\"/js/jquery-3.2.1.min.js\"></script>\n";
+echo "            <script type=\"text/javascript\" src=\"/js/shoutbox.js\"></script>\n".
 	"            <script type=\"text/javascript\" src=\"/js/ajax.js\"></script>\n".
 	"            <link rel=\"stylesheet\" href=\"css/shoutbox.css\" type=\"text/css\">\n".
 	"            <table summary=\"\" cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:97%\" class=\"tableinborder\">\n".

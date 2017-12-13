@@ -576,7 +576,11 @@ function stdhead($title = "", $msgalert = true)
 <meta name="robots" content="noindex, nofollow, noarchive">
 <meta name="MSSmartTagsPreventParsing" content="true">
 <link rel="stylesheet" href="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/" . $GLOBALS["ss_uri"]?>.css" type="text/css">
-<?php 
+<?php
+if(date('m') == 12 || date('m') == 1){
+	echo "<script type=\"text/javascript\" src=\"/js/jquery-3.2.1.min.js\"></script>\n";
+	echo "<script type=\"text/javascript\" src=\"/js/jsnow.js\"></script>\n";
+}
 if ($GLOBALS["DYNAMIC_RSS"]) {
 ?>
 <link rel="alternate" title="NetVision RSS" href="<?=$BASEURL?>/rss.php" type="application/rss+xml">
@@ -588,7 +592,15 @@ if ($GLOBALS["DYNAMIC_RSS"]) {
 ?>
 </head>
 <body>
-
+<?php
+	if(date('m') == 12 || date('m') == 1){
+		echo "<script type=\"text/javascript\">\n".
+			"$(function() {\n".
+			"    $(document).snow({ SnowImage: \"" . $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "weather-snowflake.png\" });\n".
+			"});\n".
+			"</script>\n";
+	}
+?>
 <table style="width:100%" cellpadding="0" cellspacing="1" align="center" border="0" class="tableoutborder">
   <tr>
     <td class="mainpage" align="center">
