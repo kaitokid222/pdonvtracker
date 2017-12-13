@@ -50,7 +50,15 @@ require_once("include/class/db.php");
 $database = new db($dsn);
 $GLOBALS['DB'] = $database->getPDO();
 
+/*
+// TODO
+// require_once("include/class/usergenerator.php");
+// $UserGenerator = new usergenerator();
+// $CURUSER = $UserGenerator->getUser();
+*/
+
 require_once("include/class/polls.php");
+require_once("include/class/shoutbox.php");
 
 function set_last_access($id){
 	$latime = date("Y-m-d H:i:s");

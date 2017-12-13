@@ -1,6 +1,5 @@
 <?php
 
-
 /*
 // +--------------------------------------------------------------------------+
 // | Project:    pdonvtracker - NetVision BitTorrent Tracker 2017             |
@@ -34,7 +33,7 @@ class shoutbox
 		if(isset($msg, $userid) && $msg != "" && $userid != 0){
 			$now = date("Y-m-d H:i:s");
 			$qry = $this->con->prepare("INSERT INTO shoutbox (id, added, userid, msg, visible) VALUES (NULL,:time,:userid,:msg, '1')");
-			$qry->bindParam(':date', $now, PDO::PARAM_STR);
+			$qry->bindParam(':time', $now, PDO::PARAM_STR);
 			$qry->bindParam(':userid', $userid, PDO::PARAM_INT);
 			$qry->bindParam(':msg', $msg, PDO::PARAM_STR);
 			$qry->execute();
@@ -107,9 +106,9 @@ class shoutbox
 	
 	public function get_box_data($team = false){
 		if($team)
-			$qry = $this->con->prepare("SELECT sb.*, u.username FROM shoutbox sb LEFT JOIN users u ON u.id = sb.userid ORDER BY added DESC LIMIT 25");
+			$qry = $this->con->prepare("SELECT sb.*, u.username, u.class FROM shoutbox sb LEFT JOIN users u ON u.id = sb.userid ORDER BY added DESC LIMIT 25");
 		else
-			$qry = $this->con->prepare("SELECT sb.*, u.username FROM shoutbox sb LEFT JOIN users u ON u.id = sb.userid WHERE sb.visible = '1' ORDER BY added DESC LIMIT 25");
+			$qry = $this->con->prepare("SELECT sb.*, u.username, u.class FROM shoutbox sb LEFT JOIN users u ON u.id = sb.userid WHERE sb.visible = '1' ORDER BY added DESC LIMIT 25");
 		$qry->execute();
 		if($qry->rowCount()){
 			$data = $qry->FetchAll(PDO::FETCH_ASSOC);
@@ -117,7 +116,7 @@ class shoutbox
 			$this->status[] = "Die Daten wurden in eine lokale Variable geschrieben.";
 			return $this;
 		}else{
-			$this->box = "Keine Einträge";
+			$this->box = "Keine Eintr&auml;ge";
 			$this->status[] = "Es wurden keine Daten gefunden.";
 			return $this;
 		}

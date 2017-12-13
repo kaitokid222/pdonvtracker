@@ -731,3 +731,13 @@ CREATE TABLE `users` (
 ALTER TABLE torrents ENGINE = MyISAM;
 ALTER TABLE posts ENGINE = MyISAM;
 create table scrape_lastlog (ipAddress char(15),lastAccess timestamp);
+
+-- Exportiere Struktur von Tabelle nvtracker.shoutbox
+CREATE TABLE IF NOT EXISTS `shoutbox` (
+  `id` int(10) unsigned NOT NULL auto_increment,
+  `added` datetime NOT NULL,
+  `userid` int(11) NOT NULL,
+  `msg` text NOT NULL,
+  `visible` int(11) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;

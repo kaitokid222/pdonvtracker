@@ -229,6 +229,110 @@ if($CURUSER){
 	// eof umfrage
 }
 
+// Shoutbox-Modul
+function textbbcode_edit($text, $aktive = TRUE){
+	global $BASEURL, $CURUSER;
+	$button = $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "editor";
+	$png = "true";
+	$button .= "/default";
+    print("\n<div id=\"loading-layer\" style=\"display:none; font-family: Verdana; font-size: 11px; width:200px; height:50px; background:#FFFFFF; padding:10px; text-align:center; border:1px solid #000000;\">\n" .
+          "    <div style=\"font-weight:bold;\" id=\"loading-layer-text\">Senden. Bitte warten ...</div><br />\n" .
+          "    <img src=\"" . $BASEURL . "/pic/loading.gif\" border=\"0\" />\n" .
+          "</div>\n" .
+          "<div style=\"text-align: left; width: 650px;\">\n" .
+          "  <script type=\"text/javascript\" src=\"" . $BASEURL . "/js/editor.js\"></script>\n" .
+          "  <script type=\"text/javascript\">edToolbar('" . $text . "','" . $button . "','" . $png . "','no');</script>\n");
+
+    if ($aktive){
+        print("  <input name=\"" . $text . "\" id=\"" . $text . "\" value=\"\" size=\"80\" />\n" .
+              "  <button name=\"button\" id=\"button\">Absenden</button>\n");
+    }
+
+    print("</div>\n" .
+          "<br style=\"clear: left;\" />");
+}
+
+$shoutbox = new shoutbox($database);
+echo "<br>\n".
+	"<table align=\"center\" width=\"100%\">\n".
+	"    <tr>\n".
+	"        <td>\n".
+	"            <script type=\"text/javascript\" src=\"/js/jquery-3.2.1.min.js\"></script>\n".
+	"            <script type=\"text/javascript\" src=\"/js/shoutbox.js\"></script>\n".
+	"            <script type=\"text/javascript\" src=\"/js/ajax.js\"></script>\n".
+	"            <link rel=\"stylesheet\" href=\"css/shoutbox.css\" type=\"text/css\">\n".
+	"            <table summary=\"\" cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:97%\" class=\"tableinborder\">\n".
+	"                <tr>\n".
+	"                    <td class=\"tabletitle\" width=\"100%\" style=\"text-align: center; font-weight: bold;\" colspan=\"2\">.: Ajax-Chat v0.6 :.</td>\n".
+	"                </tr>\n".
+	"                <tr>\n".
+	"                    <td width=\"12%\" class=\"tablea\" valign=\"top\">\n".
+	"                        <center>\n".
+	"                            <table summary=\"\" cellSpacing=\"1\" cellPadding=\"3\" class=\"tableinborder\" border=\"0\">\n";
+$zeile = 0;
+reset($privatesmilies);
+while(list($code, $url) = each($privatesmilies)){
+	if ($zeile == 0)
+		echo "                                <tr>\n";
+	echo "                                    <td class=\"tablea\" style=\"padding: 3px; margin: 1px\"><center>".
+		"<img border=\"0\" src=\"" . $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "/smilies/" . $url . "\" onclick=\"javascript: em('" . $code . "')\" alt=\"\" /></center></td>\n";
+	$zeile++;
+	if($zeile == 4){
+		echo "                                </tr>\n";
+		$zeile = 0;
+	}
+}
+if (($zeile != 4) && ($zeile != 0)){
+	echo "                                    <td class=\"tablea\" colspan=\"" . (4 - $zeile) . "\">&nbsp;</td>\n" .
+		"                                </tr>\n";
+}
+echo "                                <tr>\n" .
+	"                                    <td class=\"tablea\" colspan=\"4\"><center><a href=\"smilies.php\" target=\"_black\">Mehr Smilies</a></center></td>\n" .
+	"                                </tr>\n";
+
+/*if (get_user_class() >= UC_ADMIN)
+{
+  print("         <tr>\n" .
+        "           <td class=\"tabletitle\" colspan=\"10\" width=\"100%\" style=\"text-align: center\"><a href=\"ajax_chat_history.php?history=1\" target=\"_blank\">[History]</a></td>\n" .
+        "         </tr>\n");
+}*/
+
+/*print("         <tr>\n" .
+      "           <td class=\"tablea\" colspan=\"4\" width=\"100%\" style=\"text-align: center\">\n" .
+      "             <a href=\"" . $BASEURL . "/shoutcast.php\">\n" .
+      "               <img src=\"" . $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "radio_index.gif\" border=\"0\">\n" .
+      "             </a></td>\n" .
+      "         </tr>\n");*/
+
+echo "                            </table>\n".
+	"                        </center>\n".
+	"                    </td>\n".
+	"                    <td class=\"tablea\">\n".
+	"                        <table summary=\"\" class=\"tableinborder\"  border=\"0\" cellspacing=\"1\" cellpadding=\"5\" width=\"100%\">\n".
+	"                            <tr>\n".
+	"                                <td class=\"tablea\">\n".
+	"                                    <div style=\"width:100%; height:330px; background: #404953;\" id=\"frame\">\n".
+	"                                        <div style=\"padding: 2px;\" id=\"rahmen\">\n".
+	"                                            <div id=\"screen\" style=\"width:100%; height:330px; overflow:auto; text-align:left; font-size:12px; font-family:Verdana;\"></div>\n".
+	"                                        </div>\n".
+	"                                    </div>\n".
+	"                                </td>\n".
+	"                            </tr>\n".
+	"                            <tr>\n".
+	"                                <td class=\"tablea\">\n";
+textbbcode_edit("message");
+echo "                                </td>\n".
+	"                            </tr>\n".
+	"                        </table>\n".
+	"                    </td>\n".
+	"                </tr>\n".
+	"            </table>\n".
+	"        </td>\n".
+	"    </tr>\n".
+	"</table>\n".
+	"<br>\n";
+// ende shoutbox
+
 // start stats
 $a = $GLOBALS['DB']->query("SELECT value_u FROM avps WHERE arg='seeders'")->fetchAll()[0];
 $seeders = 0 + $a['value_u'];

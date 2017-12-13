@@ -1,0 +1,60 @@
+/*
+ * SB-Menü-Buttons und Layers
+ */
+.sb_button:link{
+    color  : #000000;
+    padding: 1px;
+    border : 0px;
+    cursor : pointer;
+    display: block;
+}
+.sb_button:hover{
+    background: #C1D2EE;
+    color     : #000000;
+    padding   : 0px;
+    border    : 1px solid #316AC5;
+    cursor    : pointer;
+    display   : block;
+}
+.sb_loading{
+    display    : none;
+    font-family: Verdana;
+    font-size  : 11px;
+    width      : 200px;
+    height     : 50px;
+    background : #FFFFFF;
+    padding    : 10px;
+    text-align : center;
+    border     : #000000 1px solid;
+}
+.olraised{
+    text-align : center;
+    background : #33AAFF url('../pic/raised_metallic.gif') repeat-x bottom left;
+}
+input.olinput{
+    background : #FFFFFF url('../pic/inputText.gif') repeat-x bottom left;
+    min-height : 16px;
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size  : 13px;
+    color      : #000000;
+}
+.olbgD{
+    background-color : #E1E3E4;
+}
+.olcapD{
+    font-family : Verdana, Arial, Helvetica, sans-serif;
+    font-size   : 11px;
+    font-weight : bold;
+    color       : #FFFFFF;
+}
+.oltxtD{
+    font-family : Verdana, Arial, Helvetica, sans-serif;
+    font-size   : 13px;
+    color       : #000000;
+}
+.olcap{
+    font-family : Arial;
+    font-size   : 12px;
+    font-weight : bold;
+    color       : #FFFFFF;
+}
