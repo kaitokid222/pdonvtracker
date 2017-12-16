@@ -30,68 +30,85 @@ ob_start("ob_gzhandler");
 
 require_once("include/bittorrent.php");
 
-hit_start();
+function dltable($name, $arr, $torrent){
+	global $CURUSER;
 
-function dltable($name, $arr, $torrent)
-{
-    global $CURUSER;
+	$s = "<b>" . count($arr) . " " . $name . "</b>\n";
+	if (!count($arr))
+		return $s;
 
-    $s = "<b>" . count($arr) . " $name</b>\n";
-    if (!count($arr))
-        return $s;
+	$s .= "\n";
+	$s .= "<table width=\"100%\" class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\">\n";
+	$s .= "    <tr>\n";
+	$s .= "        <td class=\"tablecat\">Benutzer/IP</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Erreichbar</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Hochgeladen</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Rate</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Runtergeladen</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Rate</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Ratio</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Fertig</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Verbunden</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Unt&auml;tig</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Client</td>";
+	$s .= "    </tr>\n";
 
-    $s .= "\n";
-    $s .= "<table width=\"100%\" class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\">\n";
-    $s .= "<tr><td class=\"tablecat\">Benutzer/IP</td>" . "<td class=\"tablecat\" style=\"text-align:center\">Erreichbar</td>" . "<td class=\"tablecat\" style=\"text-align:center\">Hochgeladen</td>" . "<td class=\"tablecat\" style=\"text-align:center\">Rate</td>" . "<td class=\"tablecat\" style=\"text-align:center\">Runtergeladen</td>" . "<td class=\"tablecat\" style=\"text-align:center\">Rate</td>" . "<td class=\"tablecat\" style=\"text-align:center\">Ratio</td>" . "<td class=\"tablecat\" style=\"text-align:center\">Fertig</td>" . "<td class=\"tablecat\" style=\"text-align:center\">Verbunden</td>" . "<td class=\"tablecat\" style=\"text-align:center\">Unt&auml;tig</td>" . "<td class=\"tablecat\" style=\"text-align:center\">Client</td></tr>\n";
+	$mod = get_user_class() >= UC_MODERATOR;
+	$now = time();
 
-    $mod = get_user_class() >= UC_MODERATOR;
-    $now = time();
-    foreach ($arr as $e) {
-        // user/ip/port
-        // check if anyone has this ip
-        ($unr = mysql_query("SELECT username, privacy, class, donor, enabled, warned, added FROM users WHERE id=$e[userid] ORDER BY last_access DESC LIMIT 1")) or die;
-        $una = mysql_fetch_array($unr);
-        $tdclass = $CURUSER && $e["userid"] == $CURUSER["id"] ? " class=\"inposttable\"": " class=\"tableb\"";
-        if ($una["privacy"] == "strong") continue;
-        $s .= "<tr>\n";
+	foreach($arr as $e){
+		// user/ip/port
+		// check if anyone has this ip
+		$qry = $GLOBALS['DB']->prepare("SELECT username, privacy, class, donor, enabled, warned, added FROM users WHERE id= :id ORDER BY last_access DESC LIMIT 1");
+		$qry->bindParam(':id', $e["userid"], PDO::PARAM_INT);
+		$qry->execute();
+		if($qry->rowCount())
+			$una = $qry->FetchAll(PDO::FETCH_ASSOC);
+		//$unr = mysql_query("SELECT username, privacy, class, donor, enabled, warned, added FROM users WHERE id=$e[userid] ORDER BY last_access DESC LIMIT 1") or die;
+		//$una = mysql_fetch_array($unr);
+		$tdclass = $CURUSER && $e["userid"] == $CURUSER["id"] ? " class=\"inposttable\"": " class=\"tableb\"";
 
-        if ($una["username"])
-            $s .= "<td$tdclass nowrap=\"nowrap\"><a href=\"userdetails.php?id=$e[userid]\"><font class=\"" . get_class_color($una["class"]) . "\"><b>$una[username]</b></font></a>&nbsp;" . get_user_icons($una) . "</td>\n";
-        else
-            $s .= "<td$tdclass>" . ($mod ? $e["ip"] : preg_replace('/\.\d+$/', ".xxx", $e["ip"])) . "</td>\n";
+		if ($una["privacy"] == "strong")
+			continue;
 
-        $revived = $e["revived"] == "yes";
-        $s .= "<td$tdclass style=\"text-align:center\">" . ($e[connectable] == "yes" ? "Ja" : "<font color=\"red\">Nein</font>") . "</td>\n";
-        $s .= "<td$tdclass style=\"text-align:right\">" . mksize($e["uploaded"]) . "</td>\n";
-        $s .= "<td$tdclass style=\"text-align:right\" nowrap=\"nowrap\">" . mksize($e["uploaded"] / max(1, $e["uploadtime"])) . "/s</td>\n";
-        $s .= "<td$tdclass style=\"text-align:right\">" . mksize($e["downloaded"]) . "</td>\n";
-        $s .= "<td$tdclass style=\"text-align:right\" nowrap=\"nowrap\">" . mksize($e["downloaded"] / max(1, $e["downloadtime"])) . "/s</td>\n";
+		$s .= "    <tr>\n";
 
-        if ($e["downloaded"]) {
-            $ratio = floor(($e["uploaded"] / $e["downloaded"]) * 1000) / 1000;
-            $s .= "<td$tdclass style=\"text-align:right\"><font color=\"" . get_ratio_color($ratio) . "\">" . number_format($ratio, 3) . "</font></td>\n";
-        } else {
-            if ($e["uploaded"])
-                $s .= "<td$tdclass style=\"text-align:right\">Inf.</td>\n";
-            else
-                $s .= "<td$tdclass style=\"text-align:right\">---</td>\n";
-        } 
+		if ($una["username"])
+			$s .= "        <td" . $tdclass . " nowrap=\"nowrap\"><a href=\"userdetails.php?id=" . $e["userid"] . "\"><font class=\"" . get_class_color($una["class"]) . "\"><b>" . $una["username"] . "</b></font></a>&nbsp;" . get_user_icons($una) . "</td>\n";
+		else
+			$s .= "        <td" . $tdclass . ">" . ($mod ? $e["ip"] : preg_replace('/\.\d+$/', ".xxx", $e["ip"])) . "</td>\n";
 
-        $s .= "<td$tdclass style=\"text-align:right\"><div title=\"" . sprintf("%.2f%%", 100 * (1 - ($e["to_go"] / $torrent["size"]))) . "\"style=\"border:1px solid black;padding:0px;width:40px;height:10px;\"><div style=\"border:none;width:" . sprintf("%.2f", 40 * (1 - ($e["to_go"] / $torrent["size"]))) . "px;height:10px;background-image:url(" . $GLOBALS["PIC_BASE_URL"] . "ryg-verlauf-small.png);background-repeat:no-repeat;\"></div></div></td>\n";
-        $s .= "<td$tdclass nowrap style=\"text-align:right\">" . mkprettytime($now - $e["st"]) . "</td>\n";
-        $s .= "<td$tdclass style=\"text-align:right\">" . mkprettytime($now - $e["la"]) . "</td>\n";
-        $s .= "<td$tdclass style=\"text-align:left\">" . htmlspecialchars(getagent($e["agent"], $e["peer_id"])) . "</td>\n";
-        $s .= "</tr>\n";
-    } 
-    $s .= "</table>\n";
-    return $s;
-} 
+		$revived = $e["revived"] == "yes";
+		$s .= "        <td" . $tdclass . " style=\"text-align:center\">" . ($e["connectable"] == "yes" ? "Ja" : "<font color=\"red\">Nein</font>") . "</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\">" . mksize($e["uploaded"]) . "</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\" nowrap=\"nowrap\">" . mksize($e["uploaded"] / max(1, $e["uploadtime"])) . "/s</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\">" . mksize($e["downloaded"]) . "</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\" nowrap=\"nowrap\">" . mksize($e["downloaded"] / max(1, $e["downloadtime"])) . "/s</td>\n";
+
+		if($e["downloaded"]){
+			$ratio = floor(($e["uploaded"] / $e["downloaded"]) * 1000) / 1000;
+			$s .= "        <td" . $tdclass . " style=\"text-align:right\"><font color=\"" . get_ratio_color($ratio) . "\">" . number_format($ratio, 3) . "</font></td>\n";
+		}else{
+			if($e["uploaded"])
+			$s .= "        <td" . $tdclass . " style=\"text-align:right\">Inf.</td>\n";
+			else
+			$s .= "        <td" . $tdclass . " style=\"text-align:right\">---</td>\n";
+		}
+
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\"><div title=\"" . sprintf("%.2f%%", 100 * (1 - ($e["to_go"] / $torrent["size"]))) . "\"style=\"border:1px solid black;padding:0px;width:40px;height:10px;\"><div style=\"border:none;width:" . sprintf("%.2f", 40 * (1 - ($e["to_go"] / $torrent["size"]))) . "px;height:10px;background-image:url(" . $GLOBALS["PIC_BASE_URL"] . "ryg-verlauf-small.png);background-repeat:no-repeat;\"></div></div></td>\n";
+		$s .= "        <td" . $tdclass . " nowrap style=\"text-align:right\">" . mkprettytime($now - $e["st"]) . "</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\">" . mkprettytime($now - $e["la"]) . "</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:left\">" . htmlspecialchars(getagent($e["agent"], $e["peer_id"])) . "</td>\n";
+		$s .= "    </tr>\n";
+	}
+	$s .= "</table>\n";
+	return $s;
+}
 
 dbconn(false);
 
 loggedinorreturn();
 
-hit_count();
 
 $id = $_GET["id"];
 $id = 0 + $id;
@@ -127,18 +144,17 @@ if (!$owned && $row["activated"] != "yes")
 if ($_GET["hit"]) {
     mysql_query("UPDATE torrents SET views = views + 1 WHERE id = $id");
     if ($_GET["tocomm"])
-        header("Location: details.php?id=$id&page=0&" . SID . "#startcomments");
+        header("Location: details.php?id=" . $id . "&page=0#startcomments");
     elseif ($_GET["filelist"])
-        header("Location: details.php?id=$id&filelist=1&" . SID . "#filelist");
+        header("Location: details.php?id=" . $id . "&filelist=1#filelist");
     elseif ($_GET["toseeders"])
-        header("Location: details.php?id=$id&dllist=1&" . SID . "#seeders");
+        header("Location: details.php?id=" . $id . "&dllist=1#seeders");
     elseif ($_GET["todlers"])
-        header("Location: details.php?id=$id&dllist=1&" . SID . "#leechers");
+        header("Location: details.php?id=" . $id . "&dllist=1#leechers");
     elseif ($_GET["tosnatchers"])
-        header("Location: details.php?id=$id&snatcher=1&" . SID . "#snatcher");
+        header("Location: details.php?id=" . $id . "&snatcher=1#snatcher");
     else
-        header("Location: details.php?id=$id&" . SID);
-    hit_end();
+        header("Location: details.php?id=" . $id);
     exit();
 } 
 
@@ -400,9 +416,11 @@ if (!$count) {
 
     ?>
 <table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
-<tr>
-<td class="tabletitle" colspan="10" width="100%" style="text-align:center"><b>Bisher noch keine Kommentare</b></td> 
-</tr></table><br>
+    <tr>
+        <td class="tabletitle" width="100%" style="text-align:center"><b>Bisher noch keine Kommentare</b></td> 
+    </tr>
+</table>
+<br>
 <?php
 } else {
     list($pagertop, $pagerbottom, $limit) = pager(20, $count, "details.php?id=$id&", array(lastpagedefault => 1));

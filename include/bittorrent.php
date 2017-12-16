@@ -65,12 +65,6 @@ function set_last_access($id){
 	$qry->execute();
 }
 	
-/**
- * *** validip/getip courtesy of manolete <manolete@myway.com> ***
- */
-// IP Validation
-
-
 //https://inkplant.com/code/ipv6-to-number
 function ipaddress_to_ipnumber($ipaddress) {
 	$pton = @inet_pton($ipaddress);
@@ -82,34 +76,64 @@ function ipaddress_to_ipnumber($ipaddress) {
 	return base_convert(ltrim($number, '0'), 2, 10);
 }
 
-function validip($ip)
-{
-    //if (!empty($ip) && ip2long($ip) != -1) {
-    if (!empty($ip) && ipaddress_to_ipnumber($ip) > 0) {
-        // reserved IANA IPv4 addresses
-        // http://www.iana.org/assignments/ipv4-address-space
-        $reserved_ips = array (
-            array('0.0.0.0', '2.255.255.255'),
-            array('10.0.0.0', '10.255.255.255'),
-            array('127.0.0.0', '127.255.255.255'),
-            array('169.254.0.0', '169.254.255.255'),
-            array('172.16.0.0', '172.31.255.255'),
-            array('192.0.2.0', '192.0.2.255'),
-            array('192.168.0.0', '192.168.255.255'),
-            array('255.255.255.0', '255.255.255.255')
-            );
+function check_ip_version($ip){
+	if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) === false){
+		if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false)
+			return 4;
+		else
+			return false;
+	}else
+		return 6;
+		
+}
 
-        foreach ($reserved_ips as $r) {
-            //$min = ip2long($r[0]);
-            $min = ipaddress_to_ipnumber($r[0]);
-            //$max = ip2long($r[1]);
-            $max = ipaddress_to_ipnumber($r[1]);
-            //if ((ip2long($ip) >= $min) && (ip2long($ip) <= $max))
-            if ((ipaddress_to_ipnumber($ip) >= $min) && (ipaddress_to_ipnumber($ip) <= $max))
+function is_valid_ip($ip){
+	$ipv = check_ip_version($ip);
+	if($ipv == 4){
+		if (!preg_match("/^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$/", $ip)){
+			return false;
+		}
+		$parts = explode(".", $_GET["ip"]);
+		foreach($parts as $part){
+			if (intval($part)<0 || intval($part)>255) {
 				return false;
-        } 
-        return true;
-    }else
+			}
+		}
+		return true;
+	}elseif($ipv == 6){
+		if(!preg_match("/^([0-9a-f\.\/:]+)$/",strtolower($ip))){
+			return false;
+		}
+		if(substr_count($ip,":") < 2){
+			return false;
+		}
+		$part = preg_split("/[:\/]/",$ip);
+		foreach($part as $i){
+			if(strlen($i) > 4){
+				return false;
+			}
+		}
+		return true;
+	}else
+		return false;
+}
+
+function validip($ip){
+	if(isset($ip)){
+		if(ipaddress_to_ipnumber($ip) > 0){
+			if(check_ip_version($ip) !== false){
+				if(is_valid_ip($ip)){
+					if(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE))
+						return true;
+					else
+						return false;
+				}else
+					return false;
+			}else
+				return false;
+		}else
+			return false;
+	}else
 		return false;
 } 
 
@@ -420,15 +444,17 @@ function mkglobal($vars)
     return 1;
 } 
 
-function tr($x, $y, $noesc = 0)
-{
-    if ($noesc)
+function tr($x, $y, $noesc = 0){
+    if ($noesc != 0)
         $a = $y;
     else {
         $a = htmlspecialchars($y);
         $a = str_replace("\n", "<br />\n", $a);
     } 
-    print("<tr><td class=\"tableb\" valign=\"top\" align=\"left\">$x</td><td class=\"tablea\" valign=\"top\" align=left>$a</td></tr>\n");
+    echo "    <tr>\n".
+		"        <td class=\"tableb\" valign=\"top\" align=\"left\">" . $x . "</td>\n".
+		"        <td class=\"tablea\" valign=\"top\" align=\"left\">" . $a . "</td>\n".
+		"    </tr>\n");
 } 
 
 function validfilename($name)
