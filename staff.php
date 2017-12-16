@@ -95,8 +95,10 @@ if (isset($_POST['action']) && $_POST['action'] == "ban") {
     if (!$_POST["first"] && !$_POST["last"]) {
         stderr("Fehler", "Keine IP / keinen Bereich angegeben!");
     } 
-    $first = ip2long($_POST['first']);
-    $last = ip2long($_POST['last']);
+    //$first = ip2long($_POST['first']);
+    $first = ipaddress_to_ipnumber($_POST['first']);
+    //$last = ip2long($_POST['last']);
+    $last = ipaddress_to_ipnumber($_POST['last']);
     mysql_query("INSERT INTO bans (first, last, comment, added, addedby) VALUES(" . $first . ", " . $last . ", " . sqlesc($_POST['comment']) . ", '" . get_date_time() . "', " . $CURUSER["id"] . ")") or sqlerr(__FILE__, __LINE__);
 
     stderr("IP (Bereich) gesperrt", "<p>Die angegebene IP bzw. der Bereich wurde gesperrt.</p><p><a href=\"" . $_SERVER['PHP_SELF'] . "?act=ban\">Zurück</a></p>");

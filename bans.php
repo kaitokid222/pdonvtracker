@@ -49,8 +49,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && get_user_class() >= UC_ADMINISTRATOR
 	$comment = trim($_POST["comment"]);
 	if (!$first || !$last || !$comment)
 		stderr("Error", "Missing form data.");
-	$first = ip2long($first);
-	$last = ip2long($last);
+	//$first = ip2long($first);
+	$first = ipaddress_to_ipnumber($first);
+	//$last = ip2long($last);
+	$last = ipaddress_to_ipnumber($last);
 	if ($first == -1 || $last == -1)
 		stderr("Error", "Bad IP address.");
 	$comment = sqlesc($comment);

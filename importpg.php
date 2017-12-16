@@ -57,8 +57,10 @@ while (!feof($f))
 	$comment = sqlesc("PeerGuardian: " . substr($s, 0, $i));
 	$s = substr($s, $i + 1);
 	$i = strpos($s, "-");
-	$first = ip2long(substr($s, 0, $i));
-	$last = ip2long(substr($s, $i + 1));
+	//$first = ip2long(substr($s, 0, $i));
+	$first = ipaddress_to_ipnumber(substr($s, 0, $i));
+	//$last = ip2long(substr($s, $i + 1));
+	$last = ipaddress_to_ipnumber(substr($s, $i + 1));
 	if ($first == -1 || $last == -1) continue;
 	$query = "INSERT INTO bans (added, addedby, first, last, comment) VALUES($dt, $uid, $first, $last, $comment)";
 	$res = mysql_query($query) or sqlerr(__FILE__, __LINE__);

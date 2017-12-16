@@ -27,10 +27,8 @@ ini_set('display_errors', 1);
 // +--------------------------------------------------------------------------+
 */
 
-function local_user()
-{
+function local_user(){
     global $_SERVER;
-
     return $_SERVER["SERVER_ADDR"] == $_SERVER["REMOTE_ADDR"];
 } 
 
@@ -38,12 +36,11 @@ if (!file_exists("include/secrets.php") || !file_exists("include/config.php"))
     die("<html><head><title>FEHLER</title></head><body><p>Der Tracker wurde noch nicht konfiguriert.</p>
         <p><a href=\"inst/install.php\">Zum Installationsscript</a></p></body></html>");
 
+// legacy parts
 require_once("include/secrets.php");
 require_once("include/config.php");
-require_once("include/cleanup.php");
-
-
-require_once("include/shoutcast.php");
+require_once("include/cleanup.php"); // neubauen class cleanup
+require_once("include/shoutcast.php"); // kein plan. scheint zu funktionieren
 
 
 require_once("include/class/db.php");
@@ -72,9 +69,23 @@ function set_last_access($id){
  * *** validip/getip courtesy of manolete <manolete@myway.com> ***
  */
 // IP Validation
+
+
+//https://inkplant.com/code/ipv6-to-number
+function ipaddress_to_ipnumber($ipaddress) {
+	$pton = @inet_pton($ipaddress);
+	if (!$pton) { return false; }
+	$number = '';
+	foreach (unpack('C*', $pton) as $byte) {
+		$number .= str_pad(decbin($byte), 8, '0', STR_PAD_LEFT);
+	}
+	return base_convert(ltrim($number, '0'), 2, 10);
+}
+
 function validip($ip)
 {
-    if (!empty($ip) && ip2long($ip) != -1) {
+    //if (!empty($ip) && ip2long($ip) != -1) {
+    if (!empty($ip) && ipaddress_to_ipnumber($ip) > 0) {
         // reserved IANA IPv4 addresses
         // http://www.iana.org/assignments/ipv4-address-space
         $reserved_ips = array (
@@ -89,34 +100,36 @@ function validip($ip)
             );
 
         foreach ($reserved_ips as $r) {
-            $min = ip2long($r[0]);
-            $max = ip2long($r[1]);
-            if ((ip2long($ip) >= $min) && (ip2long($ip) <= $max)) return false;
+            //$min = ip2long($r[0]);
+            $min = ipaddress_to_ipnumber($r[0]);
+            //$max = ip2long($r[1]);
+            $max = ipaddress_to_ipnumber($r[1]);
+            //if ((ip2long($ip) >= $min) && (ip2long($ip) <= $max))
+            if ((ipaddress_to_ipnumber($ip) >= $min) && (ipaddress_to_ipnumber($ip) <= $max))
+				return false;
         } 
         return true;
-    } else return false;
-} 
-// Patched function to detect REAL IP address if it's valid
-function getip()
-{
-    $ipaddress = '';
-    if (getenv('HTTP_CLIENT_IP'))
-        $ipaddress = getenv('HTTP_CLIENT_IP');
-    else if(getenv('HTTP_X_FORWARDED_FOR'))
-        $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
-    else if(getenv('HTTP_X_FORWARDED'))
-        $ipaddress = getenv('HTTP_X_FORWARDED');
-    else if(getenv('HTTP_FORWARDED_FOR'))
-        $ipaddress = getenv('HTTP_FORWARDED_FOR');
-    else if(getenv('HTTP_FORWARDED'))
-       $ipaddress = getenv('HTTP_FORWARDED');
-    else if(getenv('REMOTE_ADDR'))
-        $ipaddress = getenv('REMOTE_ADDR');
-    else
-        $ipaddress = 'UNKNOWN';
-    return $ipaddress;
+    }else
+		return false;
 } 
 
+function getip(){
+	$client  = @$_SERVER['HTTP_CLIENT_IP'];
+	$forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
+	$remote  = $_SERVER['REMOTE_ADDR'];
+
+	if(filter_var($client, FILTER_VALIDATE_IP)){
+		$ip = $client;
+	}elseif(filter_var($forward, FILTER_VALIDATE_IP)){
+		$ip = $forward;
+	}else{
+		$ip = $remote;
+	}
+
+	return $ip;
+} 
+
+// die quelle des bösen
 function dbconn($autoclean = false)
 {
     global $mysql_host, $mysql_user, $mysql_pass, $mysql_db, $_SERVER;
@@ -140,6 +153,9 @@ function dbconn($autoclean = false)
     mysql_select_db($mysql_db)
     or die('dbconn: mysql_select_db: ' + mysql_error());
 
+	// userlogin() ersetzt in überarbeiteten dateien dbconn()
+	// userlogin selbst ist pdo aber eine sehr schwache
+	// lösung. hier muss eine klasse "das ruder übernehmen"
     userlogin();
 
     if ($autoclean)
@@ -177,6 +193,8 @@ function userlogin()
 				return;
 			} 
 		}
+		// hier ist der angriffspunkt um rework zu vermeiden
+		// geschätzte kompatibilität 99%
         $GLOBALS["CURUSER"] = $_SESSION["userdata"];
     } else {
         // Keine Session aktiv, login via Cookie

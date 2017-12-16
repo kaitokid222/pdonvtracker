@@ -818,7 +818,8 @@ if (count($_GET) > 0 && !$_GET['h']) {
                 $user['last_access'] = '---';
 
             if ($user['ip']) {
-                $nip = ip2long($user['ip']);
+                //$nip = ip2long($user['ip']);
+                $nip = ipaddress_to_ipnumber($user['ip']);
                 $auxres = mysql_query("SELECT COUNT(*) FROM bans WHERE $nip >= first AND $nip <= last") or sqlerr(__FILE__, __LINE__);
                 $array = mysql_fetch_row($auxres);
                 if ($array[0] == 0)

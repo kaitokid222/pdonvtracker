@@ -37,8 +37,10 @@ else
 	$ip = $_GET["ip"];
 if ($ip)
 {
-	$nip = ip2long($ip);
-	if ($nip == -1)
+	//$nip = ip2long($ip);
+	$nip = ipaddress_to_ipnumber($ip);
+	//if ($nip == -1)
+	if ($nip < 1)
 	  stderr("Error", "Bad IP.");
 	$res = mysql_query("SELECT * FROM bans WHERE $nip >= first AND $nip <= last") or sqlerr(__FILE__, __LINE__);
 	if (mysql_num_rows($res) == 0)
