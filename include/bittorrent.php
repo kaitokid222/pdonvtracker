@@ -41,7 +41,10 @@ require_once("include/secrets.php");
 require_once("include/config.php");
 require_once("include/cleanup.php"); // neubauen class cleanup
 require_once("include/shoutcast.php"); // kein plan. scheint zu funktionieren
+require_once("include/std.php");
 
+require_once("include/global.php");
+require_once("include/pmfunctions.php");
 
 require_once("include/class/db.php");
 $database = new db($dsn);
@@ -90,28 +93,23 @@ function check_ip_version($ip){
 function is_valid_ip($ip){
 	$ipv = check_ip_version($ip);
 	if($ipv == 4){
-		if (!preg_match("/^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$/", $ip)){
+		if (!preg_match("/^(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})$/", $ip))
 			return false;
-		}
 		$parts = explode(".", $_GET["ip"]);
 		foreach($parts as $part){
-			if (intval($part)<0 || intval($part)>255) {
+			if (intval($part)<0 || intval($part)>255)
 				return false;
-			}
 		}
 		return true;
 	}elseif($ipv == 6){
-		if(!preg_match("/^([0-9a-f\.\/:]+)$/",strtolower($ip))){
+		if(!preg_match("/^([0-9a-f\.\/:]+)$/",strtolower($ip)))
 			return false;
-		}
-		if(substr_count($ip,":") < 2){
+		if(substr_count($ip,":") < 2)
 			return false;
-		}
 		$part = preg_split("/[:\/]/",$ip);
 		foreach($part as $i){
-			if(strlen($i) > 4){
+			if(strlen($i) > 4)
 				return false;
-			}
 		}
 		return true;
 	}else
@@ -141,15 +139,12 @@ function getip(){
 	$client  = @$_SERVER['HTTP_CLIENT_IP'];
 	$forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
 	$remote  = $_SERVER['REMOTE_ADDR'];
-
-	if(filter_var($client, FILTER_VALIDATE_IP)){
+	if(filter_var($client, FILTER_VALIDATE_IP))
 		$ip = $client;
-	}elseif(filter_var($forward, FILTER_VALIDATE_IP)){
+	elseif(filter_var($forward, FILTER_VALIDATE_IP))
 		$ip = $forward;
-	}else{
+	else
 		$ip = $remote;
-	}
-
 	return $ip;
 } 
 
@@ -442,20 +437,7 @@ function mkglobal($vars)
             return 0;
     } 
     return 1;
-} 
-
-function tr($x, $y, $noesc = 0){
-    if ($noesc != 0)
-        $a = $y;
-    else {
-        $a = htmlspecialchars($y);
-        $a = str_replace("\n", "<br />\n", $a);
-    } 
-    echo "    <tr>\n".
-		"        <td class=\"tableb\" valign=\"top\" align=\"left\">" . $x . "</td>\n".
-		"        <td class=\"tablea\" valign=\"top\" align=\"left\">" . $a . "</td>\n".
-		"    </tr>\n");
-} 
+}
 
 function validfilename($name)
 {
@@ -482,7 +464,7 @@ function urlparse($m)
 {
     $t = $m[0];
     if (preg_match(',^\w+://,', $t))
-        return "<a href=\"$t\">$t</a>";
+        return "<a href=\"" . $t . "\">" . $t . "</a>";
     return "<a href=\"http://$t\">$t</a>";
 } 
 
@@ -493,307 +475,7 @@ function parsedescr($d, $html)
         $d = str_replace("\n", "\n<br>", $d);
     } 
     return $d;
-} 
-
-function ratiostatbox()
-{
-    global $CURUSER;
-
-    if ($CURUSER) {
-        $ratio = ($CURUSER["downloaded"] > 0?number_format($CURUSER["uploaded"] / $CURUSER["downloaded"], 3, ",", "."):"Inf.");
-        $seeds = $GLOBALS['database']->row_count('peers','`userid`=' . $CURUSER["id"] . ' AND `seeder`= yes') ?: 0;
-        $leeches = $GLOBALS['database']->row_count('peers','`userid`=' . $CURUSER["id"] . ' AND `seeder`= no') ?: 0;
-        $tlimits = get_torrent_limits($CURUSER);
-
-        if ($ratio < 0.5) {
-            $ratiowarn = " style=\"background-color:red;color:white;\"";
-        } elseif ($ratio < 0.75) {
-            $ratiowarn = " style=\"background-color:#FFFF00;color:black;\"";
-        } 
-
-        if ($tlimits["seeds"] >= 0) {
-            if ($tlimits["seeds"] - $seeds < 1)
-                $seedwarn = " style=\"background-color:red;color:white;\"";
-			else
-				$seedwarn = "";
-            $tlimits["seeds"] = " / " . $tlimits["seeds"];
-        } else
-            $tlimits["seeds"] = "";
-        if ($tlimits["leeches"] >= 0) {
-            if ($tlimits["leeches"] - $leeches < 1)
-                $leechwarn = " style=\"background-color:red;color:white;\"";
-			else
-				$leechwarn = "";
-            $tlimits["leeches"] = " / " . $tlimits["leeches"];
-        } else
-            $tlimits["leeches"] = "";
-        if ($tlimits["total"] >= 0) {
-            if ($tlimits["total"] - $leeches + $seeds < 1)
-                $totalwarn = " style=\"background-color:red;color:white;\"";
-			else
-				$totalwarn = "";
-            $tlimits["total"] = " / " . $tlimits["total"];
-        } else
-            $tlimits["total"] = "";
-
-        ?>
-              <tr><td class="tabletitle" style="padding: 4px;"><b><?=htmlspecialchars($CURUSER["username"])?> :.</b></td></tr>
-              <tr><td class="tablea" style="padding-left: 4px;">
-	            <table cellspacing="0" cellpadding="2" border="0" style="width:140px;">
-		          <tr><td><b>Download:</b></td><td style="text-align:right"><?=mksize($CURUSER["downloaded"])?></td></tr>
-		          <tr><td><b>Upload:</b></td><td style="text-align:right"><?=mksize($CURUSER["uploaded"])?></td></tr>
-		          <tr><td><b>Ratio:</b></td><td style="text-align:right" style="color:<?=get_ratio_color($ratio)?>"><?=$ratio?></td></tr>
-		          <tr><td colspan="2">&nbsp;</td></tr>
-		          <tr<?=$seedwarn?>><td><b>Seeds:</b></td><td style="text-align:right"><?=$seeds . $tlimits["seeds"]?></td></tr>
-		          <tr<?=$leechwarn?>><td><b>Leeches:</b></td><td style="text-align:right"><?=$leeches . $tlimits["leeches"]?></td></tr>
-		          <tr<?=$totalwarn?>><td><b>Gesamt:</b></td><td style="text-align:right"><?=($seeds + $leeches) . $tlimits["total"]?></td></tr>
-		        </table>
-              </td></tr>
-<?php } 
-} 
-
-function stdhead($title = "", $msgalert = true)
-{
-    global $CURUSER, $_SERVER, $PHP_SELF, $BASEURL;
-
-    if (!$GLOBALS["SITE_ONLINE"])
-        die("Die Seite ist momentan aufgrund von Wartungsarbeiten nicht verfügbar.<br>");
-
-    header("Content-Type: text/html; charset=iso-8859-1");
-    header("Pragma: No-cache");
-    header("Expires: 300");
-    header("Cache-Control: private");
-
-    if ($title == "")
-        $title = $GLOBALS["SITENAME"];
-    else
-        $title = $GLOBALS["SITENAME"] . " :: " . htmlspecialchars($title);
-
-    if ($CURUSER) {
-		$qry = $GLOBALS['DB']->prepare('SELECT `uri` FROM `stylesheets` WHERE `id`= :id');
-		$qry->bindParam(':id', $CURUSER["stylesheet"], PDO::PARAM_INT);
-		$qry->execute();
-		$ss_a = $qry->fetchObject();
-        if ($ss_a) $GLOBALS["ss_uri"] = $ss_a->uri;
-    }else{
-		if (!isset($GLOBALS["ss_uri"])) {
-			$qry = $GLOBALS['DB']->prepare("SELECT `uri` FROM `stylesheets` WHERE `default`='yes'");
-			$qry->execute();
-			if($qry->rowCount() > 0){
-				$row = $qry->fetchObject();
-			}
-			$GLOBALS["ss_uri"] = $row->uri;
-		} 
-	}
-
-    if ($msgalert && $CURUSER) {
-		$unread = $GLOBALS['database']->row_count('messages','`folder_in`<>0 AND `receiver`=' . $CURUSER["id"] . ' && `unread`= yes');
-		if($unread < 1)
-			unset($unread);
-        if ($CURUSER["class"] >= UC_MODERATOR) {
-            $unread_mod = $GLOBALS['database']->row_count('messages','`sender`= 0 AND `receiver`= 0 && `mod_flag`= open');
-			if($unread_mod < 1)
-				unset($unread_mod);
-        } 
-    } 
-
-    $fn = substr($PHP_SELF, strrpos($PHP_SELF, "/") + 1);
-    $logo_pic = $GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/";
-    if (file_exists($logo_pic . "logo.gif")) $logo_pic .= "logo.gif";
-    if (file_exists($logo_pic . "logo_top.gif")) $logo_pic .= "logo_top.gif";
-    if (file_exists($logo_pic . "logo.jpg")) $logo_pic .= "logo.jpg";
-    if (file_exists($logo_pic . "logo_top.jpg")) $logo_pic .= "logo_top.jpg";
-    if (file_exists("header.jpg")) $logo_pic .= "header.jpg";
-    if (file_exists($logo_pic . "header.gif")) $logo_pic .= "header.gif";
-
-    ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<title><?=$title?></title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<meta http-equiv="Content-Script-Type" content="text/javascript">
-<meta http-equiv="pragma" content="no-cache">
-<meta http-equiv="expires" content="300">
-<meta http-equiv="cache-control" content="private">
-<meta name="robots" content="noindex, nofollow, noarchive">
-<meta name="MSSmartTagsPreventParsing" content="true">
-<link rel="stylesheet" href="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/" . $GLOBALS["ss_uri"]?>.css" type="text/css">
-<?php
-if(date('m') == 12 || date('m') == 1){
-	echo "<script type=\"text/javascript\" src=\"/js/jquery-3.2.1.min.js\"></script>\n";
-	echo "<script type=\"text/javascript\" src=\"/js/jsnow.js\"></script>\n";
 }
-if ($GLOBALS["DYNAMIC_RSS"]) {
-?>
-<link rel="alternate" title="NetVision RSS" href="<?=$BASEURL?>/rss.php" type="application/rss+xml">
-<link rel="alternate" title="NetVision RSS (Direktdownload)" href="<?=$BASEURL?>/rss.php?type=directdl" type="application/rss+xml">
-<link rel="alternate" title="NetVision RSS (Benutzerkategorien)" href="<?=$BASEURL?>/rss.php?categories=profile" type="application/rss+xml">
-<link rel="alternate" title="NetVision RSS (Benutzerkategorien, Direktdownload)" href="<?=$BASEURL?>/rss.php?categories=profile&type=directdl" type="application/rss+xml">
-<?php
-} 
-?>
-</head>
-<body>
-<?php
-	if(date('m') == 12 || date('m') == 1){
-		echo "<script type=\"text/javascript\">\n".
-			"$(function() {\n".
-			"    $(document).snow({ SnowImage: \"" . $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "weather-snowflake.png\" });\n".
-			"});\n".
-			"</script>\n";
-	}
-?>
-<table style="width:100%" cellpadding="0" cellspacing="1" align="center" border="0" class="tableoutborder">
-  <tr>
-    <td class="mainpage" align="center">
-      <table style="width:100%" border="0" cellspacing="0" cellpadding="0">
-        <tr> 
-          <td class="logobackground" align="left"><a href="index.php?sid="><img src="<?=$logo_pic?>" border="0" alt="NetVision" title="NetVision" /></a></td>
-        </tr>
-        <tr>
-          <td align="right" class="topbuttons" nowrap="nowrap"><span class="smallfont">
-            <?php if ($GLOBALS["PORTAL_LINK"] != "") {
-
-        ?><a href="<?=$GLOBALS["PORTAL_LINK"]?>"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/top_portal.gif" border="0" alt="" title="Zum Portal" /></a><?php } 
-
-    ?>
-            </span>
-          </td>
-        </tr>
-      </table>
-
-      <table style="width:100%" border="0" cellspacing="0" cellpadding="0">
-        <tr>
-          <td valign="top" align="left" style="padding: 5px;width:150px">
-            <table cellspacing="0" cellpadding="0" border="0" style="width:150px"><tr>
-            <td align="left"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/obenlinks.gif" alt="" title="" /></td>
-            <td style="width:100%" class="obenmitte"></td>
-            <td align="right"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/obenrechts.gif" alt="" title="" /></td>
-            </tr></table>
-            <table cellpadding="0" cellspacing="1" border="0" style="width:100%" class="tableinborder">
-            <?php if ($CURUSER && $CURUSER["statbox"] == "top") ratiostatbox();
-    ?>              
-              <tr><td class="tabletitle" style="padding: 4px;"><b>NetVision :.</b></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="index.php" title="Neuigkeiten vom Team sowie allgemeine Tracker-Stats und Umfragen">Tracker-News</a></td></tr>
-              <?php if ($GLOBALS["PORTAL_LINK"] != "") {
-
-        ?><tr><td class="tablea"><a style="display:block;padding:4px;" href="<?=$GLOBALS["PORTAL_LINK"]?>" title="Unser Portal und Forum f&uuml;r alles M&ouml;gliche">Portal</a></td></tr><?php } 
-
-    ?>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="faq.php" title="Oft gestellte Fragen zu diversen trackerspezifischen Themen">FAQ</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="rules.php" title="Alle Verhaltensregeln f&uuml;r den Tracker - LESEPFLICHT!">Regeln</a></td></tr>
-              <?php if ($CURUSER) {
-        if ($GLOBALS["IRCAVAILABLE"]) {
-
-            ?>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="chat.php" title="IRC-Serverdaten und ein einfach zu benutzendes Java-Applet">IRC Chat</a></td></tr>
-              <?php } 
-
-        ?>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="users.php" title="Liste aller Mitglieder, inkl. Suchfunktion">Mitglieder</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="topten.php" title="Diverse Top-Listen">Top 10</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="staff.php" title="Schnelle &Uuml;bersicht &uuml;ber das  Trackerteam">Team</a></td></tr>
-              <tr><td class="tabletitle" style="padding: 4px;"><b>Torrents :.</b></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="browse.php" title="Verf&uuml;gbare Torrents anzeigen oder suchen">Durchsuchen</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="upload.php" title="Lade einen eigenen Torrent auf den Tracker hoch">Hochladen</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="mytorrents.php" title="Hier werden alle von Dir hochgeladenen Torrents angezeigt">Meine Torrents</a></td></tr>
-              <?php if (get_user_class() >= UC_GUTEAM) {
-            ?>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="guestuploads.php" title="Zeigt alle noch nicht freigeschalteten Gastuploads">Neue Gastuploads</a></td></tr>              
-              <?php } 
-        ?>
-              <tr><td class="tabletitle" style="padding: 4px;"><b>Mein Account :.</b></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="userdetails.php?id=<?=$CURUSER["id"]?>" title="Deine Statistik-Seite, die auch andere Benutzer sehen">Mein Profil</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="my.php" title="Hier kannst Du Deine Einstellungen &auml;ndern">Profil bearbeiten</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="friends.php" title="Eine Liste Deiner &quot;Freunde&quot; auf dem Tracker">Buddyliste</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="messages.php" title="Pers&ouml;nliche Nachrichten lesen und beantworten">Nachrichten<?php
-        if (isset($unread) || isset($unread_mod))
-            echo "&nbsp;&nbsp;";
-
-        if (isset($unread)) {
-            echo "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "multipage.gif\" border=\"0\"> <b>$unread</b>";
-            if ($unread_mod)
-                echo "&nbsp;&nbsp;";
-        } 
-
-        if (isset($unread_mod)) {
-            echo "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "multipagemod.gif\" border=\"0\"> <b>$unread_mod</b>";
-        } 
-
-        ?></a>
-              </td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="bitbucket.php" title="Hier kannst Du Avatare und andere Bilder ablegen">BitBucket</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="logout.php" title="Beendet Deine Sitzung und l&ouml;scht die Autologin-Cookies">Ausloggen</a></td></tr>
-              <?php if (get_user_class() >= UC_MODERATOR) {
-
-            ?>
-              <tr><td class="tabletitle" style="padding: 4px;"><b>Administration :.</b></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="log.php" title="Tracker-Logbuch anzeigen">Site Log</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="usersearch.php" title="Suche nach Benutzern &uuml;ber diverse Angaben">Benutzersuche</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="polls.php" title="Umfrageverwaltung">Umfragen</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="staff.php?act=last" title="Liste aller Benutzer, nach Anmeldedatum sortiert">Neueste Benutzer</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="staff.php?act=ban" title="Hier kannst Du IP-Bereiche vom Tracker aussperren">IPs sperren</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="staff.php?act=upstats" title="Schnelle &Uuml;bersicht &uuml;ber die Uploadaktivit&auml;ten">Uploader-Stats</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="bitbucket-gallery.php" title="Zeigt s&auml;mtliche BitBucket-Bilder an, nach Benutzern sortiert">BitBucket Gallerie</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="startstoplog.php" title="Diverse Werzeuge, die mit dem Eventlog verkn&uuml;pft sind">Start-/Stop-Log</a></td></tr>
-              <?php if (get_user_class() >= UC_ADMINISTRATOR) {
-
-                ?>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="adduser.php" title="Hier kannst Du einen neuen Account anlegen, der sofort aktiv ist">Account erstellen</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="staff.php?act=cleanaccs" title="Benutzer nach Ratio- und Aktivit&auml;tskriterien suchen und deaktivieren">Accountbereinigung</a></td></tr>
-              <?php } 
-        } 
-    } else {
-
-        ?>
-              <tr><td class="tabletitle"><b>Account :.</b></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="signup.php">Registrieren</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="login.php">Einloggen</a></td></tr>
-              <tr><td class="tablea"><a style="display:block;padding:4px;" href="recover.php">PW vergessen?</a></td></tr>
-              <?php } 
-    if ($CURUSER && $CURUSER["statbox"] == "bottom") ratiostatbox();
-
-    ?>
-            </table>
-            <table cellspacing="0" cellpadding="0" border="0" style="width:150px"><tr>
-            <td align="left"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/untenlinks.gif" alt="" title="" /></td>
-            <td style="width:100%" class="untenmitte" align="center"></td>
-            <td align="right"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/untenrechts.gif" alt="" title="" /></td>
-            </tr></table>
-          </td>
-          <td valign="top" align="center" style="padding: 5px;width:100%">
-<?php
-
-} // stdhead
-function stdfoot()
-{
-?>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>  
-</table>
-</body>
-</html>
-<?php
-} 
-
-function genbark($x, $y)
-{
-    stdhead($y);
-
-    ?>
-<table cellpadding="4" cellspacing="1" border="0" style="width:100%" class="tableinborder">
- <tr>
-  <td class="tabletitle" colspan="10" width="100%"><span class="normalfont"><center><b> <?=htmlspecialchars($y)?> </b></center></span></td> 
- </tr><tr><td width="100%" class="tablea"><?=htmlspecialchars($x)?></td></tr></table><br>
-<?php
-    stdfoot();
-    exit();
-} 
 
 function mksecret($len = 20)
 {
@@ -1581,7 +1263,5 @@ function expandCollapse(torrentId)
             return $pics;
         } 
 
-        require_once("include/global.php");
-        require_once("include/pmfunctions.php");
 
-        ?>
+?>
