@@ -1,0 +1,3 @@
+[submodule "announce"]
+	path = announce
+	url = git://github.com/kaitokid222/BitTorrentPHPAnnounceSocketServer.git
