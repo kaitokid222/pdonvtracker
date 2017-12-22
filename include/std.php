@@ -1,5 +1,17 @@
 <?php
 
+/*
+// +--------------------------------------------------------------------------+
+// | Project:    pdonvtracker - NetVision BitTorrent Tracker 2017             |
+// +--------------------------------------------------------------------------+
+// | This file is part of pdonvtracker. NVTracker is based on BTSource,       |
+// | originally by RedBeard of TorrentBits, extensively modified by           |
+// | Gartenzwerg.                                                             |
+// +--------------------------------------------------------------------------+
+// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// +--------------------------------------------------------------------------+
+ */
+
 function stdhead($title = "", $msgalert = true){
 	global $CURUSER, $_SERVER, $PHP_SELF, $BASEURL;
 

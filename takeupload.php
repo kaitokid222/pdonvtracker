@@ -29,8 +29,6 @@
 require_once("include/benc.php");
 require_once("include/bittorrent.php");
 
-hit_start();
-
 // ACHTUNG: Nicht immer erlaubt! Bitte notfalls in der VHost-Config via:
 //   php_admin_value upload_max_filesize WERT
 // setzen. WERT kann z.B. 12M, 1000K oder eine Zahl in Bytes sein.
@@ -38,28 +36,27 @@ ini_set("upload_max_filesize", $GLOBALS["MAX_TORRENT_SIZE"] + 2 * $GLOBALS["MAX_
 
 $GLOBALS["uploaderrors"] = Array();
 
-function tr_msg($msg)
-{
-    echo "<tr><td class=\"tablea\" style=\"text-align:left;\">$msg</td>";
+function tr_msg($msg){
+    echo "<tr>\n".
+		"    <td class=\"tablea\" style=\"text-align:left;\">" . $msg . "</td>";
 }
 
-function tr_status($status)
-{
+function tr_status($status){
     echo "<td class=\"tableb\" style=\"text-align:center;\"><img src=\"".$GLOBALS["PIC_BASE_URL"];
     if ($status == "ok")
         echo "button_online2.gif";
     else
         echo "button_offline2.gif";
-    echo "\" width></td></tr>";
+    echo "\" width></td>\n".
+		"</tr>\n";
     flush();
 } 
 
-function abort($msg)
-{
+function abort($msg){
     end_table();
     end_frame();
     begin_frame("Torrent-Upload fehlgeschlagen!", FALSE, "650px");
-    echo "<p>Beim Upload ist ein schwerwiegender Fehler aufgetreten:</p><p style=\"color:red\">$msg</p><p>Bitte korrigiere den angezeigten Fehler, und versuche es erneut!</p>";
+    echo "<p>Beim Upload ist ein schwerwiegender Fehler aufgetreten:</p><p style=\"color:red\">" . $msg . "</p><p>Bitte korrigiere den angezeigten Fehler, und versuche es erneut!</p>";
     end_frame();
     stdfoot();
     die();
@@ -67,7 +64,6 @@ function abort($msg)
 
 dbconn();
 
-hit_count();
 
 loggedinorreturn();
 
@@ -290,7 +286,7 @@ tr_status("ok");
 tr_msg("Torrent-Datei auf dem Server speichern");
 // We don't move the file anymore, we rather write the changed,
 // bencoded version of our dictionary.
-$fhandle = fopen($GLOBALS["TORRENT_DIR"]."/$id.torrent", "w");
+$fhandle = fopen($GLOBALS["TORRENT_DIR"]."/" . $id . ".torrent", "w");
 if ($fhandle) {
     fwrite($fhandle, benc($dict));
     fclose($fhandle);
@@ -300,7 +296,7 @@ if ($fhandle) {
 } 
 tr_status("ok");
 
-write_log("torrentupload", "Der Torrent <a href=\"details.php?id=$id\">$id ($torrent)</a> wurde von '<a href=\"userdetails.php?id=$CURUSER[id]\">$CURUSER[username]</a>' hochgeladen.");
+write_log("torrentupload", "Der Torrent <a href=\"details.php?id=" . $id . "\">" . $id . "(" . $torrent . ")</a> wurde von '<a href=\"userdetails.php?id=" . $CURUSER["id"] . "\">" . $CURUSER["username"] . "</a>' hochgeladen.");
 
 // Handle picture uploads
 $picnum = 0;
@@ -317,11 +313,11 @@ if ($_FILES["pic2"]["name"] != "") {
 } 
 
 if ($picnum)
-    @mysql_query("UPDATE torrents SET numpics=$picnum WHERE id=$id");
+    @mysql_query("UPDATE torrents SET numpics=" . $picnum . " WHERE id=" . $id);
 
 // Create NFO image
 tr_msg("NFO-Bild erzeugen");
-if (gen_nfo_pic($nfo, $GLOBALS["BITBUCKET_DIR"]."/nfo-$id.png") == 0)
+if (gen_nfo_pic($nfo, $GLOBALS["BITBUCKET_DIR"]."/nfo-" . $id . ".png") = 0)
     tr_status("err");
 else
     tr_status("ok");
@@ -331,10 +327,8 @@ else
 
 if ($activated == "no") {
     tr_msg("Gastuploader-Team und Moderatoren benachrichtigen");
-    // Send team message
     $mod_msg = "[b]Der Benutzer [url=".$DEFAULTBASEURL."/userdetails.php?id=".$CURUSER["id"]."]".$CURUSER["username"]."[/url] hat einen Torrent hochgeladen:[/b]\n\n[url=".$DEFAULTBASEURL."/details.php?id=".$id."]".$torrent."[/url] (".$id.")\n\nBitte überprüfen und freischalten/löschen.";
     //sendPersonalMessage(0, 0, "Der Benutzer ".$CURUSER["username"]." hat einen Torrent hochgeladen.", $mod_msg, PM_FOLDERID_MOD, 0, "open");
-    
     // Send a system message to each member of the guest upload team
     $res = mysql_query("SELECT `id` FROM `users` WHERE `class` = ".UC_GUTEAM);
     while ($uid = mysql_fetch_assoc($res))
@@ -345,43 +339,32 @@ if ($activated == "no") {
 end_table();
 end_frame();
 begin_frame("Torrent-Upload war erfolgreich!", FALSE, "650px");
-?>
-<p>Dein Torrent wurde erfolgreich hochgeladen. <b>Beachte</b> dass Dein Torrent erst
-sichtbar wird, wenn der erste Seeder verfügbar ist!</p>
-<?php
+echo "<p>Dein Torrent wurde erfolgreich hochgeladen. <b>Beachte</b> dass Dein Torrent erst".
+	"sichtbar wird, wenn der erste Seeder verfügbar ist!</p>\n";
 
 if (count($GLOBALS["uploaderrors"])) {
-?>
-<p>Beim Upload des Torrents ist mindestens ein unkritischer Fehler aufgetreten:</p>
-<ul>
-<?php
-foreach($GLOBALS["uploaderrors"] as $error)
-    echo "<li>$error</li>";
-?>
-</ul>
-<?php
+	echo "<p>Beim Upload des Torrents ist mindestens ein unkritischer Fehler aufgetreten:</p>\n".
+		"<ul>\n";
+	foreach($GLOBALS["uploaderrors"] as $error)
+		echo "    <li>" . $error . "</li>";
+	echo "</ul>\n";
 }
 
 if ($activated == "no") {
-?>
-<p><b>Da Du kein Uploader bist, wurde Dein Torrent als Gastupload gewertet, und muss
-zuerst von einem Gastupload-Betreuer &uuml;berpr&uuml;ft und freigeschaltet werden.
-Erst dann kannst Du den Torrent zum Seeden herunterladen.</b> Bitte sende uns keine
-Nachrichten mit der Bitte um Freischaltung. Das Team wurde bereits per PN &uuml;ber
-Deinen Upload benachrichtigt, und wird sich baldm&ouml;glichst darum k&uuml;mmern.</p>
-<?php } ?>
-<p><b>Wichtiger Hinweis:</b><br>Bevor Du den Torrent seeden kannst, musst Du den Torrent
-erneut vom Tracker herunterladen, da beim Upload einige Änderungen an der Torrent-Datei
-vorgenommen wurden. Dadurch hat der Torrent einen neuen Info-Hash erhalten, und beim
-Download wird ebenfalls Dein PassKey in die Announce-URL eingefügt. <b>Das
-&Auml;ndern der Announce-URL in Deiner soeben hochgeladenen Torrent-Metadatei gen&uuml;gt
-nicht!</b></p>
-<p style="text-align:center"><a href="details.php?id=<?=$id?>">Weiter zu den Details Deines Torrents</a></p>
-<?php
+	echo "<p><b>Da Du kein Uploader bist, wurde Dein Torrent als Gastupload gewertet, und muss".
+		"zuerst von einem Gastupload-Betreuer &uuml;berpr&uuml;ft und freigeschaltet werden.".
+		"Erst dann kannst Du den Torrent zum Seeden herunterladen.</b> Bitte sende uns keine".
+		"Nachrichten mit der Bitte um Freischaltung. Das Team wurde bereits per PN &uuml;ber".
+		"Deinen Upload benachrichtigt, und wird sich baldm&ouml;glichst darum k&uuml;mmern.</p>\n";
+} 
+echo "<p><b>Wichtiger Hinweis:</b><br>Bevor Du den Torrent seeden kannst, musst Du den Torrent".
+	"erneut vom Tracker herunterladen, da beim Upload einige Änderungen an der Torrent-Datei".
+	"vorgenommen wurden. Dadurch hat der Torrent einen neuen Info-Hash erhalten, und beim".
+	"Download wird ebenfalls Dein PassKey in die Announce-URL eingefügt. <b>Das".
+	"&Auml;ndern der Announce-URL in Deiner soeben hochgeladenen Torrent-Metadatei gen&uuml;gt".
+	"nicht!</b></p>\n".
+	"<p style=\"text-align:center\"><a href=\"details.php?id=" . $id . "\">Weiter zu den Details Deines Torrents</a></p>\n";
 
 end_frame();
 stdfoot();
-
-hit_end();
-
 ?>

@@ -252,7 +252,7 @@ function textbbcode_edit($text, $aktive = TRUE){
           "<br style=\"clear: left;\" />");
 }
 
-$shoutbox = new shoutbox($database);
+//$shoutbox = new shoutbox($database);
 echo "<br>\n".
 	"<table align=\"center\" width=\"100%\">\n".
 	"    <tr>\n".

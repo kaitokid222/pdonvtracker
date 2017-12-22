@@ -1,6 +1,7 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);  
+//error_reporting(E_ALL);
+error_reporting(0);
+ini_set('display_errors', 0);  
 /*
 // +--------------------------------------------------------------------------+
 // | Project:    NVTracker - NetVision BitTorrent Tracker                     |
@@ -646,48 +647,46 @@ function pager($rpp, $count, $href, $opts = array())
     return array($rows, $peerdata);
 } */
 
-function commenttable($rows)
-{
-    global $CURUSER, $_SERVER;
+function commenttable($rows){
+	global $CURUSER, $_SERVER;
+	foreach ($rows as $row){
+		begin_table(true);
+		echo "    <colgroup>\n".
+			"        <col width=\"150\"><col width=\"600\">\n".
+			"    </colgroup>\n".
+			"    <tr>\n".
+			"        <td colspan=\"2\" class=\"tablecat\">\n".
+			"            #" . $row["id"] . " von ");
+		if(isset($row["username"])){
+			$title = $row["title"];
+			if($title == "")
+				$title = get_user_class_name($row["class"]);
+			else
+				$title = htmlspecialchars($title);
+			echo "<a name=\"comm" . $row["id"] . "\" href=\"userdetails.php?id=" . $row["user"] . "\"><b>" . htmlspecialchars($row["username"]) . "</b></a>" . get_user_icons(array("donor" => $row["donor"], "enabled" => $row["enabled"], "warned" => $row["warned"])) . " (" . $title . ")";
+		}else
+			echo "<a name=\"comm" . $row["id"] . "\"><i>(Gelöscht)</i></a>";
+		echo " am " . $row["added"] . ($row["user"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=edit&amp;cid=" . $row["id"] . "\">Bearbeiten</a>]" : "") .
+			(get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=delete&amp;cid=" . $row["id"] . "\">Löschen</a>]" : "") .
+			($row["editedby"] && get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=vieworiginal&amp;cid=" . $row["id"] . "\">Original anzeigen</a>]" : "") . "\n" . 
+			"        </td>\n".
+			"    </tr>\n";
+		$avatar = ($CURUSER["avatars"] == "yes" ? htmlspecialchars($row["avatar"]) : "");
+		if(!$avatar)
+			$avatar = $GLOBALS["PIC_BASE_URL"] . "default_avatar.gif";
+		$text = stripslashes(format_comment($row["text"]));
+		if($row["editedby"])
+			$text .= "<p><font size=\"1\" class=\"small\">Zuletzt von <a href=\"userdetails.php?id=" . $row["editedby"] . "\"><b>" . $row["username"] . "</b></a> am " . $row["editedat"] . " bearbeitet</font></p>";
+		echo "    <tr valign=\"top\">\n".
+			"        <td class=\"tableb\" align=\"center\" style=\"padding: 0px;width: 150px\"><img width=\"150\" src=\"" . $avatar . "\" alt=\"Avatar von " . $row["username"] . "\"></td>\n";
+			"        <td class=\"tablea\">" . $text . "</td>\n";
+			"    </tr>\n";
+		end_table();
+	} 
+}
 
-    $count = 0;
-    foreach ($rows as $row) {
-        begin_table(true);
-        print("<colgroup><col width=\"150\"><col width=\"600\"></colgroup>\n");
-        print("<tr><td colspan=\"2\" class=\"tablecat\">#" . $row["id"] . " by ");
-        if (isset($row["username"])) {
-            $title = $row["title"];
-            if ($title == "")
-                $title = get_user_class_name($row["class"]);
-            else
-                $title = htmlspecialchars($title);
-            print("<a name=\"comm" . $row["id"] . "\" href=\"userdetails.php?id=" . $row["user"] . "\"><b>" .
-                htmlspecialchars($row["username"]) . "</b></a>" . get_user_icons(array("donor" => $row["donor"], "enabled" => $row["enabled"], "warned" => $row["warned"])) . " ($title)\n");
-        } else
-            print("<a name=\"comm" . $row["id"] . "\"><i>(Gelöscht)</i></a>\n");
-
-        print(" am " . $row["added"] .
-            ($row["user"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=edit&amp;cid=$row[id]\">Bearbeiten</a>]" : "") .
-            (get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=delete&amp;cid=$row[id]\">Löschen</a>]" : "") .
-            ($row["editedby"] && get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=vieworiginal&amp;cid=$row[id]\">Original anzeigen</a>]" : "") . "</td></tr>\n");
-        $avatar = ($CURUSER["avatars"] == "yes" ? htmlspecialchars($row["avatar"]) : "");
-        if (!$avatar)
-            $avatar = $GLOBALS["PIC_BASE_URL"] . "default_avatar.gif";
-        $text = stripslashes(format_comment($row["text"]));
-        if ($row["editedby"])
-            $text .= "<p><font size=\"1\" class=\"small\">Zuletzt von <a href=\"userdetails.php?id=$row[editedby]\"><b>$row[username]</b></a> am $row[editedat] bearbeitet</font></p>\n";
-        print("<tr valign=\"top\">\n");
-        print("<td class=\"tableb\" align=\"center\" style=\"padding: 0px;width: 150px\"><img width=\"150\" src=\"$avatar\" alt=\"Avatar von $row[username]\"></td>\n");
-        print("<td class=\"tablea\">$text</td>\n");
-        print("</tr>\n");
-        end_table();
-    } 
-} 
-
-function searchfield($s)
-{
-    //return preg_replace(array('/[^a-z0-9]/si', '/^\s*/s', '/\s*$/s', '/\s+/s'), array(" ", "", "", " "), $s);
-    return $s;
+function searchfield($s){
+    return preg_replace(array('/[^a-z0-9]/si', '/^\s*/s', '/\s*$/s', '/\s+/s'), array(" ", "", "", " "), $s);
 } 
 
 function genrelist()
@@ -717,107 +716,101 @@ function ratingpic($num)
 function browse_sortlink($field, $params)
 {
     if ($field == $_GET["orderby"]) {
-        return "browse.php?orderby=$field&amp;sort=" . ($_GET["sort"] == "asc" ? "desc" : "asc") . "&amp;$params";
+        return "browse.php?orderby=" . $field . "&amp;sort=" . ($_GET["sort"] == "asc" ? "desc" : "asc") . "&amp;" . $params;
     } else {
-        return "browse.php?orderby=$field&amp;sort=" . ($_GET["sort"] == "desc" ? "desc" : "asc") . "&amp;$params";
+        return "browse.php?orderby=" . $field . "&amp;sort=" . ($_GET["sort"] == "desc" ? "desc" : "asc") . "&amp;" . $params;
     } 
 } 
 
-function torrenttable_row_oldschool($torrent_info)
-{
-    global $CURUSER;
+function torrenttable_row_oldschool($torrent_info){
+	global $CURUSER;
 
-    if (strlen($torrent_info["name"]) > 45)
-        $displayname = substr($torrent_info["name"], 0, 45) . "...";
-    else
-        $displayname = $torrent_info["name"];
+	if(strlen($torrent_info["name"]) > 45)
+		$displayname = substr($torrent_info["name"], 0, 45) . "...";
+	else
+		$displayname = $torrent_info["name"];
 
-    $returnto = "&amp;returnto=" . urlencode($_SERVER["REQUEST_URI"]);
-    $baselink = "details.php?id=" . $torrent_info["id"];
-    if ($torrent_info["variant"] == "index") {
-        $baselink .= "&amp;hit=1";
-        $filelistlink = $baselink . "&amp;filelist=1";
-        $commlink = $baselink . "&amp;tocomm=1";
-        $seederlink = $baselink . "&amp;toseeders=1";
-        $leecherlink = $baselink . "&amp;todlers=1";
-        $snatcherlink = $baselink . "&amp;tosnatchers=1";
-    } else {
-        $baselink .= $returnto;
-        $filelistlink = $baselink . "&amp;filelist=1#filelist";
-        $commlink = $baselink . "&amp;page=0#startcomments";
-        $seederlink = $baselink . "&amp;dllist=1#seeders";
-        $leecherlink = $baselink . "&amp;dllist=1#leechers";
-        $snatcherlink = $baselink . "&amp;snatcher=1#snatcher";
-    } 
+	$returnto = "&amp;returnto=" . urlencode($_SERVER["REQUEST_URI"]);
+	$baselink = "details.php?id=" . $torrent_info["id"];
+	if($torrent_info["variant"] == "index"){
+		$baselink .= "&amp;hit=1";
+		$filelistlink = $baselink . "&amp;filelist=1";
+		$commlink = $baselink . "&amp;tocomm=1";
+		$seederlink = $baselink . "&amp;toseeders=1";
+		$leecherlink = $baselink . "&amp;todlers=1";
+		$snatcherlink = $baselink . "&amp;tosnatchers=1";
+	}else{
+		$baselink .= $returnto;
+		$filelistlink = $baselink . "&amp;filelist=1#filelist";
+		$commlink = $baselink . "&amp;page=0#startcomments";
+		$seederlink = $baselink . "&amp;dllist=1#seeders";
+		$leecherlink = $baselink . "&amp;dllist=1#leechers";
+		$snatcherlink = $baselink . "&amp;snatcher=1#snatcher";
+	} 
 
-    if ($torrent_info["leechers"])
-        $ratio = $torrent_info["seeders"] / $torrent_info["leechers"];
-    elseif ($torrent_info["seeders"])
-        $ratio = 1;
-    else
-        $ratio = 0;
+	if($torrent_info["leechers"])
+		$ratio = $torrent_info["seeders"] / $torrent_info["leechers"];
+	elseif ($torrent_info["seeders"])
+		$ratio = 1;
+	else
+		$ratio = 0;
+	$seedercolor = get_slr_color($ratio);
 
-    $seedercolor = get_slr_color($ratio);
+	
+	if (!isset($torrent_info["cat_pic"])){
+		if ($torrent_info["cat_name"] != "")
+			$tci = "<a href=\"browse.php?cat=" . $torrent_info["category"] . "\">" . $torrent_info["cat_name"] . "</a>";
+		else
+			$tci = "-";
+	}else{
+		$tci = "<a href=\"browse.php?cat=" . $torrent_info["category"] . "\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $torrent_info["cat_pic"] . "\" alt=\"" . $torrent_info["cat_name"] . "\" title=\"" . $torrent_info["cat_name"] . "\" border=\"0\"></a>";
+	}
 
-    ?>
-<tr>
-  <td class="tableb" valign="top" style="width:1px;padding:0px;"><?php
-    if (!isset($torrent_info["cat_pic"]))
-        if ($torrent_info["cat_name"] != "")
-            echo "<a href=\"browse.php?cat=" . $torrent_info["category"] . "\">" . $torrent_info["cat_name"] . "</a>";
-        else
-            echo "-";
-        else
-            echo "<a href=\"browse.php?cat=" . $torrent_info["category"] . "\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $torrent_info["cat_pic"] . "\" alt=\"" . $torrent_info["cat_name"] . "\" title=\"" . $torrent_info["cat_name"] . "\" border=\"0\"></a>";
+	if(isset($torrent_info["uploaderclass"]) && $torrent_info["uploaderclass"] < UC_UPLOADER)
+		$gu = "<font color=\"red\">[GU]</font> ";
+	else
+		$gu = "";
+		
+	if($torrent_info["variant"] != "guestuploads" && $torrent_info["is_new"])
+		$isnew = " <font style=\"color:red\">(NEU)</font>";
+	else
+		$isnew = "";
 
-        ?></td>
-  <td class="tablea" style="text-align:left;vertical-align:middle;" nowrap="nowrap"><?php if (isset($torrent_info["uploaderclass"]) && $torrent_info["uploaderclass"] < UC_UPLOADER) {
-            echo '<font color="red">[GU]</font> ';
-        } 
+	if($torrent_info["gu_agent"] > 0)
+		$gua = "Ja";
+	else
+		$gua = "<font color=\"red\">Nein</font>";
+		
+	if($torrent_info["variant"] == "mytorrents"){
+		$trex = "        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\"><a href=\"edit.php?id=" . $torrent_info["id"] . $returnto . "\">Bearbeiten</a></td>\n".
+				"        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\">" . ($torrent_info["visible"] == "yes"?"Ja":"Nein") . "</td>\n";
+	}elseif($torrent_info["variant"] == "guestuploads")
+		$trex = "        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\">" . $gua . "</td>\n";
+	elseif($torrent_info["has_wait"])
+		$trex = "        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\"><font color=\"" . $torrent_info["wait_color"] . "\">" . $torrent_info["wait_left"] . "<br>Std.</font></td>\n";
 
-        ?><a href="<?=$baselink?>" title="<?=htmlspecialchars($torrent_info["name"]);
+	if($torrent_info["variant"] == "index")
+		$inde = "<td class=\"tablea\" style=\"text-align:left;vertical-align:middle;\" nowrap=\"nowrap\">" . $torrent_info["uploaderlink"] . "</td>\n";
+	else
+		$inde = "";
 
-        ?>"><b><?=htmlspecialchars($displayname)?></b></a><?php if ($torrent_info["variant"] != "guestuploads" && $torrent_info["is_new"]) echo " <font style=\"color:red\">(NEU)</font>";
-
-        ?></td>
-  <?php if ($torrent_info["variant"] == "mytorrents") {
-            ?>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><a href="edit.php?id=<?=$torrent_info["id"] . $returnto?>">Bearbeiten</a></td>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><?=($torrent_info["visible"] == "yes"?"Ja":"Nein")?></td>
-  <?php } elseif ($torrent_info["variant"] == "guestuploads") {
-            ?>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><?php if ($torrent_info["gu_agent"] > 0) echo "Ja";
-            else echo "<font color=\"red\">Nein</font>";
-            ?></td>  
-  <?php } elseif ($torrent_info["has_wait"]) {
-
-            ?>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><?php echo "<font color=\"", $torrent_info["wait_color"], "\">", $torrent_info["wait_left"], "<br>Std.</font>";
-
-            ?></td>
-  <?php } 
-
-        ?>
-  <td class="tablea" style="text-align:right;vertical-align:middle;" nowrap="nowrap"><a href="<?=$filelistlink?>"><?=$torrent_info["numfiles"]?></a></td>
-  <td class="tablea" style="text-align:right;vertical-align:middle;" nowrap="nowrap"><a href="<?=$commlink?>"><?=$torrent_info["comments"]?></a></td>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><?=str_replace("&nbsp;", "<br>", $torrent_info["added"])?></td>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><?=str_replace(" ", "<br>", $torrent_info["ttl"])?></td>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><?=str_replace(" ", "<br>", mksize($torrent_info["size"]))?></td>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><div style="border:1px solid black;padding:0px;width:60px;height:10px;"><div style="border:none;width:<?=60 * $torrent_info["dist"] / 100?>px;height:10px;background-image:url(<?=$GLOBALS["PIC_BASE_URL"]?>ryg-verlauf-small.png);background-repeat:no-repeat;"></div></div></td>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><a href="<?=$snatcherlink?>"><?=$torrent_info["times_completed"]?></a></td>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><a href="<?=$seederlink?>"><font color="<?=$seedercolor?>"><?=intval($torrent_info["seeders"])?></font></a></td>
-  <td class="tablea" style="text-align:center;vertical-align:middle;" nowrap="nowrap"><a href="<?=$leecherlink?>"><font color="<?=linkcolor($torrent_info["seeders"])?>"><?=intval($torrent_info["leechers"])?></font></a></td>
-  <td class="tablea" style="text-align:left;vertical-align:middle;" nowrap="nowrap">D:&nbsp;<?=$torrent_info["dlspeed"]?>&nbsp;KB/s<br>U:&nbsp;<?=$torrent_info["ulspeed"]?>&nbsp;KB/s</td>
-  <?php if ($torrent_info["variant"] == "index") {
-
-            ?>
-  <td class="tablea" style="text-align:left;vertical-align:middle;" nowrap="nowrap"><?=$torrent_info["uploaderlink"]?></td>
-  <?php } 
-
-        ?>  
-</tr>
-<?php
-    } 
+	echo "    <tr>\n".
+		"        <td class=\"tableb\" valign=\"top\" style=\"width:1px;padding:0px;\">" . $tci . "</td>\n".
+		"        <td class=\"tablea\" style=\"text-align:left;vertical-align:middle;\" nowrap=\"nowrap\">" . $gu . "<a href=\"" . $baselink . "\" title=\"" . htmlspecialchars($torrent_info["name"]) . "\"><b>" . htmlspecialchars($displayname) . "</b></a>" . $isnew . "</td>\n".
+		$trex.
+		"        <td class=\"tablea\" style=\"text-align:right;vertical-align:middle;\" nowrap=\"nowrap\"><a href=\"" . $filelistlink . "\">" . $torrent_info["numfiles"] . "</a></td>\n".
+		"        <td class=\"tablea\" style=\"text-align:right;vertical-align:middle;\" nowrap=\"nowrap\"><a href=\"" . $commlink . "\">" . $torrent_info["comments"] . "</a></td>\n".
+		"        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\">" . str_replace("&nbsp;", "<br>", $torrent_info["added"]) . "</td>\n".
+		"        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\">" . str_replace(" ", "<br>", $torrent_info["ttl"]) . "</td>\n".
+		"        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\">" . str_replace(" ", "<br>", mksize($torrent_info["size"])) . "</td>\n".
+		"        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\"><div style=\"border:1px solid black;padding:0px;width:60px;height:10px;\"><div style=\"border:none;width:" . (60 * $torrent_info["dist"] / 100) . "px;height:10px;background-image:url(" . $GLOBALS["PIC_BASE_URL"] . "ryg-verlauf-small.png);background-repeat:no-repeat;\"></div></div></td>\n".
+		"        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\"><a href=\"" . $snatcherlink . "\">" . $torrent_info["times_completed"] . "</a></td>\n".
+		"        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\"><a href=\"" . $seederlink . "\"><font color=\"" . $seedercolor . "\">" . intval($torrent_info["seeders"]) . "</font></a></td>\n".
+		"        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\"><a href=\"" . $leecherlink . "\"><font color=\"" . linkcolor($torrent_info["seeders"]) . "\">" . intval($torrent_info["leechers"]) . "</font></a></td>\n".
+		"        <td class=\"tablea\" style=\"text-align:left;vertical-align:middle;\" nowrap=\"nowrap\">D:&nbsp;" . $torrent_info["dlspeed"] . "&nbsp;KB/s<br>U:&nbsp;" . $torrent_info["ulspeed"] . "&nbsp;KB/s</td>\n".
+		$inde.
+		"    </tr>\n";
+}
 
     function torrenttable_row($torrent_info)
     {

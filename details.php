@@ -334,7 +334,7 @@ if (!isset($_GET["page"])) {
 
     if ($row["type"] == "multi") {
         if (!$_GET["filelist"])
-            tr("Anzahl Dateien<br /><a href=\"details.php?id=$id&amp;filelist=1$keepget#filelist\" class=\"sublink\">[Liste anzeigen]</a>", $row["numfiles"] . " Dateien", 1);
+            tr("Anzahl Dateien<br /><a href=\"details.php?id=" . $id . "&amp;filelist=1" . $keepget . "#filelist\" class=\"sublink\">[Liste anzeigen]</a>", $row["numfiles"] . " Dateien", 1);
         else {
             tr("Anzahl Dateien", $row["numfiles"] . " Dateien", 1);
 
@@ -351,22 +351,24 @@ if (!isset($_GET["page"])) {
         } 
     } 
 
-    if (!$_GET["dllist"]) {
-        tr("Peers<br /><a href=\"details.php?id=$id&amp;dllist=1$keepget#seeders\" class=\"sublink\">[Liste anzeigen]</a>", $row["seeders"] . " Seeder, " . $row["leechers"] . " Leecher = " . ($row["seeders"] + $row["leechers"]) . " Peer(s) gesamt", 1);
+//    if (!$_GET["dllist"]) {
+    if (!isset($_GET["dllist"])) {
+        tr("Peers<br /><a href=\"details.php?id=" . $id . "&amp;dllist=1" . $keepget . "#seeders\" class=\"sublink\">[Liste anzeigen]</a>", $row["seeders"] . " Seeder, " . $row["leechers"] . " Leecher = " . ($row["seeders"] + $row["leechers"]) . " Peer(s) gesamt", 1);
     } else {
         $downloaders = array();
         $seeders = array();
         $subres = mysql_query("SELECT peer_id, seeder, ip, port, traffic.uploaded AS uploaded, traffic.downloaded AS downloaded, traffic.downloadtime AS downloadtime, traffic.uploadtime AS uploadtime, to_go, UNIX_TIMESTAMP(started) AS st, connectable, agent, UNIX_TIMESTAMP(last_action) AS la, peers.userid FROM peers LEFT JOIN traffic ON peers.userid=traffic.userid AND peers.torrent=traffic.torrentid WHERE torrent = $id") or sqlerr();
-        while ($subrow = mysql_fetch_array($subres)) {
+        //while ($subrow = mysql_fetch_array($subres)) {
+        foreach($subres as $subrow){
             if ($subrow["seeder"] == "yes")
                 $seeders[] = $subrow;
             else
                 $downloaders[] = $subrow;
         } 
 
-        function leech_sort($a, $b)
-        {
-            if (isset($_GET["usort"])) return seed_sort($a, $b);
+        function leech_sort($a, $b){
+            if (isset($_GET["usort"]))
+				return seed_sort($a, $b);
             $x = $a["to_go"];
             $y = $b["to_go"];
             if ($x == $y)
@@ -376,8 +378,7 @@ if (!isset($_GET["page"])) {
             return 1;
         } 
 
-        function seed_sort($a, $b)
-        {
+        function seed_sort($a, $b){
             $x = $a["uploaded"];
             $y = $b["uploaded"];
             if ($x == $y)
@@ -392,7 +393,7 @@ if (!isset($_GET["page"])) {
 
         tr("<a name=\"seeders\">Seeder</a><br /><a href=\"details.php?id=$id$keepget\" class=\"sublink\">[Liste verbergen]</a>", dltable("Seeder", $seeders, $row), 1);
         tr("<a name=\"leechers\">Leecher</a><br /><a href=\"details.php?id=$id$keepget\" class=\"sublink\">[Liste verbergen]</a>", dltable("Leecher", $downloaders, $row), 1);
-    } 
+    }
 
     print("</table></td></tr></table><br>\n");
     begin_frame("<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "comments.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\"> Kommentare", false, "750px;");

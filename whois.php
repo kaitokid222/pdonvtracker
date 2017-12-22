@@ -16,7 +16,7 @@ require_once "include/bittorrent.php";
 
 if(isset($_GET['ip'])){
 	$ip = $_GET['ip'];
-	if(!is_valid_ip($ip,check_ip_version($ip)))
+	if(!is_valid_ip($ip))
 		die("Keine gültige IP!");
 }else
 	die("Kein Parameter \"IP\"");

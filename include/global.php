@@ -222,12 +222,12 @@ function format_comment($text, $strip_html = true)
     $s = str_replace("  ", " &nbsp;", $s);
 
     reset($smilies);
-    while (list($code, $url) = each($smilies))
-    $s = str_replace($code, "<img src=\"/pic/smilies/$url\" border=\"0\" alt=\"" . htmlspecialchars($code) . "\">", $s);
+    while(list($code, $url) = each($smilies))
+		$s = str_replace($code, "<img src=\"/pic/smilies/" . $url . "\" border=\"0\" alt=\"" . htmlspecialchars($code) . "\">", $s);
 
     reset($privatesmilies);
-    while (list($code, $url) = each($privatesmilies))
-    $s = str_replace($code, "<img border=\"0\" src=\"/pic/smilies/$url\" alt=\"\">", $s);
+    while(list($code, $url) = each($privatesmilies))
+		$s = str_replace($code, "<img border=\"0\" src=\"/pic/smilies/" . $url . "\" alt=\"\">", $s);
 
     return $s;
 } 
@@ -285,12 +285,12 @@ mehr nutzen kannst. Bitte antworte nicht auf diese E-Mail!";
     } 
 	
 	$sql = array();
-	$sql[] = ['DELETE FROM `users` WHERE `id`= :id'];
-	$sql[] = ['DELETE FROM `bitbucket` WHERE `user`= :id'];
-	$sql[] = ['DELETE FROM `nowait` WHERE `user_id`= :id'];
-	$sql[] = ['DELETE FROM `pmfolders` WHERE `owner`= :id'];
-	$sql[] = ['DELETE FROM `traffic` WHERE `userid`= :id'];
-	$sql[] = ['DELETE FROM `modcomments` WHERE `userid`= :id'];
+	$sql[] = 'DELETE FROM `users` WHERE `id`= :id';
+	$sql[] = 'DELETE FROM `bitbucket` WHERE `user`= :id';
+	$sql[] = 'DELETE FROM `nowait` WHERE `user_id`= :id';
+	$sql[] = 'DELETE FROM `pmfolders` WHERE `owner`= :id';
+	$sql[] = 'DELETE FROM `traffic` WHERE `userid`= :id';
+	$sql[] = 'DELETE FROM `modcomments` WHERE `userid`= :id';
 	foreach($sql as $s){
 		$qry = $GLOBALS['DB']->prepare($s);
 		$qry->bindParam(':id', $id, PDO::PARAM_INT);
@@ -473,62 +473,52 @@ function get_wait_time($userid, $torrentid, $only_wait_check = false, $left = -1
     return 0;
 } 
 
-function get_cur_wait_time($userid)
-{
-    $res = mysql_query("SELECT class, downloaded, uploaded, UNIX_TIMESTAMP(added) AS added FROM users WHERE users.id = $userid");
-    $arr = mysql_fetch_assoc($res);
-
-    if ($arr["class"] < UC_VIP) {
-        $gigs = $arr["uploaded"] / 1073741824;
-        $regdays = floor((time() - $arr["added"]) / 86400);
-        $ratio = (($arr["downloaded"] > 0) ? ($arr["uploaded"] / $arr["downloaded"]) : 1);
-
-        $wait_times = explode("|", $GLOBALS["WAIT_TIME_RULES"]);
-
-        $wait = 0;
-        foreach ($wait_times as $rule) {
-            $rule = explode(":", $rule, 4);
-            // Format [#w][#d] or *
-            // eg: 1w or 1w2d or 2d or * or 0
-            preg_match("/([0-9]+w)?([0-9]+d)?|([\\*0])?/", $rule[2], $regrule);
-            $regruledays = intval($regrule[1])*7 + intval($regrule[2]);
-            
-            if (($ratio < $rule[0] || $gigs < $rule[1]) && ($regruledays==0 || ($regruledays>0 && $regdays < $regruledays)))
-                $wait = max($wait, $rule[3], 0);
-        } 
-
-        return $wait;
-    } 
-    return 0;
+function get_cur_wait_time($userid){
+	$res = mysql_query("SELECT class, downloaded, uploaded, UNIX_TIMESTAMP(added) AS added FROM users WHERE users.id = $userid");
+	$arr = mysql_fetch_assoc($res);
+	if($arr["class"] < UC_VIP){
+		$gigs = $arr["uploaded"] / 1073741824;
+		$regdays = floor((time() - $arr["added"]) / 86400);
+		$ratio = (($arr["downloaded"] > 0) ? ($arr["uploaded"] / $arr["downloaded"]) : 1);
+		$wait_times = explode("|", $GLOBALS["WAIT_TIME_RULES"]);
+		$wait = 0;
+		foreach($wait_times as $rule){
+			$rule = explode(":", $rule, 4);
+			// Format [#w][#d] or *
+			// eg: 1w or 1w2d or 2d or * or 0
+			preg_match("/([0-9]+w)?([0-9]+d)?|([\\*0])?/", $rule[2], $regrule);
+			$regruledays = intval($regrule[1])*7 + intval($regrule[2]);
+			if(($ratio < $rule[0] || $gigs < $rule[1]) && ($regruledays==0 || ($regruledays>0 && $regdays < $regruledays)))
+				$wait = max($wait, $rule[3], 0);
+		}
+		return $wait;
+	} 
+	return 0;
 }
 
-function get_torrent_limits($userinfo)
-{
-    $limit = array("seeds" => -1, "leeches" => -1, "total" => -1);
-
-    if ($userinfo["tlimitall"] == 0) {
-        // Auto limit
-        $ruleset = explode("|", $GLOBALS["TORRENT_RULES"]);
-        $ratio = (($userinfo["downloaded"] > 0) ? ($userinfo["uploaded"] / $userinfo["downloaded"]) : (($userinfo["uploaded"] > 0) ? 1 : 0));
-        $gigs = $userinfo["uploaded"] / 1073741824;
-        
-        $limit = array("seeds" => 0, "leeches" => 0, "total" => 0);
-        foreach ($ruleset as $rule) {
-            $rule_parts= explode(":", $rule);
-            if ($ratio >= $rule_parts[0] && $gigs >= $rule_parts[1] && $limit["total"] <= $rule_parts[4]) {
-                $limit["seeds"] = $rule_parts[2];
-                $limit["leeches"] = $rule_parts[3];
-                $limit["total"] = $rule_parts[4];
-            }
-        }
-    } elseif ($userinfo["tlimitall"] > 0) {
-        // Manual limit
-        $limit["seeds"] = $userinfo["tlimitseeds"];
-        $limit["leeches"] = $userinfo["tlimitleeches"];
-        $limit["total"] = $userinfo["tlimitall"];
-    }
-    
-    return $limit;
+function get_torrent_limits($userinfo){
+	$limit = array("seeds" => -1, "leeches" => -1, "total" => -1);
+	if($userinfo["tlimitall"] == 0){
+		// Auto limit
+		$ruleset = explode("|", $GLOBALS["TORRENT_RULES"]);
+		$ratio = (($userinfo["downloaded"] > 0) ? ($userinfo["uploaded"] / $userinfo["downloaded"]) : (($userinfo["uploaded"] > 0) ? 1 : 0));
+		$gigs = $userinfo["uploaded"] / 1073741824;
+		$limit = array("seeds" => 0, "leeches" => 0, "total" => 0);
+		foreach($ruleset as $rule){
+			$rule_parts= explode(":", $rule);
+			if($ratio >= $rule_parts[0] && $gigs >= $rule_parts[1] && $limit["total"] <= $rule_parts[4]){
+				$limit["seeds"] = $rule_parts[2];
+				$limit["leeches"] = $rule_parts[3];
+				$limit["total"] = $rule_parts[4];
+			}
+		}
+	}elseif($userinfo["tlimitall"] > 0){
+		// Manual limit
+		$limit["seeds"] = $userinfo["tlimitseeds"];
+		$limit["leeches"] = $userinfo["tlimitleeches"];
+		$limit["total"] = $userinfo["tlimitall"];
+	}
+	return $limit;
 }
 
 function resize_image($origfn, $tmpfile, $target_filename)
@@ -565,125 +555,111 @@ function resize_image($origfn, $tmpfile, $target_filename)
     return $img_pic;
 }
 
-function torrent_image_upload($file, $id, $picnum)
-{
-	if (!isset($file) || $file["size"] < 1) {
+function torrent_image_upload($file, $id, $picnum){
+	if (!isset($file) || $file["size"] < 1){
 		tr_status("err");
-        array_push($GLOBALS["uploaderrors"], "Es wurden keine Daten von '".$file["name"]."' empfangen!");
-        return FALSE;
-    }
-    
-    if ($file["size"] > $GLOBALS["MAX_UPLOAD_FILESIZE"]) {
-		tr_status("err");
-        array_push($GLOBALS["uploaderrors"], "Die Bilddatei '".$file["name"]."' ist zu groß (max. ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")!");
-        return FALSE;
-    }
-
-    $it = exif_imagetype($file["tmp_name"]);
-	if ($it != IMAGETYPE_GIF && $it != IMAGETYPE_JPEG && $it != IMAGETYPE_PNG) {
-		tr_status("err");
-        array_push($GLOBALS["uploaderrors"], "Sorry, die hochgeladene Datei '".$file["name"]."' konnte nicht als gültige Bilddatei verifiziert werden.");
-        return FALSE;
-    }
-
-    $i = strrpos($file["name"], ".");
-	if ($i !== false)
-	{
-		$ext = strtolower(substr($file["name"], $i));
-		if (($it == IMAGETYPE_GIF  && $ext != ".gif") || 
-            ($it == IMAGETYPE_JPEG && $ext != ".jpg") || 
-            ($it == IMAGETYPE_PNG  && $ext != ".png")) {
-		    tr_status("err");
-            array_push($GLOBALS["uploaderrors"], "Ung&uuml;tige Dateinamenerweiterung: <b>$ext</b>");
-            return FALSE;
-        }
-		$filename .= $ext;
+		array_push($GLOBALS["uploaderrors"], "Es wurden keine Daten von '".$file["name"]."' empfangen!");
+		return FALSE;
 	}
-	else {
+		
+	if($file["size"] > $GLOBALS["MAX_UPLOAD_FILESIZE"]){
 		tr_status("err");
-        array_push($GLOBALS["uploaderrors"], "Die Datei '".$file["name"]."' besitzt keine Dateinamenerweiterung.");
-        return FALSE;
-    }
+		array_push($GLOBALS["uploaderrors"], "Die Bilddatei '".$file["name"]."' ist zu groß (max. ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")!");
+		return FALSE;
+	}
 
-    $img = resize_image($file["name"], $file["tmp_name"], $GLOBALS["BITBUCKET_DIR"] . "/t-$id-$picnum.jpg", 100);    
-    if ($img === FALSE) {
+	$it = exif_imagetype($file["tmp_name"]);
+	if ($it != IMAGETYPE_GIF && $it != IMAGETYPE_JPEG && $it != IMAGETYPE_PNG){
 		tr_status("err");
-        array_push($GLOBALS["uploaderrors"], "Das Bild '".$file["name"]."' konnte nicht verkleinert werden.");
-        return FALSE;
-    }
-    $ret = imagejpeg($img, $GLOBALS["BITBUCKET_DIR"] . "/f-$id-$picnum.jpg", 85);
-    imagedestroy($img);
-    if (!$ret) {
+		array_push($GLOBALS["uploaderrors"], "Sorry, die hochgeladene Datei '".$file["name"]."' konnte nicht als gültige Bilddatei verifiziert werden.");
+		return FALSE;
+	}
+
+	$i = strrpos($file["name"], ".");
+	if($i !== false){
+		$ext = strtolower(substr($file["name"], $i));
+		if(($it == IMAGETYPE_GIF  && $ext != ".gif") || ($it == IMAGETYPE_JPEG && $ext != ".jpg") || ($it == IMAGETYPE_PNG  && $ext != ".png")){
+			tr_status("err");
+			array_push($GLOBALS["uploaderrors"], "Ung&uuml;tige Dateinamenerweiterung: <b>$ext</b>");
+			return FALSE;
+		}
+		$filename .= $ext;
+	}else{
 		tr_status("err");
-        array_push($GLOBALS["uploaderrors"], "Die Originalversion des Bildes '".$file["name"]."' konnte nicht auf dem Server gespeichert werden - bitte SysOp benachrichtigen!");
-        return FALSE;
-    } else {
-        tr_status("ok");
-        return TRUE;
-    }
+		array_push($GLOBALS["uploaderrors"], "Die Datei '".$file["name"]."' besitzt keine Dateinamenerweiterung.");
+		return FALSE;
+	}
+	$img = resize_image($file["name"], $file["tmp_name"], $GLOBALS["BITBUCKET_DIR"] . "/t-" . $id . "-" . $picnum . ".jpg", 100);    
+	if($img === FALSE){
+		tr_status("err");
+		array_push($GLOBALS["uploaderrors"], "Das Bild '".$file["name"]."' konnte nicht verkleinert werden.");
+		return FALSE;
+	}
+	$ret = imagejpeg($img, $GLOBALS["BITBUCKET_DIR"] . "/f-" . $id . "-" . $picnum . ".jpg", 85);
+	imagedestroy($img);
+	if(!$ret){
+		tr_status("err");
+		array_push($GLOBALS["uploaderrors"], "Die Originalversion des Bildes '".$file["name"]."' konnte nicht auf dem Server gespeichert werden - bitte SysOp benachrichtigen!");
+		return FALSE;
+	}else{
+		tr_status("ok");
+		return TRUE;
+	}
 }
 
-function strip_ascii_art($text)
-{
-    // First, remove all "weird" characters.
-    $text = preg_replace("/[^a-zA-Z0-9öäüÖÄÜß\\-_?!&[\\]().,;:+=#*~@\\/\\\\'\"><\\s]/", "", $text);
-    
-    while ($text != $oldtext) {
-        $oldtext = $text; 
-        // Remove all repeating umlauts
-        $text = preg_replace("/[öäüÖÄÜß]{2,}/", "", $text);
-        // Remove all "free" umlauts, not enclosed by other word chars
-        $text = preg_replace("/(^|\\s)[öäüÖÄÜß]+(\\s|$)/sm", "", $text);
-    }
-    
-    // Remove trailing spaces at end of line
-    $text = preg_replace("/([\\t ]+)(\\s$)/m", "\\2", $text);
-    
-    return $text;
+function strip_ascii_art($text){
+	// First, remove all "weird" characters.
+	$text = preg_replace("/[^a-zA-Z0-9öäüÖÄÜß\\-_?!&[\\]().,;:+=#*~@\\/\\\\'\"><\\s]/", "", $text);
+		
+	while($text != $oldtext){
+		$oldtext = $text; 
+		// Remove all repeating umlauts
+		$text = preg_replace("/[öäüÖÄÜß]{2,}/", "", $text);
+		// Remove all "free" umlauts, not enclosed by other word chars
+		$text = preg_replace("/(^|\\s)[öäüÖÄÜß]+(\\s|$)/sm", "", $text);
+	}
+	// Remove trailing spaces at end of line
+	$text = preg_replace("/([\\t ]+)(\\s$)/m", "\\2", $text);
+	return $text;
 }
 
-function gen_nfo_pic($nfotext, $target_filename)
-{
-    // Make array of NFO lines and break lines at 80 chars
-    $nfotext = preg_replace('/\r\n/', "\n", $nfotext);
-    $lines = explode("\n", $nfotext);
-    for ($I=0;$I<count($lines);$I++) {
-        $lines[$I] = chop($lines[$I]);
-        $lines[$I] = wordwrap($lines[$I], 82, "\n", 1);
-    }
-    $lines = explode("\n", implode("\n", $lines));
-    
+function gen_nfo_pic($nfotext, $target_filename){
+	// Make array of NFO lines and break lines at 80 chars
+	$nfotext = preg_replace('/\r\n/', "\n", $nfotext);
+	$lines = explode("\n", $nfotext);
+	for($I=0;$I<count($lines);$I++){
+		$lines[$I] = chop($lines[$I]);
+		$lines[$I] = wordwrap($lines[$I], 82, "\n", 1);
+	}
+	$lines = explode("\n", implode("\n", $lines));
     // Get longest line
     $cols = 0;
-    for ($I=0;$I<count($lines);$I++) {
-        
-        $lines[$I] = chop($lines[$I]);
-        if (strlen($lines[$I]) > $cols)
-            $cols = strlen($lines[$I]);
-    }
-    
-    // Allow a maximum of 500 lines of text
-    $lines = array_slice($lines, 0, 500);
-    
-    // Get line count
-    $linecnt = count($lines);
-    
-    // Load font
-    $font = imageloadfont("terminal.gdf");
-    if ($font < 5)
-        die("Konnte das NFO-Font nicht laden. Admin benachrichtigen!");
-    
-    $imagewidth = $cols * imagefontwidth($font) + 1;
-    $imageheight = $linecnt * imagefontheight($font) + 1;
-    
-    $nfoimage = imagecreate($imagewidth, $imageheight);
-    $white = imagecolorallocate($nfoimage, 255, 255, 255);
-    $black = imagecolorallocate($nfoimage, 0, 0, 0);
-    
-    for ($I=0;$I<$linecnt;$I++)
-        imagestring($nfoimage, $font, 0, $I*imagefontheight($font), $lines[$I], $black);
-    
-    return imagepng($nfoimage, $target_filename);
-}
+	for($I=0;$I<count($lines);$I++){    
+		$lines[$I] = chop($lines[$I]);
+		if (strlen($lines[$I]) > $cols)
+			$cols = strlen($lines[$I]);
+	}
 
+	// Allow a maximum of 500 lines of text
+	$lines = array_slice($lines, 0, 500);
+		
+	// Get line count
+	$linecnt = count($lines);
+		
+	// Load font
+	$font = imageloadfont("terminal.gdf");
+	if($font < 5)
+		die("Konnte das NFO-Font nicht laden. Admin benachrichtigen!");
+		
+	$imagewidth = $cols * imagefontwidth($font) + 1;
+	$imageheight = $linecnt * imagefontheight($font) + 1;
+		
+	$nfoimage = imagecreate($imagewidth, $imageheight);
+	$white = imagecolorallocate($nfoimage, 255, 255, 255);
+	$black = imagecolorallocate($nfoimage, 0, 0, 0);
+
+	for($I=0;$I<$linecnt;$I++)
+		imagestring($nfoimage, $font, 0, $I*imagefontheight($font), $lines[$I], $black);
+	return imagepng($nfoimage, $target_filename);
+}
 ?>

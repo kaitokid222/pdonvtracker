@@ -42,20 +42,6 @@ if (!function_exists('hex2bin')){
 	}
 }
 
-function err($msg) {
-   return benc_resp_raw("d".benc_str("failure reason").benc_str($msg)."e");
-}
-
-function benc_resp($d){
-    benc_resp_raw(benc(array("type" => "dictionary", "value" => $d)));
-}
-
-function benc_resp_raw($x){
-    header("Content-Type: text/plain");
-    header("Pragma: no-cache");
-    print($x);
-}
-
 function check_ip_limit() {
     global $userid;
 
