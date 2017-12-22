@@ -812,449 +812,419 @@ function torrenttable_row_oldschool($torrent_info){
 		"    </tr>\n";
 }
 
-    function torrenttable_row($torrent_info)
-    {
-        global $CURUSER;
+function torrenttable_row($torrent_info){
+	global $CURUSER;
 
-        $returnto = "&amp;returnto=" . urlencode($_SERVER["REQUEST_URI"]);
-        $baselink = "details.php?id=" . $torrent_info["id"];
-        if ($torrent_info["variant"] == "index") {
-            $baselink .= "&amp;hit=1";
-            $filelistlink = $baselink . "&amp;filelist=1";
-            $commlink = $baselink . "&amp;tocomm=1";
-            $seederlink = $baselink . "&amp;toseeders=1";
-            $leecherlink = $baselink . "&amp;todlers=1";
-            $snatcherlink = $baselink . "&amp;tosnatchers=1";
-        } else {
-            $baselink .= $returnto;
-            $filelistlink = $baselink . "&amp;filelist=1#filelist";
-            $commlink = $baselink . "&amp;page=0#startcomments";
-            $seederlink = $baselink . "&amp;dllist=1#seeders";
-            $leecherlink = $baselink . "&amp;dllist=1#leechers";
-            $snatcherlink = $baselink . "&amp;snatcher=1#snatcher";
-        } 
+	$returnto = "&amp;returnto=" . urlencode($_SERVER["REQUEST_URI"]);
+	$baselink = "details.php?id=" . $torrent_info["id"];
+	if($torrent_info["variant"] == "index"){
+		$baselink .= "&amp;hit=1";
+		$filelistlink = $baselink . "&amp;filelist=1";
+		$commlink = $baselink . "&amp;tocomm=1";
+		$seederlink = $baselink . "&amp;toseeders=1";
+		$leecherlink = $baselink . "&amp;todlers=1";
+		$snatcherlink = $baselink . "&amp;tosnatchers=1";
+	}else{
+		$baselink .= $returnto;
+		$filelistlink = $baselink . "&amp;filelist=1#filelist";
+		$commlink = $baselink . "&amp;page=0#startcomments";
+		$seederlink = $baselink . "&amp;dllist=1#seeders";
+		$leecherlink = $baselink . "&amp;dllist=1#leechers";
+		$snatcherlink = $baselink . "&amp;snatcher=1#snatcher";
+	} 
 
-        if ($torrent_info["leechers"])
-            $ratio = $torrent_info["seeders"] / $torrent_info["leechers"];
-        elseif ($torrent_info["seeders"])
-            $ratio = 1;
-        else
-            $ratio = 0;
+	if ($torrent_info["leechers"])
+		$ratio = $torrent_info["seeders"] / $torrent_info["leechers"];
+	elseif ($torrent_info["seeders"])
+		$ratio = 1;
+	else
+		$ratio = 0;
 
-        $seedercolor = get_slr_color($ratio);
+	$seedercolor = get_slr_color($ratio);
+	
+	$qry = $this->con->prepare("SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid FROM completed,users LEFT JOIN peers ON peers.userid=users.id AND peers.torrent= :ptid AND peers.seeder='yes' WHERE completed.user_id=users.id AND completed.torrent_id= :ctid ORDER BY complete_time DESC LIMIT 10");
+	$qry->bindParam(':ptid', $torrent_info["id"], PDO::PARAM_INT);
+	$qry->bindParam(':ctid', $torrent_info["id"], PDO::PARAM_INT);
+	$qry->execute();
+	$data = $qry->FetchAll(PDO::FETCH_ASSOC);
 
-		//$qry = $GLOBALS['DB']->prepare('SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid FROM completed,users LEFT JOIN peers ON peers.userid=users.id AND peers.torrent= :tid AND peers.seeder= yes WHERE completed.user_id=users.id AND completed.torrent_id= :tid ORDER BY complete_time DESC');
-		//$qry = $GLOBALS['DB']->prepare('SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid FROM completed,users LEFT JOIN peers ON peers.userid=users.id AND peers.torrent= :tid AND peers.seeder= yes WHERE completed.user_id=users.id AND completed.torrent_id= :tid ORDER BY complete_time DESC LIMIT 10');
-		//$qry->bindParam(':tid', $torrent_info["id"], PDO::PARAM_INT);
-		//$res = $qry->execute()->fetchAll();
-		//$rows = $GLOBALS['DB']->query('SELECT id, name FROM categories ORDER BY name')->fetchAll();
-        $res = mysql_query("SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid 
-		FROM completed,users 
-		LEFT JOIN peers ON peers.userid=users.id 
-		AND peers.torrent=" . $torrent_info["id"] . " 
-		AND peers.seeder='yes' 
-		WHERE completed.user_id=users.id 
-		AND completed.torrent_id=" . $torrent_info["id"] . " 
-		ORDER BY complete_time DESC LIMIT 10");
+	$last10users = "";
+	foreach($data as $arr){
+		if($last10users)
+			$last10users .= ", ";
+		$arr["username"] = "<font class=\"" . get_class_color($arr["class"]) . "\">" . $arr["username"] . "</font>";
+		if($arr["peerid"] > 0){
+			$arr["username"] = "<b>" . $arr["username"] . "</b>";
+		}
+		$last10users .= "<a href=\"userdetails.php?id=" . $arr["id"] . "\">" . $arr["username"] . "</a>";
+	}
 
-        $last10users = "";
-        //foreach($res as $arr){
-		while ($arr = mysql_fetch_assoc($res)) {
-            if ($last10users) $last10users .= ", ";
-            $arr["username"] = "<font class=\"" . get_class_color($arr["class"]) . "\">" . $arr["username"] . "</font>";
-            if ($arr["peerid"] > 0) {
-                $arr["username"] = "<b>" . $arr["username"] . "</b>";
-            } 
-            $last10users .= "<a href=\"userdetails.php?id=" . $arr["id"] . "\">" . $arr["username"] . "</a>";
-        } 
+	if($last10users == "")
+		$last10users = "Diesen Torrent hat noch niemand fertiggestellt.";
+	else
+		$last10users .= "<br/><br/>(Fettgedruckte User seeden noch)";
 
-        if ($last10users == "")
-            $last10users = "Diesen Torrent hat noch niemand fertiggestellt.";
-        else
-            $last10users .= "<br/><br/>(Fettgedruckte User seeden noch)";
+	if ($GLOBALS["DOWNLOAD_METHOD"] == DOWNLOAD_REWRITE)
+		$download_url = "download/" . $torrent_info["id"] . "/" . rawurlencode($torrent_info["filename"]);
+	else
+		$download_url = "download.php?torrent=" . $torrent_info["id"];
 
-        if ($GLOBALS["DOWNLOAD_METHOD"] == DOWNLOAD_REWRITE)
-            $download_url = "download/" . $torrent_info["id"] . "/" . rawurlencode($torrent_info["filename"]);
-        else
-            $download_url = "download.php?torrent=" . $torrent_info["id"];
+	if (!isset($torrent_info["cat_pic"])){
+		if ($torrent_info["cat_name"] != "")
+			$tci = "<a href=\"browse.php?cat=" . $torrent_info["category"] . "\">" . $torrent_info["cat_name"] . "</a>";
+		else
+			$tci = "-";
+	}else{
+		$tci = "<a href=\"browse.php?cat=" . $torrent_info["category"] . "\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $torrent_info["cat_pic"] . "\" alt=\"" . $torrent_info["cat_name"] . "\" title=\"" . $torrent_info["cat_name"] . "\" border=\"0\"></a>";
+	}
+	
+	if($torrent_info["variant"] != "index")
+		$edit_l = "[ <a href=\"edit.php?id=" . $torrent_info["id"] . $returnto ."\">Bearbeiten</a> ]";
+	else
+		$edit_l = "";
+		
+	if(isset($torrent_info["uploaderclass"]) && $torrent_info["uploaderclass"] < UC_UPLOADER)
+		$gu = "<font color=\"red\">[GU]</font> ";
+	else
+		$gu = "";
 
-        ?>
-<tr>
-  <td class="tableb" valign="top" style="color:#FFFFFF;width:1px;"><?php
-        if (!isset($torrent_info["cat_pic"]))
-            if ($torrent_info["cat_name"] != "")
-                echo "<a href=\"browse.php?cat=" . $torrent_info["category"] . "\">" . $torrent_info["cat_name"] . "</a>";
-            else
-                echo "-";
-            else
-                echo "<a href=\"browse.php?cat=" . $torrent_info["category"] . "\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $torrent_info["cat_pic"] . "\" alt=\"" . $torrent_info["cat_name"] . "\" title=\"" . $torrent_info["cat_name"] . "\" border=\"0\"></a>";
+	$ecl = "<a href=\"javascript:expandCollapse('" . $torrent_info["id"] . "');\"><img id=\"plusminus" . $torrent_info["id"] . "\" src=\"" . $GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/plus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>";
 
-            ?></td>
-  <td class="tablea" valign="top" align="left">
-    <table cellpadding="2" cellspacing="2" border="0" style="width:100%">
-      <colgroup>
-        <col width="20%">
-        <col width="20%">
-        <col width="20%">
-        <col width="20%">
-        <col width="20%">
-      </colgroup>
-      <tr>
-        <td colspan="4" nowrap>
-          <a href="javascript:expandCollapse('<?=$torrent_info["id"]?>');"><img id="plusminus<?=$torrent_info["id"]?>" src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/plus.gif" alt="Auf-/Zuklappen" border="0"></a>
-          <?php if ($torrent_info["variant"] != "index") {
+	$nlink = "<a href=\"" . $baselink . "\"><b>" . $torrent_info["name"] . "</b></a>";
+	
+	if($torrent_info["variant"] != "guestuploads" && $torrent_info["is_new"])
+		$isnew = " <font style=\"color:red\">(NEU)</font>";
+	else
+		$isnew = " ";
+	
+	if ($torrent_info["variant"] == "guestuploads" && $torrent_info["gu_agent"] > 0)
+		$guagent = " <font style=\"color:red\">(Bereits in Bearbeitung)</font>";
+	else
+		$guagent = "";
+		
+	if ($torrent_info["seeders"] == 0 && $torrent_info["variant"] == "index"){
+		$deadtext = "<div style=\"padding:4px;\"><b><font color=\"red\">HINWEIS:</font></b> Es sind keine Seeder für diesen Torrent aktiv. ".
+					"Dies bedeutet, dass Du diesen Torrent wahrscheinlich nicht fertigstellen kannst, solange nicht wieder ein Seeder aktiv wird. ".
+					"Sollte der Torrent längere Zeit inaktiv gewesen und als \"Tot\" markiert worden sein, solltest Du im Forum um einen Reseed bitten, ".
+					"Falls Du noch Interesse daran hast.</div>";
+	}else
+		$deadtext = "";
 
-                ?>[ <a href="edit.php?id=<?=$torrent_info["id"] . $returnto?>">Bearbeiten</a> ]<?php } 
+	if($torrent_info["variant"] == "mytorrents"){
+		$visibiblity = "                <tr>\n".
+						"                    <td nowrap valign=\"top\"><b>Sichtbar:</b></td>\n".
+						"                    <td>", ($torrent_info["visible"] == "yes"?"Ja":"Nein, dieser Torrent ist inaktiv und als \"Tot\" markiert"), "</td>\n".
+						"                </tr>\n";
+	}else
+		$visibiblity = "";
+		
+	if($torrent_info["has_wait"]){
+		$wtt = "                <tr>\n".
+				"                    <td nowrap valign=\"top\"><b>Wartezeit:</b></td>\n".
+				"                    <td><font color=\"" . $torrent_info["wait_color"] . "\">". $torrent_info["wait_left"] . " Stunde(n)</font></td>\n".
+				"                </tr>\n";
+	}else
+		$wtt = "";
+		
+	$distributionbar = "<div style=\"border:1px solid black;padding:0px;width:300px;height:15px;\"><div style=\"border:none;width:" . (300 * $torrent_info["dist"] / 100) . "px;height:15px;background-image:url(" . $GLOBALS["PIC_BASE_URL"] . "ryg-verlauf.png);background-repeat:no-repeat;\"></div></div>";
 
-            ?>
-          <?php if (isset($torrent_info["uploaderclass"]) && $torrent_info["uploaderclass"] < UC_UPLOADER) {
-                echo '<font color="red">[GU]</font> ';
-            } 
-
-            ?>
-          <a href="<?=$baselink?>"><b><?=$torrent_info["name"]?></b></a><?php if ($torrent_info["variant"] != "guestuploads" && $torrent_info["is_new"]) echo " <font style=\"color:red\">(NEU)</font>";
-            if ($torrent_info["variant"] == "guestuploads" && $torrent_info["gu_agent"] > 0) echo " <font style=\"color:red\">(Bereits in Bearbeitung)</font>";
-
-            ?>
-        </td>
-        <td nowrap>
-          <?=($torrent_info["variant"] == "mytorrents"?"Hochgeladen am:":"Von: " . $torrent_info["uploaderlink"])?>
-        </td>
-      </tr>
-      <tr>
-        <td style="font-size:90%"><b><?=mksize($torrent_info["size"])?></b> in <b><?=$torrent_info["numfiles"]?></b> <a href="<?=$filelistlink?>">Datei(en)</a></td>
-        <td style="font-size:90%">
-          <b><font color="<?=$seedercolor?>"><?=intval($torrent_info["seeders"])?></font></b> <a href="<?=$seederlink?>">Seeder</a> &amp;
-          <b><font color="<?=linkcolor($torrent_info["seeders"])?>"><?=intval($torrent_info["leechers"])?></font></b> <a href="<?=$leecherlink?>">Leecher</a></td>
-        <td style="font-size:90%"><b><?=$torrent_info["times_completed"]?></b>x <a href="<?=$snatcherlink?>">heruntergeladen</a></td>
-        <td style="font-size:90%"><b><?=$torrent_info["comments"]?></b> <a href="<?=$commlink?>">Kommentare</a></td>
-        <td style="font-size:90%"><?=$torrent_info["added"]?></td>
-      </tr>
-    </table>
-    <div id="details<?=$torrent_info["id"]?>" style="display:none;">
-      <?php
-            if ($torrent_info["seeders"] == 0 && $torrent_info["variant"] == "index")
-                echo "<div style=\"padding:4px;\"><b><font color=\"red\">HINWEIS:</font></b> Es sind keine Seeder für diesen Torrent aktiv. ",
-                "Dies bedeutet, dass Du diesen Torrent wahrscheinlich nicht fertigstellen kannst, solange nicht wieder ein Seeder aktiv wird. ",
-                "Sollte der Torrent längere Zeit inaktiv gewesen und als \"Tot\" markiert worden sein, solltest Du im Forum um einen Reseed bitten, ",
-                "Falls Du noch Interesse daran hast.</div>";
-
-            ?>
-      <table cellspacing="2" cellpadding="2" border="0" class="inposttable" style="width:100%;">
-        <colgroup>
-          <col width="20%">
-          <col width="80%">
-        </colgroup>
-        <?php
-            if ($torrent_info["variant"] == "mytorrents") {
-                echo "<tr><td nowrap valign=\"top\"><b>Sichtbar:</b></td><td>", ($torrent_info["visible"] == "yes"?"Ja":"Nein, dieser Torrent ist inaktiv und als \"Tot\" markiert"), "</td></tr>";
-            } 
-            if ($torrent_info["has_wait"]) {
-                echo "<tr><td nowrap valign=\"top\"><b>Wartezeit:</b></td><td><font color=\"",
-                $torrent_info["wait_color"], "\">", $torrent_info["wait_left"],
-                " Stunde(n)</font></td></tr>";
-            } 
-
-            ?>
-        <tr><td nowrap="nowrap" valign="top"><b>Letzte 10 Downloader:</b></td><td><?=$last10users?></td></tr>
-        <tr><td nowrap="nowrap" valign="top"><b>&Oslash; Downloadgeschw.:</b></td><td><?=$torrent_info["dlspeed"]?> KB/s (<?php echo $torrent_info["dlspeed"] * ($torrent_info["leechers"] + $torrent_info["seeders"]);
-
-            ?> KB/s gesamt)</td></tr>
-        <tr><td nowrap="nowrap" valign="top"><b>&Oslash; Uploadgeschw.:</b></td><td><?=$torrent_info["ulspeed"]?> KB/s (<?php echo $torrent_info["ulspeed"] * ($torrent_info["leechers"] + $torrent_info["seeders"]);
-
-            ?> KB/s gesamt)</td></tr>
-        <tr><td nowrap="nowrap" valign="top"><b>Letzte Aktivit&auml;t:</b></td><td><?=$torrent_info["last_action"]?></td></tr>
-        <tr><td nowrap="nowrap" valign="top"><b>Verbleibende Zeit:</b></td><td><?=$torrent_info["ttl"]?> (falls inaktiv, sonst l&auml;nger)</td></tr>
-        <tr><td nowrap="nowrap" valign="top"><b>&Oslash; Verteilung:</b></td><td><div style="border:1px solid black;padding:0px;width:300px;height:15px;"><div style="border:none;width:<?=300 * $torrent_info["dist"] / 100?>px;height:15px;background-image:url(<?=$GLOBALS["PIC_BASE_URL"]?>ryg-verlauf.png);background-repeat:no-repeat;"></div></div></td></tr>
-      </table>
-    </div>
-  <td class="tableb" valign="top" align="center" style="width:22px;padding:4px;padding-top:10px;">
-    <?php if ($torrent_info["variant"] == "guestuploads") {
-                if ($torrent_info["gu_agent"] == 0)
-                    echo "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "nodl.png\" width=\"22\" height=\"22\" alt=\"Nicht in Bearbeitung\" title=\"Nicht in Bearbeitung\">";
-                else
-                    echo "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "taken.png\" width=\"22\" height=\"22\" alt=\"Bereits in Bearbeitung\" title=\"Bereits in Bearbeitung\">";
-            } else {
-                if ($torrent_info["activated"] == "yes") {
-                    if (!isset($torrent_info["wait_left"]) || $torrent_info["wait_left"] == 0) {
-
-                        ?>
-    <a href="<?=$download_url?>"><img src="<?=$GLOBALS["PIC_BASE_URL"]?>download.png" width="22" height="22" alt="Torrent herunterladen" title="Torrent herunterladen" border="0"></a>
-    <?php } else {
-
-                        ?>
-    <img src="<?=$GLOBALS["PIC_BASE_URL"]?>nodl.png" width="22" height="22" alt="Wartezeit nicht abgelaufen" title="Wartezeit nicht abgelaufen" border="0"
-    <?php } 
-                } else {
-
-                    ?>
-    <img src="<?=$GLOBALS["PIC_BASE_URL"]?>nodl.png" width="22" height="22" alt="Torrent nicht freigeschaltet" title="Torrent nicht freigeschaltet" border="0"
-    <?php } 
-            } 
-
-            ?>
-  </td>
-</tr>
-<?php
-        } 
-
-        function torrenttable($res, $variant = "index", $addparam = "")
-        {
-            global $CURUSER; 
-            // Sortierkriterien entfernen
-            $addparam_nosort = preg_replace(array("/orderby=(.*?)&amp;/i", "/sort=(.*?)&amp;/i"), array("", ""), $addparam); 
-            // Hat dieser Benutzer Wartezeit?
-            $has_wait = get_wait_time($CURUSER["id"], 0, true);
-
-            ?>
-<script type="text/javascript">
-
-function expandCollapse(torrentId)
-{
-    var plusMinusImg = document.getElementById("plusminus"+torrentId);
-    var detailRow = document.getElementById("details"+torrentId);
-
-    if (plusMinusImg.src.indexOf("<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/plus.gif") >= 0) {
-        plusMinusImg.src = "<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/minus.gif";
-        detailRow.style.display = "block";
-    } else {
-        plusMinusImg.src = "<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/plus.gif";
-        detailRow.style.display = "none";
-    }
+	if($torrent_info["variant"] == "guestuploads"){
+		if ($torrent_info["gu_agent"] == 0)
+			$xdlpic = "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "nodl.png\" width=\"22\" height=\"22\" alt=\"Nicht in Bearbeitung\" title=\"Nicht in Bearbeitung\">";
+		else
+			$xdlpic = "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "taken.png\" width=\"22\" height=\"22\" alt=\"Bereits in Bearbeitung\" title=\"Bereits in Bearbeitung\">";
+	}else{
+		if ($torrent_info["activated"] == "yes") {
+			if(!isset($torrent_info["wait_left"]) || $torrent_info["wait_left"] == 0){
+				$xdlpic = "<a href=\"" . $download_url . "\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "download.png\" width=\"22\" height=\"22\" alt=\"Torrent herunterladen\" title=\"Torrent herunterladen\" border=\"0\"></a>";
+			}else{
+				$xdlpic = "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "nodl.png\" width=\"22\" height=\"22\" alt=\"Wartezeit nicht abgelaufen\" title=\"Wartezeit nicht abgelaufen\" border=\"0\" />";
+			} 
+		}else{
+			$xdlpic = "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "nodl.png\" width=\"22\" height=\"22\" alt=\"Torrent nicht freigeschaltet\" title=\"Torrent nicht freigeschaltet\" border=\"0\" />";
+		}
+	}
+	
+	echo "    <tr>\n".
+		"        <td class=\"tableb\" valign=\"top\" style=\"color:#FFFFFF;width:1px;\">" . $tci . "</td>\n".
+		"        <td class=\"tablea\" valign=\"top\" align=\"left\">\n".
+		"            <table cellpadding=\"2\" cellspacing=\"2\" border=\"0\" style=\"width:100%\">\n".
+		"                <colgroup>\n".
+		"                    <col width=\"20%\">\n".
+		"                    <col width=\"20%\">\n".
+		"                    <col width=\"20%\">\n".
+		"                    <col width=\"20%\">\n".
+		"                    <col width=\"20%\">\n".
+		"                </colgroup>\n".
+		"                <tr>\n".
+		"                    <td colspan=\"4\" nowrap=\"nowrap\">". $ecl . $edit_l . $gu . $nlink . $isnew . $guagent . "</td>\n".
+        "                    <td nowrap=\"nowrap\">".($torrent_info["variant"] == "mytorrents" ? "Hochgeladen am:" : "Von: " . $torrent_info["uploaderlink"]). "</td>\n".
+		"                </tr>\n".
+		"                <tr>\n".
+		"                    <td style=\"font-size:90%\"><b>" . mksize($torrent_info["size"]) . "</b> in <b>" . $torrent_info["numfiles"] . "</b> <a href=\"" . $filelistlink . "\">Datei(en)</a></td>\n".
+		"                    <td style=\"font-size:90%\"><b><font color=\"" . $seedercolor . "\">" . intval($torrent_info["seeders"]) . "</font></b> <a href=\"" . $seederlink . "\">Seeder</a> &amp;<b><font color=\"" . linkcolor($torrent_info["seeders"]) . "\">" . intval($torrent_info["leechers"]) . "</font></b> <a href=\"" . $leecherlink . "\">Leecher</a></td>\n".
+		"                    <td style=\"font-size:90%\"><b>" . $torrent_info["times_completed"] . "</b>x <a href=\"" . $snatcherlink . "\">heruntergeladen</a></td>\n".
+		"                    <td style=\"font-size:90%\"><b>" . $torrent_info["comments"] . "</b> <a href=\"" . $commlink . "\">Kommentare</a></td>\n".
+		"                    <td style=\"font-size:90%\">" . $torrent_info["added"] . "</td>\n".
+		"                </tr>\n".
+		"            </table>\n".
+		"            <div id=\"details" . $torrent_info["id"] . "\" style=\"display:none;\">\n".
+		$deadtext.
+		"            <table cellspacing=\"2\" cellpadding=\"2\" border=\"0\" class=\"inposttable\" style=\"width:100%;\">\n".
+		"                <colgroup>\n".
+		"                    <col width=\"20%\">\n".
+		"                    <col width=\"80%\">\n".
+		"                </colgroup>\n".
+		$visibiblity.
+		$wtt.
+		"                <tr>\n".
+		"                    <td nowrap=\"nowrap\" valign=\"top\"><b>Letzte 10 Downloader:</b></td>\n".
+		"                    <td>" . $last10users . "</td>\n".
+		"                </tr>\n".
+		"                <tr>\n".
+		"                    <td nowrap=\"nowrap\" valign=\"top\"><b>&Oslash; Downloadgeschw.:</b></td>\n".
+		"                    <td>" . $torrent_info["dlspeed"] . " KB/s (" . ($torrent_info["dlspeed"] * ($torrent_info["leechers"] + $torrent_info["seeders"])) . " KB/s gesamt)</td>\n".
+		"                </tr>\n".
+		"                <tr>\n".
+		"                    <td nowrap=\"nowrap\" valign=\"top\"><b>&Oslash; Uploadgeschw.:</b></td>\n".
+		"                    <td>" . $torrent_info["ulspeed"] . " KB/s (" . ($torrent_info["ulspeed"] * ($torrent_info["leechers"] + $torrent_info["seeders"])) . " KB/s gesamt)</td>\n".
+		"                </tr>\n".
+		"                <tr>\n".
+		"                    <td nowrap=\"nowrap\" valign=\"top\"><b>Letzte Aktivit&auml;t:</b></td>\n".
+		"                    <td>" . $torrent_info["last_action"] . "</td>\n".
+		"                </tr>\n".
+		"                <tr>\n".
+		"                    <td nowrap=\"nowrap\" valign=\"top\"><b>Verbleibende Zeit:</b></td>\n".
+		"                    <td>" . $torrent_info["ttl"] . " (falls inaktiv, sonst l&auml;nger)</td>\n".
+		"                </tr>\n".
+		"                <tr>\n".
+		"                    <td nowrap=\"nowrap\" valign=\"top\"><b>&Oslash; Verteilung:</b></td>\n".
+		"                    <td>" . $distributionbar . "</td>\n".
+		"                </tr>\n".
+		"            </table>\n".
+		"            </div>\n".
+		"        </td>\n". // produziert vllt einen fehler im layout
+		"        <td class=\"tableb\" valign=\"top\" align=\"center\" style=\"width:22px;padding:4px;padding-top:10px;\">" . $xdlpic . "</td>\n".
+		"    </tr>\n";
 }
 
-</script>
-<table cellspacing="0" cellpadding="0" border="0" style="width:100%"><tr>
-        <td align="left"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/obenlinks.gif" alt="" title="" /></td>
-<td style="width:100%" class="obenmitte"></td>
-        <td align="right"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/obenrechts.gif" alt="" title="" /></td>
-</tr></table>
-<?php
+function torrenttable($res, $variant = "index", $addparam = ""){
+	global $CURUSER; 
+	// Sortierkriterien entfernen
+	$addparam_nosort = preg_replace(array("/orderby=(.*?)&amp;/i", "/sort=(.*?)&amp;/i"), array("", ""), $addparam); 
+	// Hat dieser Benutzer Wartezeit?
+	$has_wait = get_wait_time($CURUSER["id"], 0, true);
 
-            if ($CURUSER["oldtorrentlist"] == "yes") {
+	if($variant == "mytorrents"){
+		$vrtt = "        <td class=\"tablecat\" align=\"center\">Bearbeiten</td>\n".
+				"        <td class=\"tablecat\" align=\"center\">Sichtbar</td>\n";
+	}elseif($variant == "guestuploads")
+		$vrtt = "        <td class=\"tablecat\" align=\"center\">In&nbsp;Bearbeitung</td>\n";
+	elseif($has_wait)
+		$vrtt = "        <td class=\"tablecat\" align=\"center\">Wartez.</td>\n";
+		
+	if($variant == "index")
+		$vrtti = "        <td class=\"tablecat\" align=\"center\">Uploader</td>\n";
+	else
+		$vrtti = "";
 
-                ?>
-<table border="0" cellspacing="1" cellpadding="4" class="tableinborder" style="width:100%">
-<tr>
-  <td class="tablecat" align="center">Typ</td>
-  <td class="tablecat" align="left">Name</td>
-  <?php if ($variant == "mytorrents") {
+	echo "<script language=\"JavaScript\" src=\"js/expandCollapseTR.js\" type=\"text/javascript\"></script>\n".
+		"<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"width:100%\">\n".
+		"    <tr>\n".
+		"        <td align=\"left\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "obenlinks.gif\" alt=\"\" title=\"\" /></td>\n".
+		"        <td style=\"width:100%\" class=\"obenmitte\"></td>\n".
+		"        <td align=\"right\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/obenrechts.gif\" alt=\"\" title=\"\" /></td>\n".
+		"    </tr>\n".
+		"</table>\n";
+	if($CURUSER["oldtorrentlist"] == "yes"){
+		echo "<table border=\"0\" cellspacing=\"1\" cellpadding=\"4\" class=\"tableinborder\" style=\"width:100%\">\n".
+			"    <tr>\n".
+			"        <td class=\"tablecat\" align=\"center\">Typ</td>\n".
+			"        <td class=\"tablecat\" align=\"left\">Name</td>\n".
+			$vrtt.
+			"        <td class=\"tablecat\" align=\"right\">Dateien</td>\n".
+			"        <td class=\"tablecat\" align=\"right\">Komm.</td>\n".
+			"        <td class=\"tablecat\" align=\"center\">Hinzugef.</td>\n".
+			"        <td class=\"tablecat\" align=\"center\">TTL</td>\n".
+			"        <td class=\"tablecat\" align=\"center\">Gr&ouml;&szlig;e</td>\n".
+			"        <td class=\"tablecat\" align=\"center\">Verteilung</td>\n".
+			"        <td class=\"tablecat\" align=\"center\">Fertig</td>\n".
+			"        <td class=\"tablecat\" align=\"right\">Seeder</td>\n".
+			"        <td class=\"tablecat\" align=\"right\">Leecher</td>\n".
+			"        <td class=\"tablecat\" align=\"left\">&Oslash;&nbsp;Geschw.</td>\n".
+			$vrtti.
+			"    </tr>\n";
+	}else{
+		echo "<table border=\"0\" cellspacing=\"1\" cellpadding=\"0\" class=\"tableinborder\" style=\"width:100%\">\n".
+			"    <colgroup>\n".
+			"        <col width=\"32\">\n".
+			"        <col width=\"100%\">\n".
+			"        <col width=\"22\">\n".
+			"    </colgroup>\n";
+	}
 
-                    ?>
-  <td class="tablecat" align="center">Bearbeiten</td>
-  <td class="tablecat" align="center">Sichtbar</td>  
-  <?php } elseif ($variant == "guestuploads") {
+	while($row = mysql_fetch_assoc($res)){
+		$id = $row["id"];
+		$torrent_info = array();
+		$torrent_info["id"] = $row["id"];
+		$torrent_info["name"] = htmlspecialchars($row["name"]);
+		$torrent_info["activated"] = (isset($row["activated"])?$row["activated"]:"yes");
+		$torrent_info["gu_agent"] = (isset($row["gu_agent"])?$row["gu_agent"]:0);
+		$torrent_info["filename"] = $row["filename"];
+		$torrent_info["variant"] = $variant;
+		$torrent_info["category"] = $row["category"];
+		$torrent_info["cat_name"] = $row["cat_name"];
+		$torrent_info["type"] = $row["type"];
+		$torrent_info["numfiles"] = ($row["type"] == "single"?1:$row["numfiles"]);
+		$torrent_info["size"] = $row["size"];
+		$torrent_info["times_completed"] = intval($row["times_completed"]);
+		$torrent_info["seeders"] = $row["seeders"];
+		$torrent_info["leechers"] = $row["leechers"];
+		$torrent_info["uploaderlink"] = (isset($row["username"]) ? ("<a href=\"userdetails.php?id=" . $row["owner"] . "\"><b>" . htmlspecialchars($row["username"]) . "</b></a>") : "<i>(Gelöscht)</i>");
+		$torrent_info["added"] = str_replace(" ", "&nbsp;", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($row["added"])));
+		$torrent_info["comments"] = $row["comments"];
+		$torrent_info["visible"] = $row["visible"];
+		$torrent_info["last_action"] = str_replace(" ", "&nbsp;", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($row["last_action"])));
 
-                    ?>
-  <td class="tablecat" align="center">In&nbsp;Bearbeitung</td>
-  <?php } elseif ($has_wait) {
+		if(isset($row["cat_pic"]) && $row["cat_pic"] != "")
+			$torrent_info["cat_pic"] = $row["cat_pic"];
 
-                    ?>
-  <td class="tablecat" align="center">Wartez.</td>  
-  <?php } 
+		if(isset($row["uploaderclass"]))
+			$torrent_info["uploaderclass"] = $row["uploaderclass"];
 
-                ?>
-  <td class="tablecat" align="right">Dateien</td>
-  <td class="tablecat" align="right">Komm.</td>
-  <td class="tablecat" align="center">Hinzugef.</td>
-  <td class="tablecat" align="center">TTL</td>
-  <td class="tablecat" align="center">Gr&ouml;&szlig;e</td>
-  <td class="tablecat" align="center">Verteilung</td>
-  <td class="tablecat" align="center">Fertig</td>
-  <td class="tablecat" align="right">Seeder</td>
-  <td class="tablecat" align="right">Leecher</td>
-  <td class="tablecat" align="left">&Oslash;&nbsp;Geschw.</td>
-  <?php if ($variant == "index") {
+		if($has_wait){
+			$torrent_info["has_wait"] = $has_wait;
+			$torrent_info["wait_left"] = get_wait_time($CURUSER["id"], $id);
+			$torrent_info["wait_color"] = dechex(floor(127 * ($wait_left) / 48 + 128) * 65536);
+		} 
 
-                    ?>
-  <td class="tablecat" align="center">Uploader</td>          
-  <?php } 
+		$speedres = mysql_query("SELECT ROUND(AVG((downloaded - downloadoffset) / (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`started`)))/1024, 2) AS dlspeed, ROUND(AVG((uploaded - uploadoffset) / (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`started`)))/1024, 2) AS ulspeed FROM peers WHERE torrent=$id");
+		$speed = mysql_fetch_assoc($speedres);
+		if($speed["dlspeed"] == 0)
+			$speed["dlspeed"] = "0";
+		if($speed["ulspeed"] == 0)
+			$speed["ulspeed"] = "0";
+		$torrent_info["dlspeed"] = $speed["dlspeed"];
+		$torrent_info["ulspeed"] = $speed["ulspeed"];
 
-                ?>
-</tr>               
-            <?php
-            } else {
+		$distres = mysql_query("SELECT ROUND(AVG((" . $row["size"] . " - `to_go`) / " . $row["size"] . " * 100),2) AS `dist` FROM `peers` WHERE torrent=$id");
+		$dist = mysql_fetch_assoc($distres);
+		$torrent_info["dist"] = $dist["dist"];
 
-                ?>
-<table border="0" cellspacing="1" cellpadding="0" class="tableinborder" style="width:100%">
-  <colgroup>
-    <col width="32">
-    <col width="100%">
-    <col width="22">
-  </colgroup>
-            <?php
-            } while ($row = mysql_fetch_assoc($res)) {
-                $id = $row["id"];
+		$ttl = (28 * 24) - floor((time() - sql_timestamp_to_unix_timestamp($row["added"])) / 3600);
+		if($ttl == 1)
+			$ttl .= " Stunde";
+		else
+			$ttl .= " Stunden";
+		$torrent_info["ttl"] = $ttl;
 
-                $torrent_info = array();
-                $torrent_info["id"] = $row["id"];
-                $torrent_info["name"] = htmlspecialchars($row["name"]);
-                $torrent_info["activated"] = (isset($row["activated"])?$row["activated"]:"yes");
-                $torrent_info["gu_agent"] = (isset($row["gu_agent"])?$row["gu_agent"]:0);
-                $torrent_info["filename"] = $row["filename"];
-                $torrent_info["variant"] = $variant;
-                $torrent_info["category"] = $row["category"];
-                $torrent_info["cat_name"] = $row["cat_name"];
-                $torrent_info["type"] = $row["type"];
-                $torrent_info["numfiles"] = ($row["type"] == "single"?1:$row["numfiles"]);
-                $torrent_info["size"] = $row["size"];
-                $torrent_info["times_completed"] = intval($row["times_completed"]);
-                $torrent_info["seeders"] = $row["seeders"];
-                $torrent_info["leechers"] = $row["leechers"];
-                $torrent_info["uploaderlink"] = (isset($row["username"]) ? ("<a href=\"userdetails.php?id=" . $row["owner"] . "\"><b>" . htmlspecialchars($row["username"]) . "</b></a>") : "<i>(Gelöscht)</i>");
-                $torrent_info["added"] = str_replace(" ", "&nbsp;", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($row["added"])));
-                $torrent_info["comments"] = $row["comments"];
-                $torrent_info["visible"] = $row["visible"];
-                $torrent_info["last_action"] = str_replace(" ", "&nbsp;", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($row["last_action"])));
+		$newadd = "";
 
-                if (isset($row["cat_pic"]) && $row["cat_pic"] != "")
-                    $torrent_info["cat_pic"] = $row["cat_pic"];
+		$torrentunix = sql_timestamp_to_unix_timestamp($row["added"]);
+		$accessunix = sql_timestamp_to_unix_timestamp($CURUSER["last_access"]);
 
-                if (isset($row["uploaderclass"]))
-                    $torrent_info["uploaderclass"] = $row["uploaderclass"];
+		if($torrentunix >= $accessunix)
+			$torrent_info["is_new"] = true;
 
-                $torrent_info["has_wait"] = $has_wait;
-                if ($has_wait) {
-                    $torrent_info["wait_left"] = get_wait_time($CURUSER["id"], $id);
-                    $torrent_info["wait_color"] = dechex(floor(127 * ($wait_left) / 48 + 128) * 65536);
-                } 
+		if($CURUSER["oldtorrentlist"] == "yes") {
+			torrenttable_row_oldschool($torrent_info);
+		}else{
+			torrenttable_row($torrent_info);
+		} 
+	} 
 
-                $speedres = mysql_query("SELECT ROUND(AVG((downloaded - downloadoffset) / (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`started`)))/1024, 2) AS dlspeed, ROUND(AVG((uploaded - uploadoffset) / (UNIX_TIMESTAMP() - UNIX_TIMESTAMP(`started`)))/1024, 2) AS ulspeed FROM peers WHERE torrent=$id");
-                $speed = mysql_fetch_assoc($speedres);
-                if ($speed["dlspeed"] == 0) $speed["dlspeed"] = "0";
-                if ($speed["ulspeed"] == 0) $speed["ulspeed"] = "0";
-                $torrent_info["dlspeed"] = $speed["dlspeed"];
-                $torrent_info["ulspeed"] = $speed["ulspeed"];
+	echo "</table>\n".
+		"<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"width:100%\">\n".
+		"    <tr>\n".
+		"        <td align=\"left\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/untenlinks.gif\" alt=\"\" title=\"\" /></td>\n".
+		"        <td style=\"width:100%\" class=\"untenmitte\" align=\"center\"></td>\n".
+		"        <td align=\"right\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/untenrechts.gif\" alt=\"\" title=\"\" /></td>\n".
+		"    </tr>\n".
+		"</table>\n";
+	return $rows;
+} 
 
-                $distres = mysql_query("SELECT ROUND(AVG((" . $row["size"] . " - `to_go`) / " . $row["size"] . " * 100),2) AS `dist` FROM `peers` WHERE torrent=$id");
-                $dist = mysql_fetch_assoc($distres);
-                $torrent_info["dist"] = $dist["dist"];
+function hit_start(){
+	global $RUNTIME_START, $RUNTIME_TIMES; 
+	$RUNTIME_START = gettimeofday();
+} 
 
-                $ttl = (28 * 24) - floor((time() - sql_timestamp_to_unix_timestamp($row["added"])) / 3600);
-                if ($ttl == 1) $ttl .= " Stunde";
-                else $ttl .= " Stunden";
-                $torrent_info["ttl"] = $ttl;
+function hit_count(){
+	return;
+	global $RUNTIME_CLAUSE;
+	if(preg_match(',([^/]+)$,', $_SERVER["SCRIPT_NAME"], $matches))
+		$path = $matches[1];
+	else
+		$path = "(unknown)";
+	$period = date("Y-m-d H") . ":00:00";
+	$RUNTIME_CLAUSE = 'page = ' . $path . ' AND period = ' . $period;
+	$qry = $GLOBALS['DB']->prepare("UPDATE hits SET count = count + 1 WHERE page = :path AND period = :period");
+	$qry->bindParam(':path', $path, PDO::PARAM_STR);
+	$qry->bindParam(':period', $period, PDO::PARAM_STR);
+	$qry->execute();
+	if($qry->rowCount())
+		return;
+	else{
+		$qry = $GLOBALS['DB']->prepare('INSERT INTO hits (page, period, count) VALUES (:path, :period, 1)');
+		$qry->bindParam(':path', $path, PDO::PARAM_STR);
+		$qry->bindParam(':period', $period, PDO::PARAM_STR);
+		$qry->execute();
+	}
+}
 
-                $newadd = "";
+function hit_end(){
+	return;
+	global $RUNTIME_START, $RUNTIME_CLAUSE, $RUNTIME_TIMES;
+	if(empty($RUNTIME_CLAUSE))
+		return;
+	$now = gettimeofday();
+	$runtime = ($now["sec"] - $RUNTIME_START["sec"]) + ($now["usec"] - $RUNTIME_START["usec"]) / 1000000;
+	$ts = posix_times();
+	$sys = ($ts["stime"] - $RUNTIME_TIMES["stime"]) / 100;
+	$user = ($ts["utime"] - $RUNTIME_TIMES["utime"]) / 100;
+	$qry = $GLOBALS['DB']->prepare('UPDATE hits SET runs = runs + 1, runtime = runtime + :rt, user_cpu = user_cpu + :user, sys_cpu = sys_cpu + :sys WHERE :rtc');
+	$qry->bindParam(':rt', $runtime, PDO::PARAM_STR);
+	$qry->bindParam(':user', $user, PDO::PARAM_STR);
+	$qry->bindParam(':sys', $sys, PDO::PARAM_STR);
+	$qry->bindParam(':rtc', $RUNTIME_CLAUSE, PDO::PARAM_STR);
+	$qry->execute();
+}
 
-                $torrentunix = sql_timestamp_to_unix_timestamp($row["added"]);
-                $accessunix = sql_timestamp_to_unix_timestamp($CURUSER["last_access"]);
+function hash_pad($hash){
+	return str_pad($hash, 20);
+} 
 
-                if ($torrentunix >= $accessunix)
-                    $torrent_info["is_new"] = true;
+function hash_where($name, $hash){
+	$shhash = preg_replace('/ *$/s', "", $hash);
+	return "(" . $name . " = '" . $hash . "' OR " . $name . " = '" . $shhash . "')";
+} 
 
-                if ($CURUSER["oldtorrentlist"] == "yes") {
-                    torrenttable_row_oldschool($torrent_info);
-                } else {
-                    torrenttable_row($torrent_info);
-                } 
-            } 
+function get_user_icons($arr, $big = false){
+	if($big){
+		$donorpic = "starbig.png";
+		$warnedpic = "warnedbig.gif";
+		$disabledpic = "disabledbig.png";
+		$newbiepic = "pacifierbig.png";
+		$style = "style=\"margin-left:4pt;vertical-align:middle;\"";
+	}else{
+		$donorpic = "star.png";
+		$warnedpic = "warned.gif";
+		$disabledpic = "disabled.png";
+		$newbiepic = "pacifier.png";
+		$style = "style=\"margin-left:2pt;vertical-align:middle;\"";
+	} 
 
-            ?>
-</table>
-<table cellspacing="0" cellpadding="0" border="0" style="width:100%">
-	<tr>
-		<td align="left"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/untenlinks.gif" alt="" title="" /></td>
-		<td style="width:100%" class="untenmitte" align="center"></td>
-		<td align="right"><img src="<?=$GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"]?>/untenrechts.gif" alt="" title="" /></td>
-	</tr>
-</table>
-<?php
-            return $rows;
-        } 
+	$pics = $arr["donor"] == "yes" ? "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $donorpic . "\" alt=\"Spender\" title=\"Dieser Benutzer hat mit einer Spende zum Erhalt des Trackers beigetragen\" border=\"0\" " . $style . ">" : "";
 
-        function hit_start()
-        {
-            global $RUNTIME_START, $RUNTIME_TIMES; 
-            // $RUNTIME_TIMES = posix_times();
-            $RUNTIME_START = gettimeofday();
-        } 
+	if(isset($arr["warned"]) && $arr["warned"] == "yes")
+		$pics .= "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $warnedpic . "\" alt=\"Verwarnt\" title=\"Dieser Benutzer wurde verwarnt\" border=\"0\" " . $style . ">";
 
-		// es gibt keine table "hits"
-		// TODO!!
-        function hit_count()
-        {
-            return;
-            global $RUNTIME_CLAUSE;
-            if (preg_match(',([^/]+)$,', $_SERVER["SCRIPT_NAME"], $matches))
-                $path = $matches[1];
-            else
-                $path = "(unknown)";
-            $period = date("Y-m-d H") . ":00:00";
-            $RUNTIME_CLAUSE = 'page = ' . $path . ' AND period = ' . $period;
-			$qry = $GLOBALS['DB']->prepare("UPDATE hits SET count = count + 1 WHERE page = :path AND period = :period");
-			$qry->bindParam(':path', $path, PDO::PARAM_STR);
-			$qry->bindParam(':period', $period, PDO::PARAM_STR);
-			$qry->execute();
-            if ($qry->rowCount())
-                return;
-			else{
-				$qry = $GLOBALS['DB']->prepare('INSERT INTO hits (page, period, count) VALUES (:path, :period, 1)');
-				$qry->bindParam(':path', $path, PDO::PARAM_STR);
-				$qry->bindParam(':period', $period, PDO::PARAM_STR);
-				$qry->execute();
-			}
-        } 
+	if(isset($arr["enabled"]) && $arr["enabled"] == "no")
+		$pics .= "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $disabledpic . "\" alt=\"Deaktiviert\" title=\"Dieser Benutzer ist deaktiviert\" border=\"0\" " . $style . ">";
 
-        function hit_end()
-        {
-            return;
-            global $RUNTIME_START, $RUNTIME_CLAUSE, $RUNTIME_TIMES;
-            if (empty($RUNTIME_CLAUSE))
-                return;
-            $now = gettimeofday();
-            $runtime = ($now["sec"] - $RUNTIME_START["sec"]) + ($now["usec"] - $RUNTIME_START["usec"]) / 1000000;
-            $ts = posix_times();
-            $sys = ($ts["stime"] - $RUNTIME_TIMES["stime"]) / 100;
-            $user = ($ts["utime"] - $RUNTIME_TIMES["utime"]) / 100;
-			$qry = $GLOBALS['DB']->prepare('UPDATE hits SET runs = runs + 1, runtime = runtime + :rt, user_cpu = user_cpu + :user, sys_cpu = sys_cpu + :sys WHERE :rtc');
-			$qry->bindParam(':rt', $runtime, PDO::PARAM_STR);
-			$qry->bindParam(':user', $user, PDO::PARAM_STR);
-			$qry->bindParam(':sys', $sys, PDO::PARAM_STR);
-			$qry->bindParam(':rtc', $RUNTIME_CLAUSE, PDO::PARAM_STR);
-			$qry->execute();
-        }
-
-        function hash_pad($hash)
-        {
-            return str_pad($hash, 20);
-        } 
-
-        function hash_where($name, $hash)
-        {
-            $shhash = preg_replace('/ *$/s', "", $hash);
-            return "($name = " . sqlesc($hash) . " OR $name = " . sqlesc($shhash) . ")";
-        } 
-
-        function get_user_icons($arr, $big = false)
-        {
-            if ($big) {
-                $donorpic = "starbig.png";
-                $warnedpic = "warnedbig.gif";
-                $disabledpic = "disabledbig.png";
-                $newbiepic = "pacifierbig.png";
-                $style = "style=\"margin-left:4pt;vertical-align:middle;\"";
-            } else {
-                $donorpic = "star.png";
-                $warnedpic = "warned.gif";
-                $disabledpic = "disabled.png";
-                $newbiepic = "pacifier.png";
-                $style = "style=\"margin-left:2pt;vertical-align:middle;\"";
-            } 
-
-            $pics = $arr["donor"] == "yes" ? "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $donorpic . "\" alt=\"Spender\" title=\"Dieser Benutzer hat mit einer Spende zum Erhalt des Trackers beigetragen\" border=0 $style>" : "";
-
-            if (isset($arr["warned"]) && $arr["warned"] == "yes")
-                $pics .= "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $warnedpic . "\" alt=\"Verwarnt\" title=\"Dieser Benutzer wurde verwarnt\" border=0 $style>";
-
-            if (isset($arr["enabled"]) && $arr["enabled"] == "no")
-                $pics .= "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $disabledpic . "\" alt=\"Deaktiviert\" title=\"Dieser Benutzer ist deaktiviert\" border=0 $style>";
-
-            $timeadded = intval(sql_timestamp_to_unix_timestamp($arr["added"]));
-            if ($timeadded > 0 && time() - $timeadded < 604800)
-                $pics .= "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $newbiepic . "\" alt=\"Newbie\" title=\"Ist noch neu hier\" border=0 $style>";
-            return $pics;
-        } 
-
-
+	$timeadded = intval(sql_timestamp_to_unix_timestamp($arr["added"]));
+	if($timeadded > 0 && time() - $timeadded < 604800)
+		$pics .= "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $newbiepic . "\" alt=\"Newbie\" title=\"Ist noch neu hier\" border=\"0\" " . $style . ">";
+	return $pics;
+}
 ?>
