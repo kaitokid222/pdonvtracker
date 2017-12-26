@@ -4,16 +4,6 @@ require_once("include/benc.php");
 
 dbconn(false);
 
-function err($msg) {
-   return benc_resp_raw("d".benc_str("failure reason").benc_str($msg)."e");
-}
-
-function benc_resp_raw($x){
-    header("Content-Type: text/plain");
-    header("Pragma: no-cache");
-    print($x);
-}
-
 $ip = $_SERVER['REMOTE_ADDR'];
 $result = mysql_query("select lastAccess from scrape_lastlog where ipAddress='$ip'");
 $lastlog = mysql_fetch_assoc($result);

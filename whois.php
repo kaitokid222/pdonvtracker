@@ -20,16 +20,15 @@ if(isset($_GET['ip'])){
 		die("Keine gültige IP!");
 }else
 	die("Kein Parameter \"IP\"");
+
+echo "<html>\n".
+	"<head>\n".
+	"    <title>WHOIS Data zu IP " . $_GET["ip"] . "</title>\n".
+	"</head>\n".
+	"<body>\n".
+	"    <pre>".
+	system("whois ".escapeshellcmd($_GET["ip"])).
+	"    </pre>\n".
+	"</body>\n".
+	"</html>\n";
 ?>
-<html>
-<head>
-    <title>WHOIS Data zu IP <?=$_GET["ip"]?></title>
-</head>
-<body>
-    <pre>
-<?php
-system("whois ".escapeshellcmd($_GET["ip"]));
-?>
-    </pre>
-</body>
-</html>

@@ -150,8 +150,7 @@ function getip(){
 } 
 
 // die quelle des bösen
-function dbconn($autoclean = false)
-{
+function dbconn($autoclean = false){
     global $mysql_host, $mysql_user, $mysql_pass, $mysql_db, $_SERVER;
 
     if (!@mysql_connect($mysql_host, $mysql_user, $mysql_pass)) {
@@ -182,8 +181,7 @@ function dbconn($autoclean = false)
         register_shutdown_function("autoclean");
 } 
 
-function userlogin()
-{
+function userlogin(){
     global $SITE_ONLINE;
     unset($GLOBALS["CURUSER"]);
 
@@ -300,36 +298,33 @@ function userlogin()
         header("Location: rules.php?accept_rules");
         die();
     } 
-} 
+}
 
-function logincookie($id, $passhash, $updatedb = 1, $expires = 0x7fffffff)
-{
+function logincookie($id, $passhash, $updatedb = 1, $expires = 0x7fffffff){
     setcookie("uid", $id, $expires, "/");
     setcookie("pass", $passhash, $expires, "/");
 
-    if ($updatedb){
+    if($updatedb){
 		$qry = $GLOBALS['DB']->prepare('UPDATE users SET last_login = NOW() WHERE id = :id');
 		$qry->bindParam(':id', $id, PDO::PARAM_STR);
 		$qry->execute();
 	}
-} 
+}
 
-function logoutcookie()
-{
+function logoutcookie(){
     setcookie("uid", "", 0x7fffffff, "/");
     setcookie("pass", "", 0x7fffffff, "/");
     session_unset();
     session_destroy();
-} 
+}
 
-function loggedinorreturn()
-{
+function loggedinorreturn(){
     global $CURUSER, $DEFAULTBASEURL;
-    if (!$CURUSER) {
+    if(!$CURUSER){
         header("Location: " . $DEFAULTBASEURL . "/login.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]));
         exit();
-    } 
-} 
+    }
+}
 
 function autoclean()
 {
@@ -656,7 +651,7 @@ function commenttable($rows){
 			"    </colgroup>\n".
 			"    <tr>\n".
 			"        <td colspan=\"2\" class=\"tablecat\">\n".
-			"            #" . $row["id"] . " von ");
+			"            #" . $row["id"] . " von ";
 		if(isset($row["username"])){
 			$title = $row["title"];
 			if($title == "")
@@ -913,7 +908,7 @@ function torrenttable_row($torrent_info){
 	if($torrent_info["variant"] == "mytorrents"){
 		$visibiblity = "                <tr>\n".
 						"                    <td nowrap valign=\"top\"><b>Sichtbar:</b></td>\n".
-						"                    <td>", ($torrent_info["visible"] == "yes"?"Ja":"Nein, dieser Torrent ist inaktiv und als \"Tot\" markiert"), "</td>\n".
+						"                    <td>" . ($torrent_info["visible"] == "yes"?"Ja":"Nein, dieser Torrent ist inaktiv und als \"Tot\" markiert") . "</td>\n".
 						"                </tr>\n";
 	}else
 		$visibiblity = "";
@@ -1194,10 +1189,11 @@ function hash_pad($hash){
 	return str_pad($hash, 20);
 } 
 
+/* nur für announce.php und scrape nötig
 function hash_where($name, $hash){
 	$shhash = preg_replace('/ *$/s', "", $hash);
 	return "(" . $name . " = '" . $hash . "' OR " . $name . " = '" . $shhash . "')";
-} 
+}*/
 
 function get_user_icons($arr, $big = false){
 	if($big){

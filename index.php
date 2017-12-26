@@ -204,7 +204,7 @@ if($CURUSER){
 				"    <td nowrap align=\"left\">" . $poll['answers'][$answerid] . "&nbsp;&nbsp;</td>".
 				"    <td align=\"left\">".
 				"        <img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_left" . (($answerid%5)+1) . ".gif\">".
-				"        <img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_middle" . (($answerid%5)+1) . ".gif\" height=9 width=" . (($p * 5)+1) .">".
+				"        <img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_middle" . (($answerid%5)+1) . ".gif\" height=\"9\" width=" . (($p * 5)+1) .">".
 				"        <img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_right" . (($answerid%5)+1) . ".gif\"> " . $p . "%".
 				"    </td>".
 				"</tr>\n";
@@ -235,24 +235,23 @@ function textbbcode_edit($text, $aktive = TRUE){
 	$button = $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "editor";
 	$png = "true";
 	$button .= "/default";
-    print("\n<div id=\"loading-layer\" style=\"display:none; font-family: Verdana; font-size: 11px; width:200px; height:50px; background:#FFFFFF; padding:10px; text-align:center; border:1px solid #000000;\">\n" .
-          "    <div style=\"font-weight:bold;\" id=\"loading-layer-text\">Senden. Bitte warten ...</div><br />\n" .
-          "    <img src=\"" . $BASEURL . "/pic/loading.gif\" border=\"0\" />\n" .
-          "</div>\n" .
-          "<div style=\"text-align: left; width: 650px;\">\n" .
-          "  <script type=\"text/javascript\" src=\"" . $BASEURL . "/js/editor.js\"></script>\n" .
-          "  <script type=\"text/javascript\">edToolbar('" . $text . "','" . $button . "','" . $png . "','no');</script>\n");
+	echo "\n<div id=\"loading-layer\" style=\"display:none; font-family: Verdana; font-size: 11px; width:200px; height:50px; background:#FFFFFF; padding:10px; text-align:center; border:1px solid #000000;\">\n" .
+		"    <div style=\"font-weight:bold;\" id=\"loading-layer-text\">Senden. Bitte warten ...</div><br />\n" .
+		"    <img src=\"" . $BASEURL . "/pic/loading.gif\" border=\"0\" />\n" .
+		"</div>\n" .
+		"<div style=\"text-align: left; width: 650px;\">\n" .
+		"  <script type=\"text/javascript\" src=\"" . $BASEURL . "/js/editor.js\"></script>\n" .
+		"  <script type=\"text/javascript\">edToolbar('" . $text . "','" . $button . "','" . $png . "','no');</script>\n";
 
-    if ($aktive){
-        print("  <input name=\"" . $text . "\" id=\"" . $text . "\" value=\"\" size=\"80\" />\n" .
-              "  <button name=\"button\" id=\"button\">Absenden</button>\n");
-    }
+	if($aktive){
+		echo "  <input name=\"" . $text . "\" id=\"" . $text . "\" value=\"\" size=\"80\" />\n" .
+			"  <button name=\"button\" id=\"button\">Absenden</button>\n";
+	}
 
-    print("</div>\n" .
-          "<br style=\"clear: left;\" />");
+	echo "</div>\n" .
+		"<br style=\"clear: left;\" />";
 }
 
-//$shoutbox = new shoutbox($database);
 echo "<br>\n".
 	"<table align=\"center\" width=\"100%\">\n".
 	"    <tr>\n".

@@ -117,8 +117,7 @@ begin_table(TRUE);
 <table class=main width=640 border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>
 <font class=small><b>Hinweis:</b> Die hochgeladenen Dateien m&uuml;ssen mit den Avatar-Regeln konform sein, und d&uuml;rfen keine illegalen, gewaltverherrlichenden oder pronographischen Inhalte enthalten. Lade bitte auch keine Dateien hoch, von denen du nicht m&ouml;chtest, dass diese ein Fremder zu sehen bekommt.</font>
 </td></tr></table>
-<?php end_frame(); ?>
-
 <?php
+end_frame();
 stdfoot();
 ?>
