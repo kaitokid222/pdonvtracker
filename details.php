@@ -273,7 +273,8 @@ if (!isset($_GET["page"])) {
         } 
     } 
 
-    tr("Hash-Wert", preg_replace_callback('/./s', "hex_esc", hash_pad($row["info_hash"])));
+    //tr("Hash-Wert", preg_replace_callback('/./s', "hex_esc", hash_pad($row["info_hash"])));
+    tr("Hash-Wert", $row["info_hash"]);
 
     if ($waittime) {
         if ($row["activated"] != "yes" && $owned)

@@ -650,6 +650,9 @@ CREATE TABLE `torrents` (
   FULLTEXT KEY `ft_search` (`search_text`,`ori_descr`)
 ) ;
 
+ALTER TABLE `torrents`
+	CHANGE COLUMN `info_hash` `info_hash` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'latin1_bin' AFTER `id`;
+
 --
 -- Table structure for table `traffic`
 --

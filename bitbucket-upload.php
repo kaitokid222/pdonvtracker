@@ -32,92 +32,106 @@ userlogin();
 loggedinorreturn();
 
 $maxfilesize = $GLOBALS["MAX_UPLOAD_FILESIZE"];
-
-if ($CURUSER["class"]>=UC_UPLOADER) {
+if($CURUSER["class"]>=UC_UPLOADER)
     $maxbucketsize = $GLOBALS["MAX_BITBUCKET_SIZE_UPLOADER"];
-} else {
+else
     $maxbucketsize = $GLOBALS["MAX_BITBUCKET_SIZE_USER"];
-}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST")
-{
+if($_SERVER["REQUEST_METHOD"] == "POST"){
 	$file = $_FILES["file"];
-	if (!isset($file) || $file["size"] < 1)
+
+	if(!isset($file) || $file["size"] < 1)
 		stderr("Upload fehlgeschlagen", "Es wurden keine Daten empfangen!");
-    if ($_POST["is_avatar"] != "1") {
-    	if ($file["size"] > $maxfilesize)
-    		stderr("Upload fehlgeschlagen", "Sorry, diese Datei ist zu gro&szlig; f&uuml;r den BitBucket.");
+
+	if($_POST["is_avatar"] != "1"){
+		if($file["size"] > $maxfilesize)
+			stderr("Upload fehlgeschlagen", "Sorry, diese Datei ist zu gro&szlig; f&uuml;r den BitBucket.");
 
 		$qry = $GLOBALS['DB']->prepare('SELECT SUM(size) FROM bitbucket WHERE user= :id');
 		$qry->bindParam(':id', $GLOBALS["CURUSER"]["id"], PDO::PARAM_INT);
 		$qry->execute();
-		if($qry->rowCount() > 0){
+		if($qry->rowCount() > 0)
 			$bucketsize = $qry->fetchColumn();
-		}
-    	if ($bucketsize+$file["size"]>$maxbucketsize)
-    		stderr("Upload fehlgeschlagen", "Sorry, Dein BitBucket is zu voll, um diese Datei aufnehmen zu k&ouml;nnen. Bitte l&ouml;sche erst eine oder mehrere Dateien, bevor Du eine weitere hochl&auml;dst.");	
-    }
+
+		if($bucketsize+$file["size"]>$maxbucketsize)
+			stderr("Upload fehlgeschlagen", "Sorry, Dein BitBucket is zu voll, um diese Datei aufnehmen zu k&ouml;nnen. Bitte l&ouml;sche erst eine oder mehrere Dateien, bevor Du eine weitere hochl&auml;dst.");	
+	}
+
 	$filename = md5_file($file["tmp_name"]);
-	if (file_exists($tgtfile))
+
+	if(file_exists($tgtfile))
 		stderr("Upload fehlgeschlagen", "Sorry, eine Datei mit dem Namen <b>" . htmlspecialchars($filename) . "</b> existiert bereits im BitBucket.");
+
 	$it = exif_imagetype($file["tmp_name"]);
-	if ($it != IMAGETYPE_GIF && $it != IMAGETYPE_JPEG && $it != IMAGETYPE_PNG)
+
+	if($it != IMAGETYPE_GIF && $it != IMAGETYPE_JPEG && $it != IMAGETYPE_PNG)
 		stderr("Upload fehlgeschlagen", "Sorry, die hochgeladene Datei konnte nicht als g&uuml;tige Bilddatei verifiziert werden.");
 
 	$i = strrpos($file["name"], ".");
-	if ($i !== false)
-	{
+
+	if($i !== false){
 		$ext = strtolower(substr($file["name"], $i));
-		if (($it == IMAGETYPE_GIF && $ext != ".gif") || ($it == IMAGETYPE_JPEG && $ext != ".jpg") || ($it == IMAGETYPE_PNG && $ext != ".png"))
-			stderr("Fehler", "Ung&uuml;tige Dateinamenerweiterung: <b>$ext</b>");
+
+		if(($it == IMAGETYPE_GIF && $ext != ".gif") || ($it == IMAGETYPE_JPEG && $ext != ".jpg") || ($it == IMAGETYPE_PNG && $ext != ".png"))
+			stderr("Fehler", "Ung&uuml;tige Dateinamenerweiterung: <b>" . $ext . "</b>");
+
 		$filename .= $ext;
-	}
-	else
+	}else
 		stderr("Fehler", "Die Datei muss eine Dateinamenerweiterung besitzen.");
+
 	$tgtfile = $GLOBALS["BITBUCKET_DIR"]."/".$filename;
-    
-    if ($_POST["is_avatar"] == "1") {
-        $img = resize_image($file["name"], $file["tmp_name"], $tgtfile);
-        if (!$img)
-            stderr("Fehler", "Das hochgeladene Bild konnte nicht verarbeitet werden. Bitte ändere die Größe selbständig auf Avatargröße, und versuche den Upload ohne die Option \"automatisch anpassen\". Die Automatik akzeptiert nur die Formate JPEG und PNG. Animierte GIFs werden nicht unterstützt (ergeben ein statisches Bild).");
-        imagedestroy($img);
-        $file["size"] = filesize($tgtfile);
-        if ($bucketsize+filesize($tgtfile)>$maxbucketsize) {
-            unlink($tgtfile);
-            stderr("Upload fehlgeschlagen", "Sorry, Dein BitBucket ist zu voll, um diese Datei aufnehmen zu k&ouml;nnen. Bitte l&ouml;sche erst eine oder mehrere Dateien, bevor Du eine weitere hochl&auml;dst.");	
-        }
-    } else {
-        move_uploaded_file($file["tmp_name"], $tgtfile) or stderr("Fehler", "Interner Fehler #2.");
-    }
-        
-    $url = str_replace(" ", "%20", htmlspecialchars($GLOBALS["BITBUCKET_DIR"]."/".$filename));
+
+	if($_POST["is_avatar"] == "1"){
+		$img = resize_image($file["name"], $file["tmp_name"], $tgtfile);
+
+		if(!$img)
+			stderr("Fehler", "Das hochgeladene Bild konnte nicht verarbeitet werden. Bitte ändere die Größe selbständig auf Avatargröße, und versuche den Upload ohne die Option \"automatisch anpassen\". Die Automatik akzeptiert nur die Formate JPEG und PNG. Animierte GIFs werden nicht unterstützt (ergeben ein statisches Bild).");
+
+		imagedestroy($img);
+		$file["size"] = filesize($tgtfile);
+
+		if($bucketsize+filesize($tgtfile)>$maxbucketsize){
+			unlink($tgtfile);
+			stderr("Upload fehlgeschlagen", "Sorry, Dein BitBucket ist zu voll, um diese Datei aufnehmen zu k&ouml;nnen. Bitte l&ouml;sche erst eine oder mehrere Dateien, bevor Du eine weitere hochl&auml;dst.");	
+		}
+	}else
+		move_uploaded_file($file["tmp_name"], $tgtfile) or stderr("Fehler", "Interner Fehler #2.");
+
 	$qry = $GLOBALS['DB']->prepare('INSERT INTO bitbucket (`user`,`filename`,`size`,`originalname`) VALUES (:id,:fn,:fz,:fnn)');
 	$qry->bindParam(':id', $CURUSER["id"], PDO::PARAM_INT);
 	$qry->bindParam(':fn', $filename, PDO::PARAM_STR);
 	$qry->bindParam(':fz', $file["size"], PDO::PARAM_STR);
 	$qry->bindParam(':fnn', $file["name"], PDO::PARAM_STR);
 	$qry->execute();
-	
-    header("Location: bitbucket.php");
+
+	header("Location: bitbucket.php");
 }
 
 stdhead("BitBucket Upload");
 begin_frame("BitBucket Upload", FALSE, "650px");
 begin_table(TRUE);
-?>
-<tr><td class="tablea" align="center"><a href="bitbucket.php">Zur&uuml;ck zum BitBucket-Inhalt</a></td></tr></table></br>
-<form method=post action="bitbucket-upload.php" enctype="multipart/form-data">
-<p><b>Maximale Dateigr&ouml;&szlig;e: <?=number_format($maxfilesize); ?> Bytes.</b></p>
-<?php begin_table(TRUE); ?>
-<tr><td class=tableb>Datei</td><td class=tablea><input type=file name=file size=60></td></tr>
-<tr><td class=tablea colspan=2 align=center><input type=submit value="Upload" class=btn></td></tr>
-</table>
-</form>
-<p>
-<table class=main width=640 border=0 cellspacing=0 cellpadding=0><tr><td class=embedded>
-<font class=small><b>Hinweis:</b> Die hochgeladenen Dateien m&uuml;ssen mit den Avatar-Regeln konform sein, und d&uuml;rfen keine illegalen, gewaltverherrlichenden oder pronographischen Inhalte enthalten. Lade bitte auch keine Dateien hoch, von denen du nicht m&ouml;chtest, dass diese ein Fremder zu sehen bekommt.</font>
-</td></tr></table>
-<?php
+echo "    <tr>\n".
+	"        <td class=\"tablea\" align=\"center\"><a href=\"bitbucket.php\">Zur&uuml;ck zum BitBucket-Inhalt</a></td>\n".
+	"    </tr>\n";
+end_table();
+echo "<p><b>Maximale Dateigr&ouml;&szlig;e: " . mksize($maxfilesize) . "</b></p>\n";
+begin_table(TRUE);
+echo "    <form method=\"post\" action=\"bitbucket-upload.php\" enctype=\"multipart/form-data\">\n".
+	"    <tr>\n".
+	"        <td class=\"tableb\">Datei</td><td class=\"tablea\"><input type=\"file\" name=\"file\" size=\"60\"></td>\n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td class=\"tablea\" colspan=\"2\" align=\"center\"><input type=\"submit\" value=\"Upload\" class=\"btn\"></td>\n".
+	"    </tr>\n".
+	"    </form>\n";
+end_table();
+begin_table();
+echo "    <tr>\n".
+	"        <td class=\"embedded\">".
+	"<font class=\"small\"><b>Hinweis:</b> Die hochgeladenen Dateien m&uuml;ssen mit den Avatar-Regeln konform sein, und d&uuml;rfen keine illegalen, gewaltverherrlichenden oder pronographischen Inhalte enthalten. Lade bitte auch keine Dateien hoch, von denen du nicht m&ouml;chtest, dass diese ein Fremder zu sehen bekommt.</font>".
+	"</td>\n".
+	"    </tr>\n";
+end_table();
 end_frame();
 stdfoot();
 ?>

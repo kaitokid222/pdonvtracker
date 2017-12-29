@@ -7,13 +7,11 @@
 * Database configuration: see secrets.inc.php
 **************************************************************/
 
-// <--- FATAL ERRORS
-// 06.11.17
 define ('CLIENT_AUTH_IP', 0);
 define ('CLIENT_AUTH_PASSKEY', 1);
 
-define ('PASSKEY_USE_PARAM', 0);
-define ('PASSKEY_USE_SUBDOMAIN', 1);
+define ('PASSKEY_USE_PARAM', 1);
+define ('PASSKEY_USE_SUBDOMAIN', 0);
 
 define ('DOWNLOAD_REWRITE', 0);
 define ('DOWNLOAD_ATTACHMENT', 1);
@@ -44,23 +42,20 @@ $GLOBALS["MAX_USERS"] = 2150;
 // Use IP or PassKey method for user authentication
 // Valid values are CLIENT_AUTH_IP and CLIENT_AUTH_PASSKEY
 $GLOBALS["CLIENT_AUTH"] = CLIENT_AUTH_PASSKEY;
-//$GLOBALS["CLIENT_AUTH"] = 1;
 
 // PassKey source, either by parameter "passkey=...", or by
 // subdomain "http://passkey.tracker.net/announce.php"
 // Use subdomain, if you have access to wildcard subdomains,
 // but not mod_rewrite
 $GLOBALS["PASSKEY_SOURCE"] = PASSKEY_USE_PARAM;
-//$GLOBALS["PASSKEY_SOURCE"] = 0;
 
 // Download method being used by the tracker to publish .torrent files.
 // If you use themod_rewrite method, set this to DOWNLOAD_REWRITE, since
 // this solution is most compatible. Otherwise, set it to DOWNLOAD_ATTACHMENT.
 $GLOBALS["DOWNLOAD_METHOD"] = DOWNLOAD_ATTACHMENT;
-//$GLOBALS["DOWNLOAD_METHOD"] = 1;
 
 // Set this to FALSE to deactivate dynamic RSS feed via rss.php
-$GLOBALS["DYNAMIC_RSS"] = TRUE;
+$GLOBALS["DYNAMIC_RSS"] = FALSE;
 
 
 /************************************************************
@@ -104,7 +99,7 @@ $GLOBALS["MAX_PASSKEY_IPS"] = 5;
 
 // Threshold for ratio faker tool detection. If you allow root seeding,
 // consider setting this so a high value, e.g. 4 MB/sec
-$GLOBALS["RATIOFAKER_THRESH"] = 1024 * 1024;
+$GLOBALS["RATIOFAKER_THRESH"] = 2 * 1024 * 1024;
 
 // Alwas perfom a "deep" cleanup. On small trackers, you can set
 // this to TRUE, but on large trackers with lots of torrents, you
@@ -191,11 +186,10 @@ $GLOBALS["PORTAL_LINK"] = "forums.php";
 // Valid tracker announce URLs
 // The first entry will be displayed on the upload page
 $GLOBALS["ANNOUNCE_URLS"] = array();
-$GLOBALS["ANNOUNCE_URLS"][] = "http://localhost/announce.php";
-$GLOBALS["ANNOUNCE_URLS"][] = "http://localhost:80/announce.php";
+$GLOBALS["ANNOUNCE_URLS"][] = "http://localhost:81/announce";
 
 // Announce URL with passkey placeholder
-$GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://localhost:80/announce.php?passkey={KEY}";
+$GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://localhost:81/announce?passkey={KEY}";
 
 if ($_SERVER["HTTP_HOST"] == "")
     $_SERVER["HTTP_HOST"] = $_SERVER["SERVER_NAME"];
@@ -220,7 +214,7 @@ $GLOBALS["MEMBERSONLY"] = TRUE;
 // Email for sender/return path.
 $GLOBALS["SITEEMAIL"] = "noreply@localhost";
 
-$GLOBALS["SITENAME"] = "MyTracker :: Grab it, seed it!";
+$GLOBALS["SITENAME"] = "pdonvtracker :: NV Reloaded";
 
 
 /************************************************************

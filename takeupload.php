@@ -247,8 +247,15 @@ tr_status("ok");
 
 $dict["private"] = 1;
 $dict["info"]["unique id"] = mksecret();
+
 $infohash = pack("H*", sha1(benc($dict["info"])));
+
 $torrent = str_replace("_", " ", $torrent);
+
+// save info_hash as hex
+// leichteres abgleichen! :D
+$infohash_hex = bin2hex($infohash);
+
 
 tr_msg("Torrent-Informationen in die Datenbank schreiben");
 $nfo = str_replace("\x0d\x0d\x0a", "\x0d\x0a", @file_get_contents($nfofilename));
@@ -258,7 +265,7 @@ $ret = mysql_query("INSERT INTO torrents (search_text, filename, owner, visible,
 	$fname,
 	$CURUSER["id"],
 	"no",
-	$infohash,
+	$infohash_hex,
 	$torrent,
 	$totallen,
 	count($filelist),
@@ -317,7 +324,7 @@ if ($picnum)
 
 // Create NFO image
 tr_msg("NFO-Bild erzeugen");
-if (gen_nfo_pic($nfo, $GLOBALS["BITBUCKET_DIR"]."/nfo-" . $id . ".png") = 0)
+if (gen_nfo_pic($nfo, $GLOBALS["BITBUCKET_DIR"]."/nfo-" . $id . ".png") == 0)
     tr_status("err");
 else
     tr_status("ok");

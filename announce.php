@@ -33,30 +33,19 @@ require_once("include/benc.php");
 
 //hit_start();
 
-if (!function_exists('hex2bin')){
-	function hex2bin($hexdata) {
-		for ($i=0;$i<strlen($hexdata);$i+=2) {
-			$bindata.=chr(hexdec(substr($hexdata,$i,2)));
-		}
-	   return $bindata;
-	}
-}
-
-function check_ip_limit() {
+function check_ip_limit(){
     global $userid;
-
     // Check IP limit
     $res = mysql_query("SELECT DISTINCT(ip) AS ip FROM peers WHERE userid=$userid");
     $count = 0;
     $found = FALSE;
-    while ($row = mysql_fetch_assoc($res)) {
+    while($row = mysql_fetch_assoc($res)){
     	$count++;
-        if ($row["ip"] == $ip) {
+        if($row["ip"] == $ip){
             $found = TRUE;
             break;
         }
     }
-    
     if (!$found && $count >= $GLOBALS["MAX_PASSKEY_IPS"])
         err("Zu viele unterschiedliche IPs fuer diesen Benutzer (max ".$GLOBALS["MAX_PASSKEY_IPS"].")");
 }
@@ -161,6 +150,7 @@ $numpeers = $torrent["numpeers"];
 $limit = "";
 if ($numpeers > $rsize)
     $limit = "ORDER BY RAND() LIMIT $rsize";
+//$res = mysql_query("SELECT seeder, peer_id, ip, port, uploaded, downloaded, userid FROM peers WHERE torrent = $torrentid AND connectable = 'yes' $limit");
 $res = mysql_query("SELECT $fields FROM peers WHERE torrent = $torrentid AND connectable = 'yes' $limit");
 
 $resp = "d" . benc_str("interval") . "i" . $GLOBALS["ANNOUNCE_INTERVAL"] . "e" . benc_str("peers") . "l";
@@ -185,11 +175,11 @@ while ($row = mysql_fetch_assoc($res))
 
 $resp .= "ee";
 
-$selfwhere = "torrent = $torrentid AND " . hash_where("peer_id", $peer_id);
+//$selfwhere = "torrent = $torrentid AND " . hash_where("peer_id", $peer_id);
 
 if (!isset($self))
 {
-    $res = mysql_query("SELECT $fields FROM peers WHERE $selfwhere");
+    $res = mysql_query("SELECT $fields FROM peers WHERE torrent = $torrentid AND " . hash_where("peer_id", $peer_id));
     $row = mysql_fetch_assoc($res);
     if ($row)
     {
@@ -314,26 +304,19 @@ if ($acctdata["baduser"]==1) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-function portblacklisted($port)
-{
-    // direct connect
-    if ($port >= 411 && $port <= 413) return true;
-
-    // bittorrent
-    if ($port >= 6881 && $port <= 6889) return true;
-
-    // kazaa
-    if ($port == 1214) return true;
-
-    // gnutella
-    if ($port >= 6346 && $port <= 6347) return true;
-
-    // emule
-    if ($port == 4662) return true;
-
-    // winmx
-    if ($port == 6699) return true;
-
+function portblacklisted($port){
+	if($port >= 411 && $port <= 413)
+		return true;
+	if($port >= 6881 && $port <= 6889)
+		return true;
+    if($port == 1214)
+		return true;
+    if($port >= 6346 && $port <= 6347)
+		return true;
+    if($port == 4662)
+		return true;
+    if($port == 6699)
+		return true;
     return false;
 }
 

@@ -1,7 +1,7 @@
 <?php
-//error_reporting(E_ALL);
-error_reporting(0);
-ini_set('display_errors', 0);  
+error_reporting(E_ALL);
+//error_reporting(0);
+ini_set('display_errors', 1);  
 /*
 // +--------------------------------------------------------------------------+
 // | Project:    NVTracker - NetVision BitTorrent Tracker                     |
@@ -179,7 +179,12 @@ function dbconn($autoclean = false){
 
     if ($autoclean)
         register_shutdown_function("autoclean");
-} 
+}
+
+function sqlerr($file = '', $line = ''){
+	print("<table border=0 bgcolor=blue align=left cellspacing=0 cellpadding=10 style='background: blue'>" . "<tr><td class=embedded><font color=white><h1>SQL Error</h1>\n" . "<b>" . mysql_error() . ($file != '' && $line != '' ? "<p>in $file, line $line</p>" : "") . "</b></font></td></tr></table>");
+	die;
+}
 
 function userlogin(){
     global $SITE_ONLINE;

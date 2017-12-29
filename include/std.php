@@ -47,11 +47,11 @@ function stdhead($title = "", $msgalert = true){
 	}
 
 	if($msgalert && $CURUSER){
-		$unread = $GLOBALS['database']->row_count('messages','`folder_in`<>0 AND `receiver`=' . $CURUSER["id"] . ' && `unread`= yes');
+		$unread = $GLOBALS['database']->row_count("messages","receiver=" . $CURUSER["id"] . " AND folder_in<>0 AND unread='yes'");
 		if($unread < 1)
 			unset($unread);
 		if($CURUSER["class"] >= UC_MODERATOR){
-			$unread_mod = $GLOBALS['database']->row_count('messages','`sender`= 0 AND `receiver`= 0 && `mod_flag`= open');
+			$unread_mod = $GLOBALS['database']->row_count("messages","sender=0 AND receiver=0 && mod_flag= 'open'");
 			if($unread_mod < 1)
 				unset($unread_mod);
 		} 
@@ -416,25 +416,25 @@ function begin_frame($caption = "", $center = false, $width = "100%"){
 	else
 		$tdextra = " ";
 
-	echo "            <table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:" . $width . "\" class=\"tableinborder\">\n".
-		"                <tr>\n".
-		"                    <td class=\"tabletitle\" colspan=\"10\" width=\"100%\" style=\"text-align: center\"><b>" . $caption . "</b></td>\n".
-		"                </tr>\n".
-		"                <tr>\n".
-		"                    <td width=\"100%\" class=\"tablea\"" . $tdextra . ">\n";
+	echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:" . $width . "\" class=\"tableinborder\">\n".
+		"    <tr>\n".
+		"        <td class=\"tabletitle\" colspan=\"10\" width=\"100%\" style=\"text-align: center\"><b>" . $caption . "</b></td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td width=\"100%\" class=\"tablea\"" . $tdextra . ">\n";
 }
 
 function attach_frame(){
-	echo "                    </td>\n".
-		"                </tr>\n".
-		"                <tr>\n".
-		"                    <td class=\"tablea\" style=\"border-top: 0px\">\n";
+	echo "        </td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td class=\"tablea\" style=\"border-top: 0px\">\n";
 }
 
 function end_frame(){
-	echo "                   </td>\n".
-		"                </tr>\n".
-		"            </table>\n".
+	echo "        </td>\n".
+		"    </tr>\n".
+		"</table>\n".
 		"<br>\n";
 }
 
@@ -443,7 +443,7 @@ function begin_table($fullwidth = false, $padding = 4){
 		$width = " width=\"100%\"";
 	else
 		$width = "";
-	echo "                        <table class=\"tableinborder\"" . $width . " border=\"0\" cellspacing=\"1\" cellpadding=\"" . $padding . "\">\n";
+	echo "<table class=\"tableinborder\"" . $width . " border=\"0\" cellspacing=\"1\" cellpadding=\"" . $padding . "\">\n";
 }
 
 function tr($x, $y, $noesc = 0){
@@ -453,15 +453,15 @@ function tr($x, $y, $noesc = 0){
         $a = htmlspecialchars($y);
         $a = str_replace("\n", "<br />\n", $a);
     } 
-    echo "                            <tr>\n".
-		"                                <td class=\"tableb\" valign=\"top\" align=\"left\">" . $x . "</td>\n".
-		"                                <td class=\"tablea\" valign=\"top\" align=\"left\">" . $a . "</td>\n".
-		"                            </tr>\n";
+    echo "    <tr>\n".
+		"        <td class=\"tableb\" valign=\"top\" align=\"left\">" . $x . "</td>\n".
+		"        <td class=\"tablea\" valign=\"top\" align=\"left\">" . $a . "</td>\n".
+		"    </tr>\n";
 } 
 
 function end_table(){
-	echo "                    </table>\n".
-		"                    <br>\n";
+	echo "</table>\n".
+		"<br>\n";
 }
 
 function genbark($x, $y){
@@ -693,33 +693,33 @@ $privatesmilies = array(":)" => "smile1.gif",
 function insert_smilies_frame(){
 	global $smilies, $BASEURL;
 	begin_frame("Smilies", true);
-	echo "                       <center>\n";
+	echo "<center>\n";
 	begin_table(false, 5);
-	echo "                            <tr>\n";
+	echo "    <tr>\n";
 	for($I = 0; $I < 3; $I++){
 		if($I > 0)
-			echo "                                <td class=\"tablecat\">&nbsp;</td>\n";
-		echo "                                <td class=\"tablecat\">Eingeben...</td>\n".
-			"                                <td class=\"tablecat\">...f&uuml;r Smilie</td>\n";
+			echo "        <td class=\"tablecat\">&nbsp;</td>\n";
+		echo "        <td class=\"tablecat\">Eingeben...</td>\n".
+			"        <td class=\"tablecat\">...f&uuml;r Smilie</td>\n";
 	}
 	$I = 0;
-	echo "                            </tr>\n".
-		"                            <tr>\n";
+	echo "    </tr>\n".
+		"    <tr>\n";
 	while(list($code, $url) = each($smilies)){
 		if($I && $I % 3 == 0)
-			echo "                            </tr>\n".
-				"                            <tr>\n";
+			echo "    </tr>\n".
+				"    <tr>\n";
 		if($I % 3)
-			echo "                                <td class=\"inposttable\">&nbsp;</td>\n";
-		echo "                                <td class=\"tablea\">" . $code . "</td>\n".
-			"                                <td class=\"tableb\"><img src=\"" . $BASEURL . "/pic/smilies/" . $url . "\"></td>\n";
+			echo "        <td class=\"inposttable\">&nbsp;</td>\n";
+		echo "        <td class=\"tablea\">" . $code . "</td>\n".
+			"        <td class=\"tableb\"><img src=\"" . $BASEURL . "/pic/smilies/" . $url . "\"></td>\n";
 		$I++;
 	}
 	if($I % 3)
-		echo "                                <td class=\"inposttable\" colspan=" . ((3 - $I % 3) * 3) . ">&nbsp;</td>\n";
-	echo "                            </tr>\n";
+		echo "        <td class=\"inposttable\" colspan=" . ((3 - $I % 3) * 3) . ">&nbsp;</td>\n";
+	echo "    </tr>\n";
 	end_table();
-	echo "                        </center>\n";
+	echo "</center>\n";
 	end_frame();
 }
 ?>

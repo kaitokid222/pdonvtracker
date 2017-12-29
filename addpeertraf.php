@@ -1,12 +1,8 @@
 <?php
 
 require_once("include/bittorrent.php");
-
-// wozu dient diese php-datei eigentlich?
-
-//dbconn(false);
 userlogin();
-//$res = mysql_query("SELECT userid,torrent,UNIX_TIMESTAMP(started) AS started,finishedat,uploaded,downloaded FROM peers");
+
 $qry = $GLOBALS['DB']->prepare('SELECT userid,torrent,UNIX_TIMESTAMP(started) AS started,finishedat,uploaded,downloaded FROM peers');
 $qry->execute();
 if(!$qry->rowCount())
@@ -14,7 +10,6 @@ if(!$qry->rowCount())
 else
 	$res = $qry->FetchAll();
 foreach($res as $peer){
-//while ($peer = mysql_fetch_assoc($res)) {
     $uptime = time() - $peer["started"];
     if ($peer["finishedat"] > 0)
         $dntime = $peer["finishedat"] - $peer["started"];
@@ -36,8 +31,6 @@ foreach($res as $peer){
 	if(!$qry->rowCount())
         stderr("Fehler", "Daten konnten nicht eingefügt werden.");
 	else
-    //mysql_query("INSERT INTO `traffic` (`userid`,`torrentid`,`downloaded`,`uploaded`,`downloadtime`,`uploadtime`) VALUES ('$userid','$torrentid','$downloaded','$uploaded','$dntime','$uptime')");
-		echo "$userid, $torrentid, $downloaded, $uploaded, $interval   OK<br>\n";
+		echo $userid . ", " . $torrentid . ", " . $downloaded . " ," . $uploaded ", " . $interval . " - OK<br>\n";
 }
-
 ?>

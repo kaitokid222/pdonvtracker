@@ -27,81 +27,101 @@
  */
 
 require "include/bittorrent.php";
-
-dbconn(false);
-
+userlogin();
 loggedinorreturn();
 
 if (get_user_class() < UC_MODERATOR)
-  die;
+	die();
 
-$remove = $_GET['remove'];
-if (is_valid_id($remove))
-{
-  mysql_query("DELETE FROM bans WHERE id=$remove") or sqlerr();
-  write_log("Ban $remove was removed by $CURUSER[id] ($CURUSER[username])");
+if(isset($_GET['remove']) && is_valid_id($_GET['remove'])){
+	$qry = GLOBALS["DB"]->prepare("DELETE FROM bans WHERE id= :remove");
+	$qry->bindParam(':remove', $_GET['remove'], PDO::PARAM_INT);
+	$qry->execute();
+	if($qry->rowCount())
+		write_log("Ban " . $_GET['remove'] . " was removed by " . $CURUSER["username"]);
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && get_user_class() >= UC_ADMINISTRATOR)
-{
+if ($_SERVER["REQUEST_METHOD"] == "POST" && get_user_class() >= UC_ADMINISTRATOR){
 	$first = trim($_POST["first"]);
 	$last = trim($_POST["last"]);
 	$comment = trim($_POST["comment"]);
-	if (!$first || !$last || !$comment)
+	if(!$first || !$last || !$comment)
 		stderr("Error", "Missing form data.");
-	//$first = ip2long($first);
 	$first = ipaddress_to_ipnumber($first);
-	//$last = ip2long($last);
 	$last = ipaddress_to_ipnumber($last);
 	if ($first == -1 || $last == -1)
 		stderr("Error", "Bad IP address.");
-	$comment = sqlesc($comment);
-	$added = sqlesc(get_date_time());
-	mysql_query("INSERT INTO bans (added, addedby, first, last, comment) VALUES($added, $CURUSER[id], $first, $last, $comment)") or sqlerr(__FILE__, __LINE__);
-	header("Location: $BASEURL$_SERVER[REQUEST_URI]");
+	$added = get_date_time();
+
+	$qry = GLOBALS["DB"]->prepare("INSERT INTO bans (added, addedby, first, last, comment) VALUES(:added, :op, :first, :last, :comment)");
+	$qry->bindParam(':added', $added, PDO::PARAM_STR);
+	$qry->bindParam(':op', $CURUSER["id"], PDO::PARAM_INT);
+	$qry->bindParam(':first', $first, PDO::PARAM_INT);
+	$qry->bindParam(':last', $last, PDO::PARAM_INT);
+	$qry->bindParam(':comment', $comment, PDO::PARAM_INT);
+	$qry->execute();
+	if($qry->rowCount())
+		header("Location: " . $BASEURL . $_SERVER["REQUEST_URI"]);
 	die;
 }
 
 ob_start("ob_gzhandler");
 
-$res = mysql_query("SELECT * FROM bans ORDER BY added DESC") or sqlerr();
-
+$qry = GLOBALS["DB"]->prepare("SELECT bans.*, users.username as op FROM bans LEFT JOIN users ON users.id = bans.addedby ORDER BY added DESC");
+$qry->execute();
 stdhead("Bans");
 
-print("<h1>Current Bans</h1>\n");
+echo "<h1>Aktuelle Bans</h1>\n";
 
-if (mysql_num_rows($res) == 0)
-  print("<p align=center><b>Nothing found</b></p>\n");
-else
-{
-  print("<table border=1 cellspacing=0 cellpadding=5>\n");
-  print("<tr><td class=colhead>Added</td><td class=colhead align=left>First IP</td><td class=colhead align=left>Last IP</td>".
-    "<td class=colhead align=left>By</td><td class=colhead align=left>Comment</td><td class=colhead>Remove</td></tr>\n");
-
-  while ($arr = mysql_fetch_assoc($res))
-  {
-  	$r2 = mysql_query("SELECT username FROM users WHERE id=$arr[addedby]") or sqlerr();
-  	$a2 = mysql_fetch_assoc($r2);
-	$arr["first"] = long2ip($arr["first"]);
-	$arr["last"] = long2ip($arr["last"]);
- 	  print("<tr><td>$arr[added]</td><td align=left>$arr[first]</td><td align=left>$arr[last]</td><td align=left><a href=userdetails.php?id=$arr[addedby]>$a2[username]".
- 	    "</a></td><td align=left>$arr[comment]</td><td><a href=bans.php?remove=$arr[id]>Remove</a></td></tr>\n");
-  }
-  print("</table>\n");
+if (!$qry->rowCount())
+	echo "<p align=\"center\"><b>Momentan ist niemand gebannt.</b></p>\n";
+else{
+	echo "<table border=1 cellspacing=0 cellpadding=5>\n".
+		"    <tr>\n".
+		"        <td class=\"colhead\">Added</td>\n".
+		"        <td class=\"colhead\" align=\"left\">First IP</td>\n".
+		"        <td class=\"colhead\" align=\"left\">Last IP</td>\n".
+		"        <td class=\"colhead\" align=\"left\">By</td>\n".
+		"        <td class=\"colhead\" align=\"left\">Comment</td>\n".
+		"        <td class=\"colhead\">Remove</td>\n".
+		"    </tr>\n";
+	$data = $qry->FetchAll(PDO::FETCH_ASSOC);
+	foreach($data as $arr){
+		$arr["first"] = long2ip($arr["first"]);
+		$arr["last"] = long2ip($arr["last"]);
+		echo "    <tr>\n".
+			"        <td>" . $arr["added"] . "</td>\n".
+			"        <td align=\"left\">" . $arr["first"] . "</td>\n".
+			"        <td align=\"left\">" . $arr["last"] . "</td>\n".
+			"        <td align=\"left\"><a href=\"userdetails.php?id=" . $arr["addedby"] . "\">" . $arr["op"] . "</a></td>\n".
+			"        <td align=\"left\">" . $arr["comment"] . "</td>\n".
+			"        <td><a href=\"bans.php?remove=" . $arr["id"] . "\">Remove</a></td>\n".
+			"    </tr>\n";
+	}
+	echo "</table>\n";
 }
 
-if (get_user_class() >= UC_ADMINISTRATOR)
-{
-	print("<h2>Add ban</h2>\n");
-	print("<table border=1 cellspacing=0 cellpadding=5>\n");
-	print("<form method=post action=bans.php>\n");
-	print("<tr><td class=rowhead>First IP</td><td><input type=text name=first size=40></td>\n");
-	print("<tr><td class=rowhead>Last IP</td><td><input type=text name=last size=40></td>\n");
-	print("<tr><td class=rowhead>Comment</td><td><input type=text name=comment size=40></td>\n");
-	print("<tr><td colspan=2><input type=submit value='Okay' class=btn></td></tr>\n");
-	print("</form>\n</table>\n");
+if (get_user_class() >= UC_ADMINISTRATOR){
+	echo "<h2>Add ban</h2>\n".
+		"<table border=\"1\" cellspacing=\"0\" cellpadding=\"5\">\n".
+		"    <form method=\"post\" action=\"bans.php\">\n".
+		"    <tr>\n".
+		"        <td class=\"rowhead\">First IP</td>\n".
+		"        <td><input type=\"text\" name=\"first\" size=\"40\"></td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td class=\"rowhead\">Last IP</td>\n".
+		"        <td><input type=\"text\" name=\"last\" size=\"40\"></td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td class=\"rowhead\">Comment</td>\n".
+		"        <td><input type=\"text\" name=\"comment\" size=\"40\"></td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td colspan=\"2\"><input type=\"submit\" value=\"Okay\" class=\"btn\"></td>\n".
+		"    </tr>\n".
+		"    </form>\n" .
+		"</table>\n";
 }
-
 stdfoot();
-
 ?>
