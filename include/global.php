@@ -27,88 +27,78 @@
 */
 
 // User levels
-define ('UC_USER', 0);
-define ('UC_POWER_USER', 1);
-define ('UC_VIP', 5);
-define ('UC_UPLOADER', 10);
-define ('UC_GUTEAM', 20);
-define ('UC_MODERATOR', 25);
-define ('UC_ADMINISTRATOR', 50);
-define ('UC_SYSOP', 100);
+define('UC_USER', 0);
+define('UC_POWER_USER', 1);
+define('UC_VIP', 5);
+define('UC_UPLOADER', 10);
+define('UC_GUTEAM', 20);
+define('UC_MODERATOR', 25);
+define('UC_ADMINISTRATOR', 50);
+define('UC_SYSOP', 100);
 
 // PM special folder IDs
-define ('PM_FOLDERID_INBOX', -1);
-define ('PM_FOLDERID_OUTBOX', -2);
-define ('PM_FOLDERID_SYSTEM', -3);
-define ('PM_FOLDERID_MOD', -4);
+define('PM_FOLDERID_INBOX', -1);
+define('PM_FOLDERID_OUTBOX', -2);
+define('PM_FOLDERID_SYSTEM', -3);
+define('PM_FOLDERID_MOD', -4);
 
 
 $client_uas = array("/^Azureus ([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)(;.+?)?$/i",
-    "/^Azureus ([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)_B([0-9]+)(;.+?)?$/i",
-    "/^BitTorrent\\/S-([0-9]+\\.[0-9]+(\\.[0-9]+)*)(.*)$/i",
-    "/^BitTorrent\\/U-([0-9]+\\.[0-9]+\\.[0-9]+)$/i",
-    "/^BitTor(rent|nado)\\/T-(.+)$/i",
-    "/^BitTorrent\\/([0-9]+\\.[0-9]+(\\.[0-9]+)*)$/i",
-    "/^Python-urllib\\/[0-9]+\\.[a-z0-9]+$/i",
-    "/^Python-urllib\\/.+?, BitTorrent\\/([0-9]+\\.[0-9]+(\\.[0-9]+)*)$/i",
-    "/^Python-urllib\\/.+?, BitTorrent\\/TurboBT ([0-9]+\\.[0-9]+(\\.[0-9]+)*)$/i",
-    "/^BitTorrent\\/BitSpirit$/i",
-    "/^BitTorrent\\/brst(.+)$/i",
-    "/^RAZA (.+)$/i",
-    "/^BitTorrent\\/ABC-([0-9]+\\.[0-9]+\\.[0-9]+)$/i",
-    "/^BitComet\\/([0-9]+\\.[0-9]+)$/i"
-    );
+	"/^Azureus ([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)_B([0-9]+)(;.+?)?$/i",
+	"/^BitTorrent\\/S-([0-9]+\\.[0-9]+(\\.[0-9]+)*)(.*)$/i",
+	"/^BitTorrent\\/U-([0-9]+\\.[0-9]+\\.[0-9]+)$/i",
+	"/^BitTor(rent|nado)\\/T-(.+)$/i",
+	"/^BitTorrent\\/([0-9]+\\.[0-9]+(\\.[0-9]+)*)$/i",
+	"/^Python-urllib\\/[0-9]+\\.[a-z0-9]+$/i",
+	"/^Python-urllib\\/.+?, BitTorrent\\/([0-9]+\\.[0-9]+(\\.[0-9]+)*)$/i",
+	"/^Python-urllib\\/.+?, BitTorrent\\/TurboBT ([0-9]+\\.[0-9]+(\\.[0-9]+)*)$/i",
+	"/^BitTorrent\\/BitSpirit$/i",
+	"/^BitTorrent\\/brst(.+)$/i",
+	"/^RAZA (.+)$/i",
+	"/^BitTorrent\\/ABC-([0-9]+\\.[0-9]+\\.[0-9]+)$/i",
+	"/^BitComet\\/([0-9]+\\.[0-9]+)$/i"
+);
 
 $clean_uas = array("Azureus/\\1",
-    "Azureus/\\1 (Beta \\2)",
-    "Shadow's/\\1",
-    "UPnP/\\1",
-    "BitTornado/\\2",
-    "BitTorrent/\\1",
-    "G3 Torrent",
-    "BitTorrent/\\1",
-    "TurboBT/\\1",
-    "BitSpirit",
-    "Burst/\\1",
-    "Shareaza/\\1",
-    "ABC/\\1",
-    "BitComet/\\1"
-    );
+	"Azureus/\\1 (Beta \\2)",
+	"Shadow's/\\1",
+	"UPnP/\\1",
+	"BitTornado/\\2",
+	"BitTorrent/\\1",
+	"G3 Torrent",
+	"BitTorrent/\\1",
+	"TurboBT/\\1",
+	"BitSpirit",
+	"Burst/\\1",
+	"Shareaza/\\1",
+	"ABC/\\1",
+	"BitComet/\\1"
+);
 
 // Set this to the line break character sequence of your system
 $linebreak = "\r\n";
 
-function sqlerr($file = '', $line = '')
-{
-    print("<table border=0 bgcolor=blue align=left cellspacing=0 cellpadding=10 style='background: blue'>" . "<tr><td class=embedded><font color=white><h1>SQL Error</h1>\n" . "<b>" . mysql_error() . ($file != '' && $line != '' ? "<p>in $file, line $line</p>" : "") . "</b></font></td></tr></table>");
-    die;
-} 
 // Returns the current time in GMT in MySQL compatible format.
-function get_date_time($timestamp = 0)
-{
-    if ($timestamp)
-        return date("Y-m-d H:i:s", $timestamp);
-    else
-        return date("Y-m-d H:i:s");
-} 
+function get_date_time($timestamp = 0){
+	if($timestamp)
+		return date("Y-m-d H:i:s", $timestamp);
+	else
+		return date("Y-m-d H:i:s");
+}
 
-function encodehtml($s, $linebreaks = true)
-{
-    $s = str_replace("<", "&lt;", str_replace("&", "&amp;", $s));
-    if ($linebreaks)
-        $s = nl2br($s);
-    return $s;
-} 
+function encodehtml($s, $linebreaks = true){
+	$s = str_replace("<", "&lt;", str_replace("&", "&amp;", $s));
+	if($linebreaks)
+		$s = nl2br($s);
+	return $s;
+}
 
-function get_dt_num()
-{
+function get_dt_num(){
     return date("YmdHis");
-} 
+}
 
-function format_urls($s)
-{
-    return preg_replace("/(\A|[^=\]'\"a-zA-Z0-9])((http|ftp|https|ftps|irc):\/\/[^()<>\s]+)/i",
-        "\\1<a href=\"redir.php?url=\\2\">\\2</a>", $s);
+function format_urls($s){
+	return preg_replace("/(\A|[^=\]'\"a-zA-Z0-9])((http|ftp|https|ftps|irc):\/\/[^()<>\s]+)/i", "\\1<a href=\"redir.php?url=\\2\">\\2</a>", $s);
 } 
 
 /*
@@ -126,164 +116,175 @@ function format_local_urls($s)
 */
 // Finds last occurrence of needle in haystack
 // in PHP5 use strripos() instead of this
-function _strlastpos ($haystack, $needle, $offset = 0)
-{
-    $addLen = strlen ($needle);
-    $endPos = $offset - $addLen;
-    while (true) {
-        if (($newPos = strpos ($haystack, $needle, $endPos + $addLen)) === false) break;
-        $endPos = $newPos;
-    } 
-    return ($endPos >= 0) ? $endPos : false;
-} 
+function _strlastpos($haystack, $needle, $offset = 0){
+	$addLen = strlen ($needle);
+	$endPos = $offset - $addLen;
+	while(true){
+		if(($newPos = strpos ($haystack, $needle, $endPos + $addLen)) === false)
+			break;
+		$endPos = $newPos;
+	}
+	return ($endPos >= 0) ? $endPos : false;
+}
 
-function format_quotes($s)
-{
+function format_quotes($s){
 	$old_s = '';
-    while ($old_s != $s) {
-        $old_s = $s; 
-        // [quote]Text[/quote]
-        $s = preg_replace("/\[quote\](.+?)\[\/quote\]/is",
-            "<p><b>Zitat:</b></p><table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\"><tr><td class=\"inposttable\">\\1</td></tr></table><br>", $s); 
-        // [quote=Author]Text[/quote]
-        $s = preg_replace("/\[quote=(.+?)\](.+?)\[\/quote\]/is",
-            "<p><b>\\1 hat geschrieben:</b></p><table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\"><tr><td class=\"inposttable\">\\2</td></tr></table><br>", $s);
-    } 
+	while($old_s != $s){
+		$old_s = $s; 
+		// [quote]Text[/quote]
+		$s = preg_replace("/\[quote\](.+?)\[\/quote\]/is", "<p><b>Zitat:</b></p><table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\"><tr><td class=\"inposttable\">\\1</td></tr></table><br>", $s); 
+		// [quote=Author]Text[/quote]
+		$s = preg_replace("/\[quote=(.+?)\](.+?)\[\/quote\]/is", "<p><b>\\1 hat geschrieben:</b></p><table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\"><tr><td class=\"inposttable\">\\2</td></tr></table><br>", $s);
+	}
+	return $s;
+}
 
-    return $s;
-} 
+function format_comment($text, $strip_html = true){
+	global $smilies, $privatesmilies;
 
-function format_comment($text, $strip_html = true)
-{
-    global $smilies, $privatesmilies;
+	s = stripslashes($text); 
 
-    $s = stripslashes($text); 
-    // This fixes the extraneous ;) smilies problem. When there was an html escaped
-    // char before a closing bracket - like >), "), ... - this would be encoded
-    // to &xxx;), hence all the extra smilies. I created a new :wink: label, removed
-    // the ;) one, and replace all genuine ;) by :wink: before escaping the body.
-    // (What took us so long? :blush:)- wyz
-    $s = str_replace(";)", ":wink:", $s);
+	// This fixes the extraneous ;) smilies problem. When there was an html escaped
+	// char before a closing bracket - like >), "), ... - this would be encoded
+	// to &xxx;), hence all the extra smilies. I created a new :wink: label, removed
+	// the ;) one, and replace all genuine ;) by :wink: before escaping the body.
+	// (What took us so long? :blush:)- wyz
+	$s = str_replace(";)", ":wink:", $s);
 
-    if ($strip_html)
-        $s = htmlspecialchars($s); 
-     // [center]Centered text[/center]
-    $s = preg_replace("/\[center\]((\s|.)+?)\[\/center\]/i", "<center>\\1</center>", $s); 
-    // [list]List[/list]
-    $s = preg_replace("/\[list\]((\s|.)+?)\[\/list\]/", "<ul>\\1</ul>", $s); 
-    // [list=disc|circle|square]List[/list]
-    $s = preg_replace("/\[list=(disc|circle|square)\]((\s|.)+?)\[\/list\]/", "<ul type=\"\\1\">\\2</ul>", $s); 
-    // [list=1|a|A|i|I]List[/list]
-    $s = preg_replace("/\[list=(1|a|A|i|I)\]((\s|.)+?)\[\/list\]/", "<ol type=\"\\1\">\\2</ol>", $s); 
-    // [*]
-    $s = preg_replace("/\[\*\]/", "<li>", $s); 
-    // [b]Bold[/b]
-    $s = preg_replace("/\[b\]((\s|.)+?)\[\/b\]/", "<b>\\1</b>", $s); 
-    // [i]Italic[/i]
-    $s = preg_replace("/\[i\]((\s|.)+?)\[\/i\]/", "<i>\\1</i>", $s); 
-    // [u]Underline[/u]
-    $s = preg_replace("/\[u\]((\s|.)+?)\[\/u\]/", "<u>\\1</u>", $s); 
-    // [u]Underline[/u]
-    $s = preg_replace("/\[u\]((\s|.)+?)\[\/u\]/i", "<u>\\1</u>", $s); 
-    // [img]http://www/image.gif[/img]
-    $s = preg_replace("/\[img\]([^\s'\"<>]+?)\[\/img\]/i", "<img src=\"\\1\" alt=\"\" border=\"0\">", $s); 
-    // [img=http://www/image.gif]
-    $s = preg_replace("/\[img=([^\s'\"<>]+?)\]/i", "<img src=\"\\1\" alt=\"\" border=\"0\">", $s); 
-    // [color=blue]Text[/color]
-    $s = preg_replace("/\[color=([a-zA-Z]+)\]((\s|.)+?)\[\/color\]/i",
-        "<font color=\\1>\\2</font>", $s); 
-    // [color=#ffcc99]Text[/color]
-    $s = preg_replace("/\[color=(#[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9])\]((\s|.)+?)\[\/color\]/i",
-        "<font color=\\1>\\2</font>", $s); 
-    // [url=http://www.example.com]Text[/url]
-    $s = preg_replace("/\[url=([^()<>\s]+?)\]((\s|.)+?)\[\/url\]/i",
-        "<a href=\"\\1\">\\2</a>", $s); 
-    // [url]http://www.example.com[/url]
-    $s = preg_replace("/\[url\]([^()<>\s]+?)\[\/url\]/i",
-        "<a href=\"\\1\">\\1</a>", $s); 
-    // [size=4]Text[/size]
-    $s = preg_replace("/\[size=([1-7])\]((\s|.)+?)\[\/size\]/i",
-        "<font size=\\1>\\2</font>", $s); 
-    // [font=Arial]Text[/font]
-    $s = preg_replace("/\[font=([a-zA-Z ,]+)\]((\s|.)+?)\[\/font\]/i",
-        "<font face=\"\\1\">\\2</font>", $s);
-   // Quotes
-    $s = format_quotes($s); 
-    // URLs
-    $s = format_urls($s);
-    // $s = format_local_urls($s); 
-    // Linebreaks
-    $s = nl2br($s); 
-    // [pre]Preformatted[/pre]
-    $s = preg_replace("/\[pre\]((\s|.)+?)\[\/pre\]/i", "<tt><nobr>\\1</nobr></tt>", $s); 
-    // [nfo]NFO-preformatted[/nfo]
-    $s = preg_replace("/\[nfo\]((\s|.)+?)\[\/nfo\]/i", "<tt><nobr><font face=\"MS Linedraw\" size=\"2\" style=\"font-size: 10pt; line-height: 10pt\">\\1</font></nobr></tt>", $s); 
-    // Maintain spacing
-    $s = str_replace("  ", " &nbsp;", $s);
+	if($strip_html)
+		$s = htmlspecialchars($s); 
+	// [center]Centered text[/center]
+	$s = preg_replace("/\[center\]((\s|.)+?)\[\/center\]/i", "<center>\\1</center>", $s); 
+	// [list]List[/list]
+	$s = preg_replace("/\[list\]((\s|.)+?)\[\/list\]/", "<ul>\\1</ul>", $s); 
+	// [list=disc|circle|square]List[/list]
+	$s = preg_replace("/\[list=(disc|circle|square)\]((\s|.)+?)\[\/list\]/", "<ul type=\"\\1\">\\2</ul>", $s); 
+	// [list=1|a|A|i|I]List[/list]
+	$s = preg_replace("/\[list=(1|a|A|i|I)\]((\s|.)+?)\[\/list\]/", "<ol type=\"\\1\">\\2</ol>", $s); 
+	// [*]
+	$s = preg_replace("/\[\*\]/", "<li>", $s); 
+	// [b]Bold[/b]
+	$s = preg_replace("/\[b\]((\s|.)+?)\[\/b\]/", "<b>\\1</b>", $s); 
+	// [i]Italic[/i]
+	$s = preg_replace("/\[i\]((\s|.)+?)\[\/i\]/", "<i>\\1</i>", $s); 
+	// [u]Underline[/u]
+	$s = preg_replace("/\[u\]((\s|.)+?)\[\/u\]/", "<u>\\1</u>", $s); 
+	// [u]Underline[/u]
+	$s = preg_replace("/\[u\]((\s|.)+?)\[\/u\]/i", "<u>\\1</u>", $s); 
+	// [img]http://www/image.gif[/img]
+	$s = preg_replace("/\[img\]([^\s'\"<>]+?)\[\/img\]/i", "<img src=\"\\1\" alt=\"\" border=\"0\">", $s); 
+	// [img=http://www/image.gif]
+	$s = preg_replace("/\[img=([^\s'\"<>]+?)\]/i", "<img src=\"\\1\" alt=\"\" border=\"0\">", $s); 
+	// [color=blue]Text[/color]
+	$s = preg_replace("/\[color=([a-zA-Z]+)\]((\s|.)+?)\[\/color\]/i", "<font color=\\1>\\2</font>", $s); 
+	// [color=#ffcc99]Text[/color]
+	$s = preg_replace("/\[color=(#[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9])\]((\s|.)+?)\[\/color\]/i", "<font color=\\1>\\2</font>", $s); 
+	// [url=http://www.example.com]Text[/url]
+	$s = preg_replace("/\[url=([^()<>\s]+?)\]((\s|.)+?)\[\/url\]/i", "<a href=\"\\1\">\\2</a>", $s); 
+	// [url]http://www.example.com[/url]
+	$s = preg_replace("/\[url\]([^()<>\s]+?)\[\/url\]/i", "<a href=\"\\1\">\\1</a>", $s); 
+	// [size=4]Text[/size]
+	$s = preg_replace("/\[size=([1-7])\]((\s|.)+?)\[\/size\]/i", "<font size=\\1>\\2</font>", $s); 
+	// [font=Arial]Text[/font]
+	$s = preg_replace("/\[font=([a-zA-Z ,]+)\]((\s|.)+?)\[\/font\]/i", "<font face=\"\\1\">\\2</font>", $s);
+	// Quotes
+	$s = format_quotes($s); 
+	// URLs
+	$s = format_urls($s);
+	// $s = format_local_urls($s); 
+	// Linebreaks
+	$s = nl2br($s); 
+	// [pre]Preformatted[/pre]
+	$s = preg_replace("/\[pre\]((\s|.)+?)\[\/pre\]/i", "<tt><nobr>\\1</nobr></tt>", $s); 
+	// [nfo]NFO-preformatted[/nfo]
+	$s = preg_replace("/\[nfo\]((\s|.)+?)\[\/nfo\]/i", "<tt><nobr><font face=\"MS Linedraw\" size=\"2\" style=\"font-size: 10pt; line-height: 10pt\">\\1</font></nobr></tt>", $s); 
+	// Maintain spacing
+	//$s = str_replace("  ", " &nbsp;", $s);
+	// Fix für Umlaute by Cerberus
+	$s = str_replace(array("  ", "&amp;acute;", "&amp;quot;","&amp;lt;","&amp;gt;", "Ä", "Ö", "Ü", "ä", "ö", "ü", "ß", "&amp;Auml;", "&amp;Ouml;", "&amp;Uuml;", "&amp;auml;", "&amp;ouml;", "&amp;uuml;", "&amp;szlig;"), array(" &nbsp;", "&acute;", "&quot;","&lt;","&gt;", "&Auml;", "&Ouml;", "&Uuml;", "&auml;", "&ouml;", "&uuml;", "&szlig;", "&Auml;", "&Ouml;", "&Uuml;", "&auml;", "&ouml;", "&uuml;", "&szlig;"),$s);  
 
-    reset($smilies);
-    while(list($code, $url) = each($smilies))
+	reset($smilies);
+	while(list($code, $url) = each($smilies))
 		$s = str_replace($code, "<img src=\"/pic/smilies/" . $url . "\" border=\"0\" alt=\"" . htmlspecialchars($code) . "\">", $s);
 
-    reset($privatesmilies);
-    while(list($code, $url) = each($privatesmilies))
+	reset($privatesmilies);
+	while(list($code, $url) = each($privatesmilies))
 		$s = str_replace($code, "<img border=\"0\" src=\"/pic/smilies/" . $url . "\" alt=\"\">", $s);
-
-    return $s;
+	return $s;
 } 
 
-function get_user_class()
-{
+function get_user_class(){
     global $CURUSER;
     return $CURUSER["class"];
 } 
 
-function get_user_class_name($class)
-{
-    switch ($class) {
-        case UC_USER: return "User";
-        case UC_POWER_USER: return "Power User";
-        case UC_VIP: return "VIP";
-        case UC_UPLOADER: return "Uploader";
-        case UC_GUTEAM: return "GU-Betreuer";
-        case UC_MODERATOR: return "Moderator";
-        case UC_ADMINISTRATOR: return "Administrator";
-        case UC_SYSOP: return "SysOp";
-    } 
-    return "";
+function get_user_class_name($class){
+	switch ($class){
+		case UC_USER:
+			return "User";
+		case UC_POWER_USER:
+			return "Power User";
+		case UC_VIP:
+			return "VIP";
+		case UC_UPLOADER:
+			return "Uploader";
+		case UC_GUTEAM:
+			return "GU-Betreuer";
+		case UC_MODERATOR:
+			return "Moderator";
+		case UC_ADMINISTRATOR:
+			return "Administrator";
+		case UC_SYSOP:
+			return "SysOp";
+	} 
+	return "";
+}
+
+function get_class_color($class){
+	switch($class){
+		case UC_SYSOP:
+			return "ucsysop";
+		case UC_ADMINISTRATOR:
+			return "ucadministrator";
+		case UC_MODERATOR:
+			return "ucmoderator";
+		case UC_GUTEAM:
+			return "ucguteam";
+		case UC_UPLOADER:
+			return "ucuploader";
+		case UC_VIP:
+			return "ucvip";
+		case UC_POWER_USER:
+			return "ucpoweruser";
+		case UC_USER:
+			return "ucuser";
+	}
+}
+
+function is_valid_user_class($class){
+	return is_numeric($class) && floor($class) == $class && $class >= UC_USER && $class <= UC_SYSOP;
 } 
 
-function is_valid_user_class($class)
-{
-    return is_numeric($class) && floor($class) == $class && $class >= UC_USER && $class <= UC_SYSOP;
-} 
-
-function is_valid_id($id)
-{
-    return is_numeric($id) && ($id > 0) && (floor($id) == $id);
+function is_valid_id($id){
+	return is_numeric($id) && ($id > 0) && (floor($id) == $id);
 } 
 
 function delete_acct($id){ 
-    // Mailadresse holen
 	$qry = $GLOBALS['DB']->prepare('SELECT `email`,`username`,`status` FROM `users` WHERE `id`= :id');
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
 	$qry->execute();
-	if($qry->rowCount() > 0){
+	if($qry->rowCount() > 0)
 		$userinfo = $qry->fetchObject();
-	}
-	
-    //$userinfo = @mysql_fetch_assoc(@mysql_query("SELECT `email`,`username`,`status` FROM `users` WHERE `id`=$id"));
-	
-    if ($userinfo->email && $userinfo->status == "confirmed") {
-        $mailbody = "Dein Account auf ".$GLOBALS["SITENAME"]." wurde gelöscht. Dies ist entweder passiert,
-weil Du Dich längere Zeit nicht mehr eingeloggt hast, oder Dein Account von einem
-Administrator deaktiviert wurde.
 
-Diese E-Mail dient dazu, Dich darüber zu informieren, dass Du diesen Account nun nicht
-mehr nutzen kannst. Bitte antworte nicht auf diese E-Mail!";
-        mail("\"" . $userinfo->username . "\" <" . $userinfo->email . ">", "Account gelöscht auf ".$GLOBALS["SITENAME"], $mailbody);
-    } 
-	
+	if($userinfo->email && $userinfo->status == "confirmed"){
+		$mailbody = "Dein Account auf ".$GLOBALS["SITENAME"]." wurde gelöscht. Dies ist entweder passiert,".
+					"weil Du Dich längere Zeit nicht mehr eingeloggt hast, oder Dein Account von einem".
+					"Administrator deaktiviert wurde.".
+					"Diese E-Mail dient dazu, Dich darüber zu informieren, dass Du diesen Account nun nicht".
+					"mehr nutzen kannst. Bitte antworte nicht auf diese E-Mail!";
+		mail("\"" . $userinfo->username . "\" <" . $userinfo->email . ">", "Account gelöscht auf ".$GLOBALS["SITENAME"], $mailbody);
+	}
+
 	$sql = array();
 	$sql[] = 'DELETE FROM `users` WHERE `id`= :id';
 	$sql[] = 'DELETE FROM `bitbucket` WHERE `user`= :id';
@@ -324,158 +325,157 @@ mehr nutzen kannst. Bitte antworte nicht auf diese E-Mail!";
 	return TRUE;
 } 
 
-function sql_timestamp_to_unix_timestamp($s)
-{
-    return mktime(substr($s, 11, 2), substr($s, 14, 2), substr($s, 17, 2), substr($s, 5, 2), substr($s, 8, 2), substr($s, 0, 4));
-} 
-
-function get_ratio_color($ratio)
-{
-    if ($ratio < 0.1) return "#ff0000";
-    if ($ratio < 0.2) return "#ee0000";
-    if ($ratio < 0.3) return "#dd0000";
-    if ($ratio < 0.4) return "#cc0000";
-    if ($ratio < 0.5) return "#bb0000";
-    if ($ratio < 0.6) return "#aa0000";
-    if ($ratio < 0.7) return "#990000";
-    if ($ratio < 0.8) return "#880000";
-    if ($ratio < 0.9) return "#770000";
-    if ($ratio < 1) return "#660000";
-    return "#000000";
-} 
-
-function get_slr_color($ratio)
-{
-    if ($ratio < 0.025) return "#ff0000";
-    if ($ratio < 0.05) return "#ee0000";
-    if ($ratio < 0.075) return "#dd0000";
-    if ($ratio < 0.1) return "#cc0000";
-    if ($ratio < 0.125) return "#bb0000";
-    if ($ratio < 0.15) return "#aa0000";
-    if ($ratio < 0.175) return "#990000";
-    if ($ratio < 0.2) return "#880000";
-    if ($ratio < 0.225) return "#770000";
-    if ($ratio < 0.25) return "#660000";
-    if ($ratio < 0.275) return "#550000";
-    if ($ratio < 0.3) return "#440000";
-    if ($ratio < 0.325) return "#330000";
-    if ($ratio < 0.35) return "#220000";
-    if ($ratio < 0.375) return "#110000";
-    return "#000000";
-} 
-
-function get_class_color($class)
-{
-    switch ($class) {
-        case UC_SYSOP:
-            return "ucsysop";
-        case UC_ADMINISTRATOR:
-            return "ucadministrator";
-        case UC_MODERATOR:
-            return "ucmoderator";
-        case UC_GUTEAM:
-            return "ucguteam";
-        case UC_UPLOADER:
-            return "ucuploader";
-        case UC_VIP:
-            return "ucvip";
-        case UC_POWER_USER:
-            return "ucpoweruser";
-        case UC_USER:
-            return "ucuser";
-    } 
-} 
-
-function write_log($typ, $text)
-{
-    $typ = sqlesc($typ);
-    $text = sqlesc($text);
-    $added = sqlesc(get_date_time());
-    mysql_query("INSERT INTO `sitelog` (`typ`, `added`, `txt`) VALUES($typ, $added, $text)") or sqlerr(__FILE__, __LINE__);
+function sql_timestamp_to_unix_timestamp($s){
+	return mktime(substr($s, 11, 2), substr($s, 14, 2), substr($s, 17, 2), substr($s, 5, 2), substr($s, 8, 2), substr($s, 0, 4));
 }
 
-function write_modcomment($uid, $moduid, $text)
-{
-    $text = sqlesc(stripslashes($text));
-    mysql_query("INSERT INTO `modcomments` (`added`, `userid`, `moduid`, `txt`) VALUES (NOW(), $uid, $moduid, $text)");
+function get_ratio_color($ratio){
+	if($ratio < 0.1)
+		return "#ff0000";
+	if($ratio < 0.2)
+		return "#ee0000";
+	if($ratio < 0.3)
+		return "#dd0000";
+	if($ratio < 0.4)
+		return "#cc0000";
+	if($ratio < 0.5)
+		return "#bb0000";
+	if($ratio < 0.6)
+		return "#aa0000";
+	if($ratio < 0.7)
+		return "#990000";
+	if($ratio < 0.8)
+		return "#880000";
+	if($ratio < 0.9)
+		return "#770000";
+	if($ratio < 1)
+		return "#660000";
+	return "#000000";
+} 
+
+function get_slr_color($ratio){
+	if($ratio < 0.025)
+		return "#ff0000";
+	if($ratio < 0.05)
+		return "#ee0000";
+	if($ratio < 0.075)
+		return "#dd0000";
+	if($ratio < 0.1)
+		return "#cc0000";
+	if($ratio < 0.125)
+		return "#bb0000";
+	if($ratio < 0.15)
+		return "#aa0000";
+	if($ratio < 0.175)
+		return "#990000";
+	if($ratio < 0.2)
+		return "#880000";
+	if($ratio < 0.225)
+		return "#770000";
+	if($ratio < 0.25)
+		return "#660000";
+	if($ratio < 0.275)
+		return "#550000";
+	if($ratio < 0.3)
+		return "#440000";
+	if($ratio < 0.325)
+		return "#330000";
+	if($ratio < 0.35)
+		return "#220000";
+	if($ratio < 0.375)
+		return "#110000";
+	return "#000000";
 }
 
-function get_elapsed_time($ts)
-{
-    /* $mins = floot((gmtime() - $ts) / 60); */
+function write_log($typ, $text){
+	$added = get_date_time();
+	$qry = $GLOBALS['DB']->prepare("INSERT INTO `sitelog` (`typ`, `added`, `txt`) VALUES(:typ, :added, :text)");
+	$qry->bindParam(':typ', $typ, PDO::PARAM_STR);
+	$qry->bindParam(':added', $added, PDO::PARAM_STR);
+	$qry->bindParam(':text', $text, PDO::PARAM_STR);
+	$qry->execute();
+}
 
-    $mins = floor((time() - $ts) / 60);
-    $hours = floor($mins / 60);
-    $mins -= $hours * 60;
-    $days = floor($hours / 24);
-    $hours -= $days * 24;
-    $weeks = floor($days / 7);
-    $days -= $weeks * 7;
-    $t = "";
-    if ($weeks > 0)
-        return "$weeks Woche" . ($weeks > 1 ? "n" : "");
-    if ($days > 0)
-        return "$days Tag" . ($days > 1 ? "en" : "");
-    if ($hours > 0)
-        return "$hours Stunde" . ($hours > 1 ? "n" : "");
-    if ($mins > 0)
-        return "$mins Minute" . ($mins > 1 ? "n" : "");
-    return "< 1 Minute";
+function write_modcomment($uid, $moduid, $text){
+	$text = stripslashes($text);
+	$qry = $GLOBALS['DB']->prepare("INSERT INTO `modcomments` (`added`, `userid`, `moduid`, `txt`) VALUES (NOW(), :uid, :moduid, :text)");
+	$qry->bindParam(':uid', $uid, PDO::PARAM_INT);
+	$qry->bindParam(':moduid', $moduid, PDO::PARAM_INT);
+	$qry->bindParam(':text', $text, PDO::PARAM_STR);
+	$qry->execute();
+}
+
+function get_elapsed_time($ts){
+	/* $mins = floot((gmtime() - $ts) / 60); */
+	$mins = floor((time() - $ts) / 60);
+	$hours = floor($mins / 60);
+	$mins -= $hours * 60;
+	$days = floor($hours / 24);
+	$hours -= $days * 24;
+	$weeks = floor($days / 7);
+	$days -= $weeks * 7;
+	$t = "";
+	if($weeks > 0)
+		return $weeks . " Woche" . ($weeks > 1 ? "n" : "");
+	if($days > 0)
+		return $days . " Tag" . ($days > 1 ? "en" : "");
+	if($hours > 0)
+		return $hours . " Stunde" . ($hours > 1 ? "n" : "");
+	if($mins > 0)
+		return $mins . " Minute" . ($mins > 1 ? "n" : "");
+	return "< 1 Minute";
 } 
 
-function hex_esc($matches)
-{
-    return sprintf("%02x", ord($matches[0]));
+function hex_esc($matches){
+	return sprintf("%02x", ord($matches[0]));
 } 
 
-function getagent($httpagent, $peer_id)
-{
-    global $client_uas, $clean_uas; 
-    // Spezialfälle mittels Peer-ID bestimmen
-    if (substr($peer_id, 0, 4) == "exbc")
-        $httpagent = "BitComet/" . ord(substr($peer_id, 4, 1)) . "." . ord(substr($peer_id, 5, 1));
-    if (preg_match("/^-BC(\d\d)(\d\d)-/", $peer_id, $matches))
-        $httpagent = "BitComet/" . intval($matches[1]) . "." . intval($matches[2]);
-
-    return preg_replace($client_uas, $clean_uas, $httpagent);
+function getagent($httpagent, $peer_id){
+	global $client_uas, $clean_uas; 
+	// Spezialfälle mittels Peer-ID bestimmen
+	if(substr($peer_id, 0, 4) == "exbc")
+		$httpagent = "BitComet/" . ord(substr($peer_id, 4, 1)) . "." . ord(substr($peer_id, 5, 1));
+	if(preg_match("/^-BC(\d\d)(\d\d)-/", $peer_id, $matches))
+		$httpagent = "BitComet/" . intval($matches[1]) . "." . intval($matches[2]);
+	return preg_replace($client_uas, $clean_uas, $httpagent);
 } 
 
-function get_wait_time($userid, $torrentid, $only_wait_check = false, $left = -1)
-{
-    $res = mysql_query("SELECT users.class, users.downloaded, users.uploaded, UNIX_TIMESTAMP(users.added) AS u_added, UNIX_TIMESTAMP(torrents.added) AS t_added, nowait.`status` AS `status` FROM users LEFT JOIN torrents ON torrents.id = $torrentid LEFT JOIN nowait ON nowait.user_id = $userid AND nowait.torrent_id = $torrentid WHERE users.id = $userid");
-    $arr = mysql_fetch_assoc($res);
+function get_wait_time($userid, $torrentid, $only_wait_check = false, $left = -1){
+	$qry = $GLOBALS["DB"]->prepare("SELECT users.class, users.downloaded, users.uploaded, UNIX_TIMESTAMP(users.added) AS u_added, UNIX_TIMESTAMP(torrents.added) AS t_added, nowait.`status` AS `status` FROM users LEFT JOIN torrents ON torrents.id = :torrentid LEFT JOIN nowait ON nowait.user_id = :userid AND nowait.torrent_id = :torrentid WHERE users.id = :userid");
+	$qry->bindParam(':userid', $userid, PDO::PARAM_INT);
+	$qry->bindParam(':torrentid', $torrentid, PDO::PARAM_INT);
+	$qry->execute();
+	$arr = $qry->Fetch(PDO::FETCH_ASSOC);
 
-    if (($arr["status"] != "granted" || ($arr["status"] == "granted" && $left > 0 && $GLOBALS["NOWAITTIME_ONLYSEEDS"])) && $arr["class"] < UC_VIP) {
-        $gigs = $arr["uploaded"] / 1073741824;
-        $elapsed = floor((time() - $arr["t_added"]) / 3600);
-        $regdays = floor((time() - $arr["u_added"]) / 86400);
-        $ratio = (($arr["downloaded"] > 0) ? ($arr["uploaded"] / $arr["downloaded"]) : 1);
-
-        $wait_times = explode("|", $GLOBALS["WAIT_TIME_RULES"]);
-
-        $wait = 0;
-        foreach ($wait_times as $rule) {
-            $rule = explode(":", $rule, 4);
-            // Format [#w][#d] or *
-            // eg: 1w or 1w2d or 2d or * or 0
-            preg_match("/([0-9]+w)?([0-9]+d)?|([\\*0])?/", $rule[2], $regrule);
-            $regruledays = intval($regrule[1])*7 + intval($regrule[2]);
-            
-            if (($ratio < $rule[0] || $gigs < $rule[1]) && ($regruledays==0 || ($regruledays>0 && $regdays < $regruledays)))
-                $wait = max($wait, $rule[3], 0);
-        }
-
-        if ($only_wait_check)
-            return ($wait > 0);
-
-        return max($wait - $elapsed, 0);
-    } 
-    return 0;
-} 
+	if(($arr["status"] != "granted" || ($arr["status"] == "granted" && $left > 0 && $GLOBALS["NOWAITTIME_ONLYSEEDS"])) && $arr["class"] < UC_VIP){
+		$gigs = $arr["uploaded"] / 1073741824;
+		$elapsed = floor((time() - $arr["t_added"]) / 3600);
+		$regdays = floor((time() - $arr["u_added"]) / 86400);
+		$ratio = (($arr["downloaded"] > 0) ? ($arr["uploaded"] / $arr["downloaded"]) : 1);
+		$wait_times = explode("|", $GLOBALS["WAIT_TIME_RULES"]);
+		$wait = 0;
+		foreach($wait_times as $rule){
+			$rule = explode(":", $rule, 4);
+			// Format [#w][#d] or *
+			// eg: 1w or 1w2d or 2d or * or 0
+			preg_match("/([0-9]+w)?([0-9]+d)?|([\\*0])?/", $rule[2], $regrule);
+			$regruledays = intval($regrule[1])*7 + intval($regrule[2]);
+			if(($ratio < $rule[0] || $gigs < $rule[1]) && ($regruledays==0 || ($regruledays>0 && $regdays < $regruledays)))
+				$wait = max($wait, $rule[3], 0);
+		}
+		if($only_wait_check)
+			return ($wait > 0);
+		return max($wait - $elapsed, 0);
+	} 
+	return 0;
+}
 
 function get_cur_wait_time($userid){
-	$res = mysql_query("SELECT class, downloaded, uploaded, UNIX_TIMESTAMP(added) AS added FROM users WHERE users.id = $userid");
-	$arr = mysql_fetch_assoc($res);
+	$qry = $GLOBALS["DB"]->prepare("SELECT class, downloaded, uploaded, UNIX_TIMESTAMP(added) AS added FROM users WHERE users.id = :userid");
+	$qry->bindParam(':userid', $userid, PDO::PARAM_INT);
+	$qry->execute();
+	$arr = $qry->Fetch(PDO::FETCH_ASSOC);
+
 	if($arr["class"] < UC_VIP){
 		$gigs = $arr["uploaded"] / 1073741824;
 		$regdays = floor((time() - $arr["added"]) / 86400);
@@ -521,38 +521,39 @@ function get_torrent_limits($userinfo){
 	return $limit;
 }
 
-function resize_image($origfn, $tmpfile, $target_filename)
-{
+function resize_image($origfn, $tmpfile, $target_filename){
 	// Bild laden
-	if (preg_match("/(jp(e|eg|g))$/i", $origfn)) {
-   		$img_pic = @imagecreatefromjpeg($tmpfile);
+	if(preg_match("/(jp(e|eg|g))$/i", $origfn)){
+		$img_pic = @imagecreatefromjpeg($tmpfile);
 	}
-	if (preg_match("/png$/i", $origfn)) {
-   		$img_pic = @imagecreatefrompng($tmpfile);
+
+	if(preg_match("/png$/i", $origfn)){
+		$img_pic = @imagecreatefrompng($tmpfile);
 	}
-	if (preg_match("/gif$/i", $origfn)) {
-   		$img_pic = @imagecreatefromgif($tmpfile);
+
+	if(preg_match("/gif$/i", $origfn)){
+		$img_pic = @imagecreatefromgif($tmpfile);
 	}
-    	
-	if (!$img_pic)
-        return FALSE;
+
+	if(!$img_pic)
+		return FALSE;
         
-    $size_x = imagesx($img_pic);
-    $size_y = imagesy($img_pic);				
-    
-    $tn_size_x = 150;
-    $tn_size_y = (int)((float)$size_y / (float)$size_x * (float)150);
-    
-    // Thumbnail erzeugen
-    $img_tn = imagecreatetruecolor($tn_size_x, $tn_size_y);
-    imagecopyresampled($img_tn, $img_pic, 0, 0, 0, 0, $tn_size_x, $tn_size_y, $size_x, $size_y);		
-    
-    // Bild speichern
-    $dummy = imagejpeg($img_tn, $target_filename, 85);
-    
-    imagedestroy($img_tn);
-    
-    return $img_pic;
+	$size_x = imagesx($img_pic);
+	$size_y = imagesy($img_pic);				
+
+	$tn_size_x = 150;
+	$tn_size_y = (int)((float)$size_y / (float)$size_x * (float)150);
+		
+	// Thumbnail erzeugen
+	$img_tn = imagecreatetruecolor($tn_size_x, $tn_size_y);
+	imagecopyresampled($img_tn, $img_pic, 0, 0, 0, 0, $tn_size_x, $tn_size_y, $size_x, $size_y);		
+
+	// Bild speichern
+	$dummy = imagejpeg($img_tn, $target_filename, 85);
+
+	imagedestroy($img_tn);
+
+	return $img_pic;
 }
 
 function torrent_image_upload($file, $id, $picnum){
