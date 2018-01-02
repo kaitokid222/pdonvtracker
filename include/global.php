@@ -142,7 +142,7 @@ function format_quotes($s){
 function format_comment($text, $strip_html = true){
 	global $smilies, $privatesmilies;
 
-	s = stripslashes($text); 
+	$s = stripslashes($text); 
 
 	// This fixes the extraneous ;) smilies problem. When there was an html escaped
 	// char before a closing bracket - like >), "), ... - this would be encoded
