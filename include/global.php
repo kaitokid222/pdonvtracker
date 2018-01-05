@@ -277,10 +277,10 @@ function delete_acct($id){
 		$userinfo = $qry->fetchObject();
 
 	if($userinfo->email && $userinfo->status == "confirmed"){
-		$mailbody = "Dein Account auf ".$GLOBALS["SITENAME"]." wurde gelöscht. Dies ist entweder passiert,".
-					"weil Du Dich längere Zeit nicht mehr eingeloggt hast, oder Dein Account von einem".
-					"Administrator deaktiviert wurde.".
-					"Diese E-Mail dient dazu, Dich darüber zu informieren, dass Du diesen Account nun nicht".
+		$mailbody = "Dein Account auf ".$GLOBALS["SITENAME"]." wurde gelöscht. Dies ist entweder passiert, ".
+					"weil Du Dich längere Zeit nicht mehr eingeloggt hast, oder Dein Account von einem ".
+					"Administrator deaktiviert wurde. ".
+					"Diese E-Mail dient dazu, Dich darüber zu informieren, dass Du diesen Account nun nicht ".
 					"mehr nutzen kannst. Bitte antworte nicht auf diese E-Mail!";
 		mail("\"" . $userinfo->username . "\" <" . $userinfo->email . ">", "Account gelöscht auf ".$GLOBALS["SITENAME"], $mailbody);
 	}
@@ -428,7 +428,7 @@ function get_elapsed_time($ts){
 
 function hex_esc($matches){
 	return sprintf("%02x", ord($matches[0]));
-} 
+}
 
 function getagent($httpagent, $peer_id){
 	global $client_uas, $clean_uas; 
@@ -556,7 +556,7 @@ function resize_image($origfn, $tmpfile, $target_filename){
 	return $img_pic;
 }
 
-function torrent_image_upload($file, $id, $picnum){
+/*function torrent_image_upload($file, $id, $picnum){
 	if (!isset($file) || $file["size"] < 1){
 		tr_status("err");
 		array_push($GLOBALS["uploaderrors"], "Es wurden keine Daten von '".$file["name"]."' empfangen!");
@@ -606,12 +606,12 @@ function torrent_image_upload($file, $id, $picnum){
 		tr_status("ok");
 		return TRUE;
 	}
-}
+}*/
 
 function strip_ascii_art($text){
 	// First, remove all "weird" characters.
 	$text = preg_replace("/[^a-zA-Z0-9öäüÖÄÜß\\-_?!&[\\]().,;:+=#*~@\\/\\\\'\"><\\s]/", "", $text);
-		
+	$oldtext = "";
 	while($text != $oldtext){
 		$oldtext = $text; 
 		// Remove all repeating umlauts

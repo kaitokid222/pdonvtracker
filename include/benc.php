@@ -242,7 +242,7 @@ function bdec($wholefile){
 	return $return[0];
 }
 
-function bdec_file($f) {
+function bdec_file($f){
 	$nf = file_get_contents($f);
 	$decoded = bdec($nf);
 	return $decoded;

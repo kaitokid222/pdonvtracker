@@ -60,6 +60,7 @@ $GLOBALS['DB'] = $database->getPDO();
 
 require_once("include/class/polls.php");
 require_once("include/class/shoutbox.php");
+require_once("include/class/tupload.php");
 
 function set_last_access($id){
 	$latime = date("Y-m-d H:i:s");
@@ -147,12 +148,12 @@ function getip(){
 	else
 		$ip = $remote;
 	return $ip;
-} 
+}
 
 // die quelle des bösen
 function dbconn($autoclean = false){
     global $mysql_host, $mysql_user, $mysql_pass, $mysql_db, $_SERVER;
-
+	trigger_error("Veraltete Funktion dbconn wurde aufgerufen!");
     if (!@mysql_connect($mysql_host, $mysql_user, $mysql_pass)) {
         switch (mysql_errno()) {
             case 1040:
@@ -182,6 +183,7 @@ function dbconn($autoclean = false){
 }
 
 function sqlerr($file = '', $line = ''){
+	trigger_error("Veraltete Funktion sqlerr wurde aufgerufen!");
 	print("<table border=0 bgcolor=blue align=left cellspacing=0 cellpadding=10 style='background: blue'>" . "<tr><td class=embedded><font color=white><h1>SQL Error</h1>\n" . "<b>" . mysql_error() . ($file != '' && $line != '' ? "<p>in $file, line $line</p>" : "") . "</b></font></td></tr></table>");
 	die;
 }
@@ -358,11 +360,10 @@ function autoclean()
     docleanup();
 } 
 
-function unesc($x)
-{
-    if (get_magic_quotes_gpc())
-        return stripslashes($x);
-    return $x;
+function unesc($x){
+	if(get_magic_quotes_gpc())
+		return stripslashes($x);
+	return $x;
 } 
 
 function mksize($bytes)
@@ -453,11 +454,13 @@ function validemail($email)
 // Muss weg!
 function sqlesc($x)
 {
+	trigger_error("Veraltete Funktion sqlesc wurde aufgerufen!");
     return "'" . mysql_real_escape_string($x) . "'";
 } 
 // Muss weg!
 function sqlwildcardesc($x)
 {
+	trigger_error("Veraltete Funktion sqlwildcardescesc wurde aufgerufen!");
     return str_replace(array("%", "_"), array("\\%", "\\_"), mysql_real_escape_string($x));
 } 
 

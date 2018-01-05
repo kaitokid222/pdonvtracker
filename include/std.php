@@ -457,6 +457,22 @@ function tr($x, $y, $noesc = 0){
 		"        <td class=\"tableb\" valign=\"top\" align=\"left\">" . $x . "</td>\n".
 		"        <td class=\"tablea\" valign=\"top\" align=\"left\">" . $a . "</td>\n".
 		"    </tr>\n";
+}
+
+function tr_msg($msg){
+    echo "<tr>\n".
+		"    <td class=\"tablea\" style=\"text-align:left;\">" . $msg . "</td>\n";
+}
+
+function tr_status($status){
+    echo "<td class=\"tableb\" style=\"text-align:center;\"><img src=\"".$GLOBALS["PIC_BASE_URL"];
+    if ($status == "ok")
+        echo "button_online2.gif";
+    else
+        echo "button_offline2.gif";
+    echo "\"></td>\n".
+		"</tr>\n";
+    //flush();
 } 
 
 function end_table(){
