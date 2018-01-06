@@ -18,10 +18,16 @@ if(isset($_GET['socket'], $_GET['operator']) && $_GET['socket'] == 1 && $_GET['o
 	$nwtos = ($GLOBALS["NOWAITTIME_ONLYSEEDS"] === true) ? "yes" : "no";
 	$c["config"]["ONLY_LEECHERS_WAIT"] = $olw;
 	$c["config"]["NOWAITTIME_ONLYSEEDS"] = $nwtos;
+	$c["config"]["ANNOUNCE_INTERVAL"] = "" . $GLOBALS["ANNOUNCE_INTERVAL"];
 	$c["config"]["WAIT_TIME_RULES"] = $GLOBALS["WAIT_TIME_RULES"];
 	$c["config"]["TORRENT_RULES"] = $GLOBALS["TORRENT_RULES"];
-	$c["config"]["MAX_PASSKEY_IPS"] = $GLOBALS["MAX_PASSKEY_IPS"];
-	$c["config"]["RATIOFAKER_THRESH"] = "" . $GLOBALS["RATIOFAKER_THRESH"] . "";
+	$c["config"]["MAX_PASSKEY_IPS"] = "" . $GLOBALS["MAX_PASSKEY_IPS"];
+	$c["config"]["RATIOFAKER_THRESH"] = "" . $GLOBALS["RATIOFAKER_THRESH"];
+	$c["config"]["BAN_USERAGENTS"] = $GLOBALS["BAN_USERAGENTS"];
+	$na = array();
+	foreach($GLOBALS["BAN_PEERIDS"] as $banc)
+		$na[] = urlencode($banc);
+	$c["config"]["BAN_PEERIDS"] = $na;
 	$resp = json_encode($c, JSON_FORCE_OBJECT);
 	header("Content-Type: text/plain");
 	die($resp);
@@ -40,6 +46,16 @@ if(isset($_GET["action"]) && $_GET["action"] == "kill"){
 	}else
 		stderr("Socketserver stoppen?", "Willst Du den Socket-Announce-Server wirklich stoppen? Klicke\n" . "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=kill&sure=1\">hier</a>, wenn Du Dir sicher bist.");
 }
+
+/* tötet apache.. aber der socket startet :D
+if(isset($_GET["action"]) && $_GET["action"] == "start"){
+	$path = "c:\\xampp\\htdocs\\announce\\";
+	chdir($path);
+	exec("start start.bat");
+	$path = "c:\\xampp\\htdocs\\";
+	chdir($path);
+	die();
+}*/
 
 $status = (@file_get_contents($GLOBALS["ANNOUNCE_URLS"][0]) !== false) ? true : false;
 $avgping_str = @file_get_contents($GLOBALS["SOCKET_URL"] . "/control?action=avgping&operator=admin");

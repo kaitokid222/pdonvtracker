@@ -140,10 +140,7 @@ $GLOBALS["THREAD_LOCK_TIMEOUT"] = 7;
 // Autoclean interval (seconds)
 // Time between torrent and user cleanups. If the tracker suffers
 // from high load, consider setting this to a higher value.
-$GLOBALS["AUTOCLEAN_INTERVAL"] = 3000 * 60;
-
-// How long a Client has to wait before scraping again. default 15 Seconds
-$GLOBALS["SCRAPE_INTERVAL"] = 15;
+$GLOBALS["AUTOCLEAN_INTERVAL"] = 30 * 60;
 
 // Maximum personal message prune time (days, 0=disabled)
 // Personal messages are getting deleted after this number of days,
@@ -182,6 +179,9 @@ $GLOBALS["PIC_BASE_URL"] = "pic/";
 // Relative or absolute URL to the portal, if it exists. Leave blank
 // to hide the portal links.
 $GLOBALS["PORTAL_LINK"] = "forums.php";
+
+// Socket-base
+$GLOBALS["SOCKET_URL"] = "http://localhost:81";
 
 // Valid tracker announce URLs
 // The first entry will be displayed on the upload page
