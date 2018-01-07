@@ -157,7 +157,10 @@ if ($user["added"] == "0000-00-00 00:00:00") {
     if ($days_regged) {
         $down_per_day = "(" . mksize(floor($user["downloaded"] / $days_regged)) . " / Tag)";
         $upped_per_day = "(" . mksize(floor($user["uploaded"] / $days_regged)) . " / Tag)";
-    } 
+    } else{
+        $down_per_day = "(0,00 KB / Tag)";
+        $upped_per_day = "(0,00 KB / Tag)";
+	}
 } 
 $lastseen = $user["last_access"];
 if ($lastseen == "0000-00-00 00:00:00")

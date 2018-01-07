@@ -61,6 +61,7 @@ $GLOBALS['DB'] = $database->getPDO();
 require_once("include/class/polls.php");
 require_once("include/class/shoutbox.php");
 require_once("include/class/tupload.php");
+require_once("include/class/user.php");
 
 function set_last_access($id){
 	$latime = date("Y-m-d H:i:s");
