@@ -446,6 +446,11 @@ function begin_table($fullwidth = false, $padding = 4){
 	echo "<table class=\"tableinborder\"" . $width . " border=\"0\" cellspacing=\"1\" cellpadding=\"" . $padding . "\">\n";
 }
 
+function end_table(){
+	echo "</table>\n".
+		"<br>\n";
+}
+
 function tr($x, $y, $noesc = 0){
     if ($noesc != 0)
         $a = $y;
@@ -475,10 +480,6 @@ function tr_status($status){
     //flush();
 } 
 
-function end_table(){
-	echo "</table>\n".
-		"<br>\n";
-}
 
 function genbark($x, $y){
     stdhead($y);
