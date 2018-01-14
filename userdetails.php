@@ -32,80 +32,11 @@ dbconn(false);
 
 loggedinorreturn();
 
-function bark($msg)
-{
-    stdhead();
-    stdmsg("Error", $msg);
-    stdfoot();
-    exit;
-} 
+// --------------------->
 
-function get_domain($ip)
-{
-    $dom = @gethostbyaddr($ip);
-    if ($dom == $ip || @gethostbyname($dom) != $ip)
-        return "<a href=\"whois.php?ip=$ip\" target=\"nvwhois\">$ip</a>";
-    else {
-        $dom = strtoupper($dom);
-        return "<a href=\"whois.php?ip=$ip\" target=\"nvwhois\">$ip</a> ($dom)";
-    } 
-} 
 
-function maketable($res)
-{
-    $ret = "<table class=tableinborder border=0 cellspacing=1 cellpadding=4 width=\"100%\">" . "<tr><td class=tablecat align=center>Typ</td><td class=tablecat width=\"100%\">Name</td><td class=tablecat align=center>TTL</td><td class=tablecat align=center>Größe</td><td class=tablecat align=right>Se.</td><td class=tablecat align=right>Le.</td><td class=tablecat align=center>Hochgel.</td>\n" . "<td class=tablecat align=center>Runtergel.</td><td class=tablecat align=center>Ratio</td></tr>\n";
-    while ($arr = mysql_fetch_assoc($res)) {
-        if ($arr["downloaded"] > 0) {
-            $ratio = number_format($arr["uploaded"] / $arr["downloaded"], 3);
-            $ratio = "<font color=" . get_ratio_color($ratio) . ">$ratio</font>";
-        } else
-        if ($arr["uploaded"] > 0)
-            $ratio = "Inf.";
-        else
-            $ratio = "---";
-        $catimage = htmlspecialchars($arr["image"]);
-        $catname = htmlspecialchars($arr["catname"]);
-        $ttl = (28 * 24) - floor((time() - sql_timestamp_to_unix_timestamp($arr["added"])) / 3600);
-        if ($ttl == 1) $ttl .= "<br>hour";
-        else $ttl .= "<br>hours";
-        $size = str_replace(" ", "<br>", mksize($arr["size"]));
-        $uploaded = str_replace(" ", "<br>", mksize($arr["uploaded"]));
-        $downloaded = str_replace(" ", "<br>", mksize($arr["downloaded"]));
-        $seeders = number_format($arr["seeders"]);
-        $leechers = number_format($arr["leechers"]);
-        $ret .= "<tr><td class=tableb style='padding: 0px'><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $catimage . "\" alt=\"$catname\" title=\"$catname\" width=42 height=42></td>\n" . "<td class=tablea><a href=details.php?id=$arr[torrent]&amp;hit=1><b>" . htmlspecialchars($arr["torrentname"]) . "</b></a></td><td class=tableb align=center>$ttl</td><td class=tablea align=center>$size</td><td class=tableb align=right>$seeders</td><td class=tablea align=right>$leechers</td><td class=tableb align=center>$uploaded</td>\n" . "<td class=tablea align=center>$downloaded</td><td class=tableb align=center>$ratio</td></tr>\n";
-    } 
-    $ret .= "</table>\n";
-    return $ret;
-} 
 
-function makecomptable($res)
-{
-    $ret = "<table class=tableinborder border=0 cellspacing=1 cellpadding=4 width=\"100%\">" . "<tr><td class=tablecat style=\"text-align:center\">Typ</td><td class=tablecat width=\"100%\">Name</td>\n" . "<td class=tablecat style=\"text-align:center\">Fertiggestellt</td><td class=tablecat>Se.</td><td class=tablecat>Le.</td><td class=tablecat>Hochgel.</td><td class=tablecat>Runtergel.</td></tr>\n";
-    while ($arr = mysql_fetch_assoc($res)) {
-        $catimage = htmlspecialchars($arr["image"]);
-        $catname = htmlspecialchars($arr["catname"]);
-        $ret .= "<tr><td class=\"tableb\" style=\"padding: 0px\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $catimage . "\" alt=\"$catname\" title=\"$catname\" width=42 height=42></td>\n<td class=tablea>";
-        if ($arr["torrent_origid"] > 0) {
-            $seeders = number_format($arr["seeders"]);
-            $leechers = number_format($arr["leechers"]);
-            $ret .= "<a href=\"details.php?id=$arr[torrent]&amp;hit=1\"><b>" . htmlspecialchars($arr["torrent_name"]) . "</b></a></td>";
-            $ret .= "<td class=\"tableb\" style=\"text-align:center\">" . str_replace(" ", "<br />", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($arr["complete_time"]))) . "</td>";
-            $ret .= "<td class=\"tablea\" style=\"text-align:right\">$seeders</td>";
-            $ret .= "<td class=\"tableb\" style=\"text-align:right\">$leechers</td>";
-            $ret .= "<td class=\"tablea\" style=\"text-align:right\" nowrap=\"nowrap\">" . mksize($arr["uploaded"]) . "<br>@ " . mksize($arr["uploaded"] / max(1, $arr["uploadtime"])) . "/s</td>";
-            $ret .= "<td class=\"tablea\" style=\"text-align:right\" nowrap=\"nowrap\">" . mksize($arr["downloaded"]) . "<br>@ " . mksize($arr["downloaded"] / max(1, $arr["downloadtime"])) . "/s</td>";
-            $ret .= "</tr>\n";
-        } else {
-            $ret .= "<b>" . htmlspecialchars($arr["torrent_name"]) . "</b>";
-            $ret .= "</td><td class=\"tableb\" style=\"text-align:center\">" . str_replace(" ", "<br />", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($arr["complete_time"]))) . "</td>";
-            $ret .= "<td class=\"tablea\" style=\"text-align:center\" colspan=\"4\">Gelöscht</td></tr>\n";
-        } 
-    } 
-
-    $ret .= "</table>\n";
-    return $ret;
-} 
+// <---------------------
 
 $id = intval($_GET["id"]);
 
@@ -352,145 +283,309 @@ if ($showpmbutton || $showemailbutton) {
 
 print("</table></td></tr></table><br>\n");
 
-if ((get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()) || get_user_class() == UC_SYSOP) {
-
-    ?>
-<script type="text/javascript">
-function togglediv()
-{
-    var mySelect = document.getElementById('tselect');
-    var myDiv = document.getElementById('tlimitdiv');
-
-    if (mySelect.options[mySelect.selectedIndex].value == "manual")
-        myDiv.style.visibility = 'visible';
-    else
-        myDiv.style.visibility = 'hidden';
-    
-}
-</script>
-<?php
-    $bbfilecount = mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS cnt FROM bitbucket WHERE user=$id"));
-
+if((get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()) || get_user_class() == UC_SYSOP){
+	echo "<script type=\"text/javascript\">\n".
+		"    function togglediv(){\n".
+		"        var mySelect = document.getElementById(\"tselect\");\n".
+		"        var myDiv = document.getElementById(\"tlimitdiv\");\n".
+		"        if(mySelect.options[mySelect.selectedIndex].value == \"manual\")\n".
+		"            myDiv.style.visibility = \"visible\";\n".
+		"        else\n".
+		"            myDiv.style.visibility = \"hidden\";\n".
+		"    }\n".
+		"</script>\n";
+    $bbfilecount = $database->row_count('bitbucket','`user`='.$id);
+	$bb_str = ($bbfilecount > 0) ? "    <tr>\n        <td class=\"tableb\">BitBucket</td>\n        <td class=\"tablea\" colspan=\"2\" align=\"left\"><a href=\"bitbucket.php?id=" . $id . "\">BitBucket-Inhalt dieses Benutzers anzeigen / bearbeiten</a> (" . $bbfilecount . " Datei(en))</td>\n    </tr>\n" : "";
+	$avatar = htmlspecialchars($user["avatar"]);
     begin_frame("Profil bearbeiten", false, "750px");
-    print("<form method=post action=modtask.php>\n");
-    print("<input type=hidden name='action' value='edituser'>\n");
-    print("<input type=hidden name='userid' value='$id'>\n");
-    print("<input type=hidden name='returnto' value='userdetails.php?id=$id&" . SID . "'>\n");
-    print("<table class=tableinborder border=0 cellspacing=1 cellpadding=4 style=\"width:100%;\">\n");
-    print("<tr><td class=tableb>Titel</td><td class=tablea colspan=2 align=left><input type=text size=60 name=title value=\"" . htmlspecialchars($user['title']) . "\"></tr>\n");
-    $avatar = htmlspecialchars($user["avatar"]);
-    print("<tr><td class=tableb>Avatar&nbsp;URL</td><td class=tablea colspan=2 align=left><input type=text size=60 name=avatar value=\"$avatar\"></tr>\n");
-    print("<tr><td class=tableb>Start/Stop&nbsp;Events</td><td class=tablea colspan=2 align=left><a href=\"startstoplog.php?op=user&amp;uid=" . $user["id"] . "\">Ereignisse anzeigen</a></td></tr>\n");
-    if ($bbfilecount["cnt"]) {
-        print("<tr><td class=tableb>BitBucket</td><td class=tablea colspan=2 align=left><a href=\"bitbucket.php?id=$id\">BitBucket-Inhalt dieses Benutzers anzeigen / bearbeiten</a> (" . $bbfilecount["cnt"] . " Datei(en))</tr>\n");
-    } 
-    // we do not want mods to be able to change user classes or amount donated...
-    if ($CURUSER["class"] < UC_ADMINISTRATOR)
-        print("<input type=hidden name=donor value=$user[donor]>\n");
-    else {
-        print("<tr><td class=tableb>Gespendet</td><td class=tablea colspan=2 align=left><input type=radio name=donor value=yes" . ($user["donor"] == "yes" ? " checked" : "") . ">Ja <input type=radio name=donor value=no" . ($user["donor"] == "no" ? " checked" : "") . ">Nein</td></tr>\n");
-    } 
-
-    if (get_user_class() == UC_MODERATOR && $user["class"] > UC_VIP)
-        printf("<input type=hidden name=class value=$user[class]\n");
-    else {
-        print("<tr><td class=tableb>Klasse</td><td class=tablea colspan=2 align=left><select name=class>\n");
-        if (get_user_class() == UC_MODERATOR)
-            $maxclass = UC_VIP;
-        elseif (get_user_class() == UC_SYSOP)
-            $maxclass = UC_SYSOP;
-        else
-            $maxclass = get_user_class() - 1;
-        for ($i = 0; $i <= $maxclass; ++$i)
-        if (get_user_class_name($i) != "")
-            print("<option value=" . $i . ($user["class"] == $i ? " selected" : "") . ">" . get_user_class_name($i) . "\n");
-            //print("<option value=$i" . ($user["class"] == $i ? " selected" : "") . ">$prefix" . get_user_class_name($i) . "\n");
-        print("</select></td></tr>\n");
-    } 
-
-    print("<tr><td class=tableb>Torrentbegrenzung</td><td class=tablea colspan=2 align=left><select id=\"tselect\" name=\"limitmode\" size=\"1\" onchange=\"togglediv();\">");
-    print("<option value=\"auto\"" . ($user["tlimitall"] == 0?" selected=\"selected\"":"") . ">Automatisch</option>\n");
-    print("<option value=\"unlimited\"" . ($user["tlimitall"] == -1?" selected=\"selected\"":"") . ">Unbegrenzt</option>\n");
-    print("<option value=\"manual\"" . ($user["tlimitall"] > 0?" selected=\"selected\"":"") . ">Manuell</option>\n");
-    print("</select><div id=\"tlimitdiv\" style=\"display: inline;" . ($user["tlimitall"] <= 0?"visibility:hidden;":"") . "\">&nbsp;&nbsp;&nbsp;");
-    print(" Seeds: <input type=\"text\" size=\"2\" maxlength=\"2\" name=\"maxseeds\" value=\"" . ($user["tlimitseeds"] > 0?$user["tlimitseeds"]:"") . "\">");
-    print(" Leeches: <input type=\"text\" size=\"2\" maxlength=\"2\" name=\"maxleeches\" value=\"" . ($user["tlimitleeches"] > 0?$user["tlimitleeches"]:"") . "\">");
-    print(" Gesamt: <input type=\"text\" size=\"2\" maxlength=\"2\" name=\"maxtotal\" value=\"" . ($user["tlimitall"] > 0?$user["tlimitall"]:"") . "\">");
-    print("</div></td></tr>\n");
-
-    $res = mysql_query("SELECT msg,name,torrent_id,`status` FROM nowait LEFT JOIN torrents ON torrents.id=torrent_id WHERE user_id=$id");
-
-    if (mysql_num_rows($res)) {
-        print("<tr><td class=tableb>Wartezeit&nbsp;aufheben</td><td class=tablea colspan=2 align=left><table");
-        print("<table class=tableinborder border=0 cellspacing=1 cellpadding=4 width=\"100%\">");
-        print("<tr><td class=tablecat width=\"100%\">Torrent / Grund</td><td class=tablecat>Status</td></tr>\n");
-        while ($arr = mysql_fetch_assoc($res)) {
-            print("<tr><td class=tablea><p><b><a href=\"details.php?id=$arr[torrent_id]\">" . htmlspecialchars($arr["name"]) . "</a></b></p><p>" . htmlspecialchars($arr["msg"]) . "</td>");
-            if ($arr["status"] == "pending") {
-                print("<td class=tableb valign=\"middle\" nowrap=\"nowrap\"><input type=\"radio\" name=\"wait[$arr[torrent_id]]\" value=\"yes\"" . ($arr["status"] == "granted"?" checked=\"checked\"":"") . "> Akzeptieren<br/>");
-                print("<input type=\"radio\" name=\"wait[$arr[torrent_id]]\" value=\"no\"" . ($arr["status"] == "rejected"?" checked=\"checked\"":"") . "> Ablehnen<br/>\n");
-                print("<input type=\"radio\" name=\"wait[$arr[torrent_id]]\" value=\"\"" . ($arr["status"] == "pending"?" checked=\"checked\"":"") . "> Nichts tun</td></tr>\n");
-            } else {
-                print("<td class=tableb valign=\"middle\" align=\"center\">" . ($arr["status"] == "granted"?"Akzeptiert":"Abgelehnt") . "</td></tr>\n");
-            } 
-        } 
-        print("</table></td></tr>\n");
-    } 
+	echo "    <form method=\"post\" action=\"modtask.php\">\n".
+		"    <input type=\"hidden\" name=\"action\" value=\"edituser\">\n".
+		"    <input type=\"hidden\" name=\"userid\" value=\"" . $id . "\">\n".
+		"    <input type=\"hidden\" name=\"returnto\" value=\"userdetails.php?id=" . $id . "\">\n".
+		"    <table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" style=\"width:100%;\">\n".
+		"    <tr>\n".
+		"        <td class=\"tableb\">Titel</td>\n".
+		"        <td class=\"tablea\" colspan=\"2\" align=\"left\"><input type=\"text\" size=\"60\" name=\"title\" value=\"" . htmlspecialchars($user["title"]) . "\"></td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td class=\"tableb\">Avatar&nbsp;URL</td>\n".
+		"        <td class=\"tablea\" colspan=\"2\" align=\"left\"><input type=\"text\" size=\"60\" name=\"avatar\" value=\"" . $avatar . "\"></td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td class=\"tableb\">Start/Stop&nbsp;Events</td>\n".
+		"        <td class=\"tablea\" colspan=\"2\" align=\"left\"><a href=\"startstoplog.php?op=user&amp;uid=" . $user["id"] . "\">Ereignisse anzeigen</a></td>\n".
+		"    </tr>\n".
+		$bb_str;
+	if($CURUSER["class"] < UC_ADMINISTRATOR)
+		echo "    <input type=\"hidden\" name=\"donor\" value=\"" . $user["donor"] . "\">\n";
+	else{
+		echo "    <tr>\n".
+			"        <td class=\"tableb\">Gespendet</td>\n".
+			"        <td class=\"tablea\" colspan=\"2\" align=\"left\">".
+			"<input type=\"radio\" name=\"donor\" value=\"yes\"" . ($user["donor"] == "yes" ? " checked" : "") . ">Ja ".
+			"<input type=\"radio\" name=\"donor\" value=\"no\"" . ($user["donor"] == "no" ? " checked" : "") . ">Nein</td>\n".
+			"    </tr>\n";
+	}
+	if(get_user_class() == UC_MODERATOR && $user["class"] > UC_VIP)
+		echo "<input type=\"hidden\" name=\"class\" value=\"" . $user["class"] . "\"\n";
+	else{
+		echo "    <tr>\n".
+			"        <td class=\"tableb\">Klasse</td>\n".
+			"        <td class=\"tablea\" colspan=\"2\" align=\"left\">\n".
+			"        <select name=\"class\">\n";
+		if(get_user_class() == UC_MODERATOR)
+			$maxclass = UC_VIP;
+		elseif(get_user_class() == UC_SYSOP)
+			$maxclass = UC_SYSOP;
+		else
+			$maxclass = get_user_class() - 1;
+		for($i = 0; $i <= $maxclass; ++$i)
+			if(get_user_class_name($i) != "")
+				echo "            <option value=\"" . $i . "\"" . ($user["class"] == $i ? " selected=\"selected\"" : "") . ">" . get_user_class_name($i) . "\n";
+		echo "        </select>\n".
+			"        </td>\n".
+			"    </tr>\n";
+	}
+	echo "    <tr>\n".
+		"        <td class=\"tableb\">Torrentbegrenzung</td>\n".
+		"        <td class=\"tablea\" colspan=\"2\" align=\"left\">\n".
+		"        <select id=\"tselect\" name=\"limitmode\" size=\"1\" onchange=\"togglediv();\">\n".
+		"            <option value=\"auto\"" . (($user["tlimitall"] == 0) ? " selected=\"selected\"" : "") . ">Automatisch</option>\n".
+		"            <option value=\"unlimited\"" . (($user["tlimitall"] == -1) ? " selected=\"selected\"" : "") . ">Unbegrenzt</option>\n".
+		"            <option value=\"manual\"" . (($user["tlimitall"] > 0) ? " selected=\"selected\"" : "") . ">Manuell</option>\n".
+		"        </select>\n".
+		"        <div id=\"tlimitdiv\" style=\"display: inline;" . (($user["tlimitall"] <= 0) ? "visibility:hidden;" : "") . "\">&nbsp;&nbsp;&nbsp;".
+		" Seeds: <input type=\"text\" size=\"2\" maxlength=\"2\" name=\"maxseeds\" value=\"" . (($user["tlimitseeds"] > 0) ? $user["tlimitseeds"] : "") . "\">".
+		" Leeches: <input type=\"text\" size=\"2\" maxlength=\"2\" name=\"maxleeches\" value=\"" . (($user["tlimitleeches"] > 0) ? $user["tlimitleeches"] : "") . "\">".
+		" Gesamt: <input type=\"text\" size=\"2\" maxlength=\"2\" name=\"maxtotal\" value=\"" . (($user["tlimitall"] > 0) ? $user["tlimitall"] : "") . "\">".
+		"</div>\n".
+		"        </td>\n".
+		"    </tr>\n";
+	$qry = $GLOBALS['DB']->prepare("SELECT msg,name,torrent_id,`status` FROM nowait LEFT JOIN torrents ON torrents.id=torrent_id WHERE user_id= :id");
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$qry->execute();
+	if($qry->rowCount() > 0){
+		$data = $qry->FetchAll(PDO::FETCH_ASSOC);
+		echo "    <tr>\n".
+			"        <td class=\"tableb\">Wartezeit aufheben</td>\n".
+			"        <td class=\"tablea\" colspan=\"2\" align=\"left\">\n".
+			"            <table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" width=\"100%\">\n".
+			"                <tr>\n".
+			"                    <td class=\"tablecat\" width=\"100%\">Torrent / Grund</td>\n".
+			"                    <td class=\"tablecat\">Status</td>\n".
+			"                </tr>\n";
+		foreach($data as $arr){
+			echo "                <tr>\n".
+				"                    <td class=\"tablea\"><p><b><a href=\"details.php?id=" . $arr["torrent_id"] . "\">" . htmlspecialchars($arr["name"]) . "</a></b></p><p>" . htmlspecialchars($arr["msg"]) . "</td>\n";
+			if($arr["status"] == "pending"){
+				echo "                    <td class=\"tableb\" valign=\"middle\" nowrap=\"nowrap\">".
+					"<input type=\"radio\" name=\"wait[" . $arr["torrent_id"] . "]\" value=\"yes\"" . (($arr["status"] == "granted") ? " checked=\"checked\"" : "") . "> Akzeptieren<br/>".
+					"<input type=\"radio\" name=\"wait[" . $arr["torrent_id"] . "]\" value=\"no\"" . (($arr["status"] == "rejected") ? " checked=\"checked\"" : "") . "> Ablehnen<br/>\n".
+					"<input type=\"radio\" name=\"wait[" . $arr["torrent_id"] . "]\" value=\"\"" . (($arr["status"] == "pending") ? " checked=\"checked\"" : "") . "> Nichts tun".
+					"</td>\n".
+					"                </tr>\n";
+			}else{
+				echo "                    <td class=\"tableb\" valign=\"middle\" align=\"center\">" . (($arr["status"] == "granted") ? "Akzeptiert" : "Abgelehnt") . "</td>\n".
+					"                </tr>\n";
+			}
+		}
+		echo "            </table>\n".
+			"        </td>\n".
+			"    </tr>\n";
+	}
     
-    print("<tr><td class=tableb>Kommentare</td><td class=tablea colspan=2 align=left><div style=\"width:500px;height:100px;overflow:auto;\">");
+	echo "    <tr>\n".
+		"        <td class=tableb>Kommentare</td>\n".
+		"        <td class=tablea colspan=2 align=left>\n".
+		"            <div style=\"width:580px;height:100px;overflow:auto;\">\n";
     begin_table(TRUE);
-    $modcommentres = mysql_query("SELECT `modcomments`.`added`,`modcomments`.`userid`,`modcomments`.`moduid`,`modcomments`.`txt`,`users`.`username` FROM `modcomments` LEFT JOIN `users` ON `users`.`id`=`modcomments`.`moduid` WHERE `userid`=$id ORDER BY `added` DESC");
-    while ($comment = mysql_fetch_assoc($modcommentres)) {
-        $comment["added"] = str_replace(" ", "&nbsp;", $comment["added"]);
-        print("<tr><td class=\"tablea\" valign=\"top\">".$comment["added"]."</td>\n<td class=\"tableb\" valign=\"top\">");
-    	if ($comment["moduid"] == 0)
-            print("System");
-        elseif ($comment["username"] == "")
-            print("<i>Gelöscht</i>");
-        else
-            print("<a href=\"userdetails.php?id=".$comment["moduid"]."\">".$comment["username"]."</a>");
-        print("</td>\n");
-        print("<td class=\"tablea\" valign=\"top\">".format_comment(stripslashes($comment["txt"]))."</td></tr>\n");
-    }    
-    print("</table></div><br>Hinzufügen:&nbsp;&nbsp;<input type=\"text\" size=\"50\" name=\"modcomment\"></td></tr>\n");
-    
+
+	$qry = $GLOBALS['DB']->prepare("SELECT `modcomments`.`added`,`modcomments`.`userid`,`modcomments`.`moduid`,`modcomments`.`txt`,`users`.`username` FROM `modcomments` LEFT JOIN `users` ON `users`.`id`=`modcomments`.`moduid` WHERE `userid`= :id ORDER BY `added` DESC");
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$qry->execute();
+	$data = $qry->FetchAll(PDO::FETCH_ASSOC);
+	foreach($data as $comment){
+		$comment["added"] = str_replace(" ", "&nbsp;", $comment["added"]);
+		echo "                <tr>\n".
+			"                    <td class=\"tablea\" valign=\"top\" width=\"130px\">".$comment["added"]."</td>\n".
+			"                    <td class=\"tableb\" valign=\"top\">";
+		if($comment["moduid"] == 0)
+			echo "System";
+		elseif ($comment["username"] == "")
+			echo "<i>Gelöscht</i>";
+		else
+			echo "<a href=\"userdetails.php?id=".$comment["moduid"]."\">".$comment["username"]."</a>";
+		echo "</td>\n".
+			"                    <td class=\"tablea\" valign=\"top\">".format_comment(stripslashes($comment["txt"]))."</td>\n".
+			"                </tr>\n";
+	}   
+	echo "</table>\n".
+		"            </div><br>Hinzufügen: <input type=\"text\" size=\"50\" name=\"modcomment\"></td>\n".
+		"    </tr>\n";
+
     $warned = $user["warned"] == "yes";
-    print("<tr><td class=tableb" . (!$warned ? " rowspan=2": "") . ">Verwarnt</td>
- 	<td class=tablea align=left width=20%>" . ($warned ? "<input name=warned value='yes' type=radio checked>Ja<input name=warned value='no' type=radio>Nein" : "Nein") . "</td>");
+    echo "    <tr>\n".
+		"        <td class=\"tableb\"" . ((!$warned) ? " rowspan=\"2\"" : "") . ">Verwarnt</td>\n".
+		"        <td class=\"tablea\" align=\"left\" width=\"20%\">" . (($warned) ? "<input name=\"warned\" value=\"yes\" type=\"radio\" checked=\"checked\">Ja <input name=\"warned\" value=\"no\" type=\"radio\">Nein" : "Nein") . "</td>\n";
 
-    if ($warned) {
-        $warneduntil = $user['warneduntil'];
-        if ($warneduntil == '0000-00-00 00:00:00')
-            print("<td class=tablea align=center>(willkürliche Dauer)</td></tr>\n");
-        else {
-            print("<td class=tablea align=center>Bis $warneduntil");
-            print(" (noch " . mkprettytime(strtotime($warneduntil) - time()) . ")</td></tr>\n");
-        } 
-    } else {
-        print("<td class=tablea>Verwarnen für <select name=warnlength>\n");
-        print("<option value=0>------</option>\n");
-        print("<option value=1>1 Woche</option>\n");
-        print("<option value=2>2 Wochen</option>\n");
-        print("<option value=4>4 Wochen</option>\n");
-        print("<option value=8>8 Wochen</option>\n");
-        print("<option value=255>Unbefristet</option>\n");
-        print("</select></td></tr>\n");
-        print("<tr><td class=tablea colspan=2 align=left>PM Kommentar (BBCode erlaubt):<br><textarea cols=\"60\" rows=\"4\" name=\"warnpm\"></textarea><br>");
-        print("<input id=\"addwarnratio\" type=\"checkbox\" name=\"addwarnratio\" value=\"yes\"><label for=\"addwarnratio\">&nbsp;Ratiostats zu Mod-Kommentar hinzufügen</label></td></tr>");
-    }
-    print("<tr><td class=tableb>Muss Regeln bestätigen</td><td class=tablea colspan=2 align=left><input name=acceptrules value='no' type=radio" . ($acceptrules ? " checked" : "") . ">Ja <input name=acceptrules value='yes' type=radio" . (!$acceptrules ? " checked" : "") . ">Nein</td></tr>\n");
-    print("<tr><td class=tableb>Torrent-Upload sperren</td><td class=tablea align=left colspan=2><input name=denyupload value='yes' type=radio" . (!$allowupload ? " checked" : "") . ">Ja <input name=denyupload value='no' type=radio" . ($allowupload ? " checked" : "") . ">Nein</td></tr>\n");
-    print("<tr><td class=tableb>Bad User <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "help.png\" style=\"vertical-align:middle;\" title=\"Bewirkt, dass dieser Benutzer nur ungültige Peer-IPs erhält\" alt=\"Bewirkt, dass dieser Benutzer nur ungültige Peer-IPs erhält\"></td><td class=tablea align=left><input name=baduser value='yes' type=radio" . ($baduser ? " checked" : "") . ">Ja <input name=baduser value='no' type=radio" . (!$baduser ? " checked" : "") . ">Nein</td><td class=tablea align=left><a href=\"startstoplog.php?op=acclist&amp;id=$id\">Liste ehem. Accounts anzeigen</a></td></tr>\n");
-    print("<tr><td class=tableb>Aktiviert</td><td class=tablea align=left><input name=enabled value='yes' type=radio" . ($enabled ? " checked" : "") . ">Ja <input name=enabled value='no' type=radio" . (!$enabled ? " checked" : "") . ">Nein</td><td class=tablea align=left>Grund: <input type=text name=disablereason size=40></td></tr>\n");
-
-    print("</td></tr>");
-    print("<tr><td class=tablea colspan=3 align=center><input type=submit class=btn value='Okay'></td></tr>\n");
-    print("</table>\n");
-    print("</form>\n");
+	if($warned){
+		$warneduntil = $user['warneduntil'];
+		if($warneduntil == '0000-00-00 00:00:00'){
+			echo "        <td class=\"tablea\" align=\"center\">(willkürliche Dauer)</td>\n".
+				"    </tr>\n";
+		}else{
+			echo "        <td class=\"tablea\" align=\"center\">Bis " . $warneduntil . " (noch " . mkprettytime(strtotime($warneduntil) - time()) . ")</td>\n".
+				"    </tr>\n";
+		}
+	}else{
+		echo "        <td class=\"tablea\">Verwarnen für \n".
+			"            <select name=\"warnlength\">\n".
+			"                <option value=\"0\">------</option>\n".
+			"                <option value=\"1\">1 Woche</option>\n".
+			"                <option value=\"2\">2 Wochen</option>\n".
+			"                <option value=\"4\">4 Wochen</option>\n".
+			"                <option value=\"8\">8 Wochen</option>\n".
+			"                <option value=\"255\">Unbefristet</option>\n".
+			"            </select>\n".
+			"        </td>\n".
+			"    </tr>\n".
+			"    <tr>\n".
+			"        <td class=\"tablea\" colspan=\"2\" align=\"left\">PM Kommentar (BBCode erlaubt):<br><textarea cols=\"60\" rows=\"4\" name=\"warnpm\"></textarea><br><input id=\"addwarnratio\" type=\"checkbox\" name=\"addwarnratio\" value=\"yes\"><label for=\"addwarnratio\">&nbsp;Ratiostats zu Mod-Kommentar hinzufügen</label></td>\n".
+			"    </tr>";
+	}
+    echo "    <tr>\n".
+		"        <td class=\"tableb\">Muss Regeln bestätigen</td>\n".
+		"        <td class=\"tablea\" colspan=\"2\" align=\"left\"><input name=\"acceptrules\" value=\"no\" type=\"radio\"" . (($acceptrules) ? " checked=\"checked\"" : "") . ">Ja <input name=\"acceptrules\" value=\"yes\" type=\"radio\"" . ((!$acceptrules) ? " checked=\"checked\"" : "") . ">Nein</td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td class=\"tableb\">Torrent-Upload sperren</td>\n".
+		"        <td class=\"tablea\" align=\"left\" colspan=\"2\"><input name=\"denyupload\" value=\"yes\" type=\"radio\"" . ((!$allowupload) ? " checked=\"checked\"" : "") . ">Ja <input name=\"denyupload\" value=\"no\" type=\"radio\"" . (($allowupload) ? " checked=\"checked\"" : "") . ">Nein</td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td class=\"tableb\">Bad User <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "help.png\" style=\"vertical-align:middle;\" title=\"Bewirkt, dass dieser Benutzer nur ungültige Peer-IPs erhält\" alt=\"Bewirkt, dass dieser Benutzer nur ungültige Peer-IPs erhält\"></td>\n".
+		"        <td class=\"tablea\" align=\"left\"><input name=\"baduser\" value=\"yes\" type=\"radio\"" . (($baduser) ? " checked=\"checked\"" : "") . ">Ja <input name=\"baduser\" value=\"no\" type=\"radio\"" . ((!$baduser) ? " checked=\"checked\"" : "") . ">Nein</td>\n".
+		"        <td class=\"tablea\" align=\"left\"><a href=\"startstoplog.php?op=acclist&amp;id=" . $id . "\">Liste ehem. Accounts anzeigen</a></td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td class=\"tableb\">Aktiviert</td>\n".
+		"        <td class=\"tablea\" align=\"left\"><input name=\"enabled\" value=\"yes\" type=\"radio\"" . (($enabled) ? " checked=\"checked\"" : "") . ">Ja <input name=\"enabled\" value=\"no\" type=\"radio\"" . ((!$enabled) ? " checked=\"checked\"" : "") . ">Nein</td>\n".
+		"        <td class=\"tablea\" align=\"left\">Grund: <input type=\"text\" name=\"disablereason\" size=\"40\"></td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td class=\"tablea\" colspan=\"3\" align=\"center\"><input type=\"submit\" class=\"btn\" value=\"Okay\"></td>\n".
+		"    </tr>\n".
+		"    </table>\n".
+		"    </form>\n";
     end_frame();
-} 
+}
 end_main_frame();
-echo "</center>";
+echo "</center>\n";
 stdfoot();
+
+function bark($msg){
+	stdhead();
+	stdmsg("Error", $msg);
+	stdfoot();
+	exit;
+} 
+
+function get_domain($ip){
+	$dom = @gethostbyaddr($ip);
+	if($dom == $ip || @gethostbyname($dom) != $ip)
+		return "<a href=\"whois.php?ip=" . $ip . "\" target=\"nvwhois\">" . $ip . "</a>";
+	else{
+		$dom = strtoupper($dom);
+		return "<a href=\"whois.php?ip=" . $ip . "\" target=\"nvwhois\">" . $ip . "</a> (" . $dom . ")";
+	}
+}
+
+function maketable($res){
+	$ret = "<table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" width=\"100%\">\n".
+		"    <tr>\n".
+		"        <td class=\"tablecat\" align=\"center\">Typ</td>\n".
+		"        <td class=\"tablecat\" width=\"100%\">Name</td>\n".
+		"        <td class=\"tablecat\" align=\"center\">TTL</td>\n".
+		"        <td class=\"tablecat\" align=\"center\">Größe</td>\n".
+		"        <td class=\"tablecat\" align=\"right\">Se.</td>\n".
+		"        <td class=\"tablecat\" align=\"right\">Le.</td>\n".
+		"        <td class=\"tablecat\" align=\"center\">Hochgel.</td>\n".
+		"        <td class=\"tablecat\" align=\"center\">Runtergel.</td>\n".
+		"        <td class=\"tablecat\" align=\"center\">Ratio</td>\n".
+		"    </tr>\n";
+	while($arr = mysql_fetch_assoc($res)){
+		if ($arr["downloaded"] > 0){
+			$ratio = number_format($arr["uploaded"] / $arr["downloaded"], 3);
+			$ratio = "<font color=" . get_ratio_color($ratio) . ">$ratio</font>";
+		}else{
+			if($arr["uploaded"] > 0)
+				$ratio = "Inf.";
+			else
+				$ratio = "---";
+		}
+		$catimage = htmlspecialchars($arr["image"]);
+		$catname = htmlspecialchars($arr["catname"]);
+		$ttl = (28 * 24) - floor((time() - sql_timestamp_to_unix_timestamp($arr["added"])) / 3600);
+		if($ttl == 1)
+			$ttl .= "<br>hour";
+		else
+			$ttl .= "<br>hours";
+		$size = str_replace(" ", "<br>", mksize($arr["size"]));
+		$uploaded = str_replace(" ", "<br>", mksize($arr["uploaded"]));
+		$downloaded = str_replace(" ", "<br>", mksize($arr["downloaded"]));
+		$seeders = number_format($arr["seeders"]);
+		$leechers = number_format($arr["leechers"]);
+		$ret .= "    <tr>\n".
+			"        <td class=\"tableb\" style=\"padding: 0px\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $catimage . "\" alt=\"" . $catname . "\" title=\"" . $catname . "\" width=\"42\" height=\"42\"></td>\n". 
+			"        <td class=\"tablea\"><a href=\"details.php?id=" . $arr["torrent"] . "&amp;hit=1\"><b>" . htmlspecialchars($arr["torrentname"]) . "</b></a></td>\n".
+			"        <td class=\"tableb\" align=\"center\">" . $ttl . "</td>\n".
+			"        <td class=\"tablea\" align=\"center\">" . $size . "</td>\n".
+			"        <td class=\"tableb\" align=\"right\">" . $seeders . "</td>\n".
+			"        <td class=\"tablea\" align=\"right\">" . $leechers . "</td>\n".
+			"        <td class=\"tableb\" align=\"center\">" . $uploaded . "</td>\n".
+			"        <td class=\"tablea\" align=\"center\">" . $downloaded . "</td>\n".
+			"        <td class=\"tableb\" align=\"center\">" . $ratio . "</td>\n".
+			"    </tr>\n";
+	}
+	$ret .= "</table>\n";
+	return $ret;
+}
+
+function makecomptable($res){
+	$ret = "<table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" width=\"100%\">\n".
+		"    <tr>\n".
+		"        <td class=\"tablecat\" style=\"text-align:center\">Typ</td>\n".
+		"        <td class=\"tablecat\" width=\"100%\">Name</td>\n".
+		"        <td class=\"tablecat\" style=\"text-align:center\">Fertiggestellt</td>\n".
+		"        <td class=\"tablecat\">Se.</td>\n".
+		"        <td class=\"tablecat\">Le.</td>\n".
+		"        <td class=\"tablecat\">Hochgel.</td>\n".
+		"        <td class=\"tablecat\">Runtergel.</td>\n".
+		"    </tr>\n";
+	while($arr = mysql_fetch_assoc($res)){
+		$catimage = htmlspecialchars($arr["image"]);
+		$catname = htmlspecialchars($arr["catname"]);
+		$ret .= "    <tr>\n".
+			"        <td class=\"tableb\" style=\"padding: 0px\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $catimage . "\" alt=\"" . $catname . "\" title=\"" . $catname . "\" width=\"42\" height=\"42\"></td>\n".
+			"        <td class=\"tablea\">";
+		if($arr["torrent_origid"] > 0){
+			$seeders = number_format($arr["seeders"]);
+			$leechers = number_format($arr["leechers"]);
+			$ret .= "<a href=\"details.php?id=" . $arr["torrent"] . "&amp;hit=1\"><b>" . htmlspecialchars($arr["torrent_name"]) . "</b></a></td>\n".
+				"        <td class=\"tableb\" style=\"text-align:center\">" . str_replace(" ", "<br />", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($arr["complete_time"]))) . "</td>\n".
+				"        <td class=\"tablea\" style=\"text-align:right\">" . $seeders . "</td>\n".
+				"        <td class=\"tableb\" style=\"text-align:right\">" . $leechers . "</td>\n".
+				"        <td class=\"tablea\" style=\"text-align:right\" nowrap=\"nowrap\">" . mksize($arr["uploaded"]) . "<br>@ " . mksize($arr["uploaded"] / max(1, $arr["uploadtime"])) . "/s</td>\n".
+				"        <td class=\"tablea\" style=\"text-align:right\" nowrap=\"nowrap\">" . mksize($arr["downloaded"]) . "<br>@ " . mksize($arr["downloaded"] / max(1, $arr["downloadtime"])) . "/s</td>\n".
+				"    </tr>\n";
+		}else{
+			$ret .= "<b>" . htmlspecialchars($arr["torrent_name"]) . "</b></td>\n".
+				"        <td class=\"tableb\" style=\"text-align:center\">" . str_replace(" ", "<br />", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($arr["complete_time"]))) . "</td>\n".
+				"        <td class=\"tablea\" style=\"text-align:center\" colspan=\"4\">Gelöscht</td>\n".
+				"    </tr>\n";
+		}
+	}
+	$ret .= "</table>\n";
+	return $ret;
+}
 
 ?>
