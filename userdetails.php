@@ -28,11 +28,9 @@
 
 require "include/bittorrent.php";
 
-dbconn(false);
-
+userlogin();
 loggedinorreturn();
 
-// --------------------->
 if(isset($_GET["id"]))
 	$id = intval($_GET["id"]);
 else
@@ -76,7 +74,8 @@ if($qry->rowCount() > 0){
 			"    </tr>\n";
 	}
 	$torrents .= "</table>";
-}
+}else
+	$torrents = "";
 
 if($GLOBALS["CLIENT_AUTH"] == CLIENT_AUTH_PASSKEY)
 	$announceurl = preg_replace("/\\{KEY\\}/", preg_replace_callback('/./s', "hex_esc", str_pad($user["passkey"], 8)), $GLOBALS["PASSKEY_ANNOUNCE_URL"]);
@@ -133,7 +132,7 @@ if($qry->rowCount() == 1){
 	$country = "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "flag/" . $arr["flagpic"] . "\" alt=\"" . $arr["name"] . "\" style=\"margin-left: 8pt;vertical-align: middle;\">";
 }else
 	$country = "";
-// <---------------------
+
 $leeching = "";
 $qry = $GLOBALS['DB']->prepare("SELECT torrent,added,traffic.uploaded,traffic.downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers JOIN traffic ON peers.userid = traffic.userid AND peers.torrent = traffic.torrentid JOIN torrents ON peers.torrent = torrents.id JOIN categories ON torrents.category = categories.id WHERE peers.userid= :id AND seeder='no'");
 $qry->bindParam(':id', $id, PDO::PARAM_INT);
@@ -142,10 +141,7 @@ if($qry->rowCount() > 0){
 	$arr = $qry->FetchAll(PDO::FETCH_ASSOC);
 	$leeching = maketable($arr);
 }
-/*$res = mysql_query("SELECT torrent,added,traffic.uploaded,traffic.downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers JOIN traffic ON peers.userid = traffic.userid AND peers.torrent = traffic.torrentid JOIN torrents ON peers.torrent = torrents.id JOIN categories ON torrents.category = categories.id WHERE peers.userid=$id AND seeder='no'") or sqlerr();
-$leeching = "";
-if (mysql_num_rows($res) > 0)
-    $leeching = maketable($res);*/
+
 $seeding = "";
 $qry = $GLOBALS['DB']->prepare("SELECT torrent,added,traffic.uploaded,traffic.downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers JOIN traffic ON peers.userid = traffic.userid AND peers.torrent = traffic.torrentid JOIN torrents ON peers.torrent = torrents.id JOIN categories ON torrents.category = categories.id WHERE peers.userid= :id AND seeder='yes'");
 $qry->bindParam(':id', $id, PDO::PARAM_INT);
@@ -154,10 +150,6 @@ if($qry->rowCount() > 0){
 	$arr = $qry->FetchAll(PDO::FETCH_ASSOC);
 	$seeding = maketable($arr);
 }
-/*$res = mysql_query("SELECT torrent,added,traffic.uploaded,traffic.downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers JOIN traffic ON peers.userid = traffic.userid AND peers.torrent = traffic.torrentid JOIN torrents ON peers.torrent = torrents.id JOIN categories ON torrents.category = categories.id WHERE peers.userid=$id AND seeder='yes'") or sqlerr();
-$seeding = "";
-if (mysql_num_rows($res) > 0)
-    $seeding = maketable($res);*/
 
 $completed = "";
 if(get_user_class() >= UC_MODERATOR || (isset($CURUSER) && $CURUSER["id"] == $user["id"])){
@@ -175,155 +167,249 @@ if(get_user_class() >= UC_MODERATOR || (isset($CURUSER) && $CURUSER["id"] == $us
 	}
 }
 
-stdhead("Benutzerprofil von " . $user["username"]);
+$qry = $GLOBALS['DB']->prepare("SELECT `baduser` FROM `accounts` WHERE `userid`= :id");
+$qry->bindParam(':id', $id, PDO::PARAM_INT);
+$qry->execute();
+$acctdata = $qry->Fetch(PDO::FETCH_ASSOC);
+$baduser = $acctdata["baduser"];
+
 $enabled = $user["enabled"] == 'yes';
 $acceptrules = $user["accept_rules"] == 'no';
 $allowupload = $user["allowupload"] == 'yes';
 
-$acctdata = mysql_fetch_assoc(mysql_query("SELECT `baduser` FROM `accounts` WHERE `userid`=$id"));
-$baduser = $acctdata["baduser"];
-
+stdhead("Benutzerprofil von " . $user["username"]);
 begin_frame("<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "personal.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\">  Benutzerprofil von " . $user["username"] . get_user_icons($user, true) . "&nbsp;" . $country, false, "750px");
 begin_table(true);
+if(!$enabled){
+	echo "    <tr>\n".
+		"        <td colspan=\"2\" class=\"tablea\"><b>Dieser Account wurde gesperrt</b></td>\n".
+		"    </tr>\n";
+}
 
-if (!$enabled)
-    print("<tr><td colspan=\"2\" class=\"tablea\"><b>Dieser Account wurde gesperrt</b></td></tr>\n");
-elseif ($CURUSER["id"] <> $user["id"]) {
-    $r = mysql_query("SELECT id FROM friends WHERE userid=$CURUSER[id] AND friendid=$id") or sqlerr(__FILE__, __LINE__);
-    $friend = mysql_num_rows($r);
-    $r = mysql_query("SELECT id FROM blocks WHERE userid=$CURUSER[id] AND blockid=$id") or sqlerr(__FILE__, __LINE__);
-    $block = mysql_num_rows($r);
+if($CURUSER["id"] != $user["id"] && $enabled){
+	$friend = $database->row_count("friends", "userid= " . $CURUSER["id"] . " AND friendid= " . $id . "");
+	if($friend == 0)
+		$block = $database->row_count("blocks", "userid= " . $CURUSER["id"] . " AND blockid= " . $id . "");
 
-    if ($friend)
-        print("<tr><td colspan=\"2\" class=\"tablea\" align=\"center\"><a href=friends.php?action=delete&type=friend&targetid=$id>Von Freundesliste entfernen</a></td></tr>\n");
-    elseif ($block)
-        print("<tr><td colspan=\"2\" class=\"tablea\" align=\"center\"><a href=friends.php?action=delete&type=block&targetid=$id>Von Blockliste entfernen</a></td></tr>\n");
-    else {
-        print("<tr><td class=\"tablea\" align=\"center\"><a href=friends.php?action=add&type=friend&targetid=$id>Zu Freunden hinzufügen</a></td>");
-        print("<td class=\"tablea\" align=\"center\"><a href=friends.php?action=add&type=block&targetid=$id>Zu Blockliste hinzufügen</a></td></tr>\n");
-    } 
-} 
-
+	if($friend > 0){
+		echo "    <tr>\n".
+			"        <td colspan=\"2\" class=\"tablea\" align=\"center\"><a href=\"friends.php?action=delete&type=friend&targetid=" . $id . "\">Von Freundesliste entfernen</a></td>\n".
+			"    </tr>\n";
+	}elseif($block > 0){
+		echo "    <tr>\n".
+			"        <td colspan=\"2\" class=\"tablea\" align=\"center\"><a href=\"friends.php?action=delete&type=block&targetid=" . $id . "\">Von Blockliste entfernen</a></td>\n".
+			"    </tr>\n";
+	}else{
+		echo "    <tr>\n".
+			"        <td class=\"tablea\" align=\"center\"><a href=\"friends.php?action=add&type=friend&targetid=" . $id . "\">Zu Freunden hinzufügen</a></td>\n".
+			"        <td class=\"tablea\" align=\"center\"><a href=\"friends.php?action=add&type=block&targetid=" . $id . "\">Zu Blockliste hinzufügen</a></td>\n".
+			"    </tr>\n";
+	}
+}
 end_table();
 
-?>
-<table cellspacing="1" cellpadding="5" border="0" class="tableinborder" style="width: 100%">
-<tr><td class="tableb" width=1%>Registriert</td><td class=tablea align=left width=99%><?=$joindate?></td></tr>
-<tr><td class="tableb">Zuletzt&nbsp;aktiv</td><td class=tablea align=left><?=$lastseen?></td></tr>
-<?php
-if (get_user_class() >= UC_MODERATOR)
-    print("<tr><td class=tableb>E-Mail</td><td class=tablea align=left><a href=mailto:$user[email]>$user[email]</a></td></tr>\n");
-if ($addr)
-    print("<tr><td class=tableb>Adresse</td><td class=tablea align=left>$addr</td></tr>\n");
-if ($peer_addr)
-    print("<tr><td class=tableb>Peer-Adressen</td><td class=tablea align=left>$peer_addr</td></tr>\n");
-if ($CURUSER["id"] == $user["id"] || get_user_class() == UC_SYSOP)
-    print("<tr><td class=tableb>Announce-URL</td><td class=tablea align=left>$announceurl</td></tr>\n");
-// if ($user["id"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR)
-// {
-?>
-<tr><td class=tableb>Hochgeladen</td><td class=tablea align=left><?=mksize($user["uploaded"])?> <?=$upped_per_day?></td></tr>
-<tr><td class=tableb>Runtergeladen</td><td class=tablea align=left><?=mksize($user["downloaded"])?> <?=$down_per_day?></td></tr>
-<?php
-if ($user["downloaded"] > 0) {
-    $sr = $user["uploaded"] / $user["downloaded"];
-    if ($sr >= 10)
-        $s = "pirate2";
-    else if ($sr >= 7.5)
-        $s = "bow";
-    else if ($sr >= 5)
-        $s = "yikes";
-    else if ($sr >= 3.5)
-        $s = "w00t";
-    else if ($sr >= 2)
-        $s = "grin";
-    else if ($sr >= 1)
-        $s = "smile1";
-    else if ($sr >= 0.9)
-        $s = "innocent";
-    else if ($sr >= 0.5)
-        $s = "noexpression";
-    else if ($sr >= 0.25)
-        $s = "sad";
-    else if ($sr >= 0.1)
-        $s = "cry";
-    else
-        $s = "shit";
-    $sr = floor($sr * 1000) / 1000;
-    $sr = "<table border=0 cellspacing=0 cellpadding=0><tr><td class=embedded><font color=" . get_ratio_color($sr) . ">" . number_format($sr, 3) . "</font></td><td class=embedded>&nbsp;&nbsp;<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "smilies/$s.gif\"></td></tr></table>";
-    print("<tr><td class=tableb style='vertical-align: middle'>Ratio</td><td class=tablea align=left valign=center style='padding-top: 1px; padding-bottom: 0px'>$sr</td></tr>\n");
+echo "<table cellspacing=\"1\" cellpadding=\"5\" border=\"0\" class=\"tableinborder\" style=\"width: 100%\">\n".
+	"    <tr>\n".
+	"        <td class=\"tableb\" width=\"1%\">Registriert</td>\n".
+	"        <td class=\"tablea\" align=\"left\" width=\"99%\">" . $joindate . "</td>\n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td class=\"tableb\">Zuletzt aktiv</td>\n".
+	"        <td class=\"tablea\" align=\"left\">" . $lastseen . "</td>\n".
+	"    </tr>\n";
+if(get_user_class() >= UC_MODERATOR){
+	echo "    <tr>\n".
+		"        <td class=\"tableb\">E-Mail</td>\n".
+		"        <td class=\"tablea\" align=\"left\"><a href=\"mailto:" . $user["email"] . "\">" . $user["email"] . "</a></td>\n".
+		"    </tr>\n";
+}
 
-    if (file_exists($GLOBALS["BITBUCKET_DIR"] . "/rstat-" . $user["id"] . ".png"))
-        print("<tr><td class=tableb style='vertical-align: middle'>Ratio-Histogramm</td><td class=tablea align=left valign=center style='padding-top: 1px; padding-bottom: 0px'><img src=\"" . $GLOBALS["BITBUCKET_DIR"] . "/rstat-" . $user["id"] . ".png\"></td></tr>\n");
-} 
-// }
-// if ($user['donated'] > 0 && (get_user_class() >= UC_MODERATOR || $CURUSER["id"] == $user["id"]))
-// print("<tr><td class=tableb>Donated</td><td align=left>$$user[donated]</td></tr>\n");
-if ($user["avatar"])
-    print("<tr><td class=tableb>Avatar</td><td class=tablea align=left><img src=\"" . htmlspecialchars($user["avatar"]) . "\"></td></tr>\n");
-print("<tr><td class=tableb>Rang</td><td class=tablea align=left>" . get_user_class_name($user["class"]) . "</td></tr>\n");
-print("<tr><td class=tableb>Kommentare</td>");
-if ($torrentcomments && (($user["class"] >= UC_POWER_USER && $user["id"] == $CURUSER["id"]) || get_user_class() >= UC_MODERATOR))
-    print("<td class=tablea align=left><a href=userhistory.php?action=viewcomments&id=$id>$torrentcomments</a></td></tr>\n");
+if($addr != ""){
+	echo "    <tr>\n".
+		"        <td class=\"tableb\">Adresse</td>\n".
+		"        <td class=\"tablea\" align=\"left\">" . $addr . "</td>\n".
+		"    </tr>\n";
+}
+
+if ($peer_addr){
+	echo "    <tr>\n".
+		"        <td class=\"tableb\">Peer-Adressen</td>\n".
+		"        <td class=\"tablea\" align=\"left\">" . $peer_addr . "</td>\n".
+		"    </tr>\n";
+}
+
+if ($CURUSER["id"] == $user["id"] || get_user_class() == UC_SYSOP){
+	echo "    <tr>\n".
+		"        <td class=\"tableb\">Announce-URL</td>\n".
+		"        <td class=\"tablea\" align=\"left\">" . $announceurl . "</td>\n".
+		"    </tr>\n";
+}
+
+echo "    <tr>\n".
+	"        <td class=\"tableb\">Hochgeladen</td>\n".
+	"        <td class=\"tablea\" align=\"left\">" . mksize($user["uploaded"]) . " " . $upped_per_day . "</td>\n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td class=\"tableb\">Runtergeladen</td>\n".
+	"        <td class=\"tablea\" align=\"left\">" . mksize($user["downloaded"]) . " " . $down_per_day . "</td>\n".
+	"    </tr>\n";
+
+if($user["downloaded"] > 0){
+	$sr = $user["uploaded"] / $user["downloaded"];
+	if($sr >= 10)
+		$s = "pirate2";
+	elseif($sr >= 7.5)
+		$s = "bow";
+	elseif($sr >= 5)
+		$s = "yikes";
+	elseif($sr >= 3.5)
+		$s = "w00t";
+	elseif($sr >= 2)
+		$s = "grin";
+	elseif($sr >= 1)
+		$s = "smile1";
+	elseif($sr >= 0.9)
+		$s = "innocent";
+	elseif($sr >= 0.5)
+		$s = "noexpression";
+	elseif($sr >= 0.25)
+		$s = "sad";
+	elseif($sr >= 0.1)
+		$s = "cry";
+	else
+		$s = "shit";
+	$sr = floor($sr * 1000) / 1000;
+	$sr = "<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">"."<tr>"."<td class=\"embedded\"><font color=\"" . get_ratio_color($sr) . "\">" . number_format($sr, 3) . "</font></td>"."<td class=\"embedded\">&nbsp;&nbsp;<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "smilies/" . $s . ".gif\"></td>"."</tr>"."</table>";
+	echo "    <tr>\n".
+		"        <td class=\"tableb\" style=\"vertical-align: middle\">Ratio</td>\n".
+		"        <td class=\"tablea\" align=\"left\" valign=\"center\" style=\"padding-top: 1px; padding-bottom: 0px\">" . $sr . "</td>\n".
+		"    </tr>\n";
+
+	if(file_exists($GLOBALS["BITBUCKET_DIR"] . "/rstat-" . $user["id"] . ".png")){
+		echo "    <tr>\n".
+			"        <td class=\"tableb\" style=\"vertical-align: middle\">Ratio-Histogramm</td>\n".
+			"        <td class=\"tablea\" align=\"left\" valign=\"center\" style=\"padding-top: 1px; padding-bottom: 0px\"><img src=\"" . $GLOBALS["BITBUCKET_DIR"] . "/rstat-" . $user["id"] . ".png\"></td>\n".
+			"    </tr>\n";
+	}
+}
+
+if($user["avatar"]){
+	echo "    <tr>\n".
+		"        <td class=\"tableb\">Avatar</td>\n".
+		"        <td class=\"tablea\" align=\"left\"><img src=\"" . htmlspecialchars($user["avatar"]) . "\"></td>\n".
+		"    </tr>\n";
+}
+echo "    <tr>\n".
+	"        <td class=\"tableb\">Rang</td>\n".
+	"        <td class=\"tablea\" align=\"left\">" . get_user_class_name($user["class"]) . "</td>\n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td class=\"tableb\">Kommentare</td>";
+if($torrentcomments && (($user["class"] >= UC_POWER_USER && $user["id"] == $CURUSER["id"]) || get_user_class() >= UC_MODERATOR)){
+	echo "        <td class=\"tablea\" align=\"left\"><a href=\"userhistory.php?action=viewcomments&id=" . $id . "\">" . $torrentcomments . "</a></td>\n".
+		"    </tr>\n";
+}else{
+	echo "        <td class=\"tablea\" align=\"left\">" . $torrentcomments . "</td>\n".
+		"    </tr>\n";
+}
+echo "    <tr>\n".
+	"        <td class=\"tableb\">Forumbeiträge</td>\n";
+if($forumposts && (($user["class"] >= UC_POWER_USER && $user["id"] == $CURUSER["id"]) || get_user_class() >= UC_MODERATOR))
+	echo "        <td class=\"tablea\" align=\"left\"><a href=\"userhistory.php?action=viewposts&id=" . $id . "\">" . $forumposts . "</a></td>\n".
+		"    </tr>\n";
 else
-    print("<td class=tablea align=left>$torrentcomments</td></tr>\n");
-print("<tr><td class=tableb>Forumbeiträge</td>");
-if ($forumposts && (($user["class"] >= UC_POWER_USER && $user["id"] == $CURUSER["id"]) || get_user_class() >= UC_MODERATOR))
-    print("<td class=tablea align=left><a href=userhistory.php?action=viewposts&id=$id>$forumposts</a></td></tr>\n");
-else
-    print("<td class=tablea align=left>$forumposts</td></tr>\n");
+	echo "        <td class=\"tablea\" align=\"left\">" . $forumposts . "</td>\n".
+		"    </tr>\n";
 
-if ($torrents)
-    print("<tr valign=top><td class=tableb>Hochgeladen</td><td class=tablea align=left>$torrents</td></tr>\n");
-if ($seeding)
-    print("<tr valign=top><td class=tableb>Seedet&nbsp;momentan</td><td class=tablea align=left>$seeding</td></tr>\n");
-if ($leeching)
-    print("<tr valign=top><td class=tableb>Leecht&nbsp;momentan</td><td class=tablea align=left>$leeching</td></tr>\n");
-if ($completed) {
-    print("<tr valign=top><td class=tableb><a name=\"completed\"></a>");
-    if (!$_GET["allcompleted"])
-        print("Letzte 3 fertige Torrents<br><a class=\"sublink\" href=\"userdetails.php?id=$id&amp;allcompleted=1#completed\">[Alle anzeigen]</a></td><td class=tablea align=left>$completed</td></tr>\n");
-    else
-        print("Alle fertigen Torrents<br><a class=\"sublink\" href=\"userdetails.php?id=$id#completed\">[Liste verbergen]</a></td><td class=tablea align=left>$completed</td></tr>\n");
+if($torrents){
+	echo "    <tr valign=\"top\">\n".
+		"        <td class=\"tableb\">Hochgeladen</td>\n".
+		"        <td class=\"tablea\" align=\"left\">" . $torrents . "\n</td>\n".
+		"    </tr>\n";
+}
+
+if($seeding){
+	echo "    <tr valign=\"top\">\n".
+		"        <td class=\"tableb\">Seedet&nbsp;momentan</td>\n".
+		"        <td class=\"tablea\" align=\"left\">" . $seeding . "\n</td>\n".
+		"    </tr>\n";
+}
+
+if($leeching){
+	echo "    <tr valign=\"top\">\n".
+		"        <td class=\"tableb\">Leecht&nbsp;momentan</td>\n".
+		"        <td class=\"tablea\" align=\"left\">" . $leeching . "\n</td>\n".
+		"    </tr>\n";
+}
+
+if($completed){
+	echo "    <tr valign=\"top\">\n".
+		"        <td class=\"tableb\"><a name=\"completed\"></a>";
+	if(!$_GET["allcompleted"]){
+		echo "Letzte 3 fertige Torrents<br><a class=\"sublink\" href=\"userdetails.php?id=" . $id . "&amp;allcompleted=1#completed\">[Alle anzeigen]</a></td>\n".
+			"        <td class=\"tablea\" align=\"left\">" . $completed . "\n</td>\n".
+			"    </tr>\n";
+	}else{
+		echo "Alle fertigen Torrents<br><a class=\"sublink\" href=\"userdetails.php?id=" . $id . "#completed\">[Liste verbergen]</a></td>\n".
+			"        <td class=\"tablea\" align=\"left\">" . $completed . "\n</td>\n".
+			"    </tr>\n";
+	}
+}
+
+if($user["info"]){
+	echo "    <tr valign=\"top\">\n".
+		"        <td class=\"inposttable\" align=\"left\" colspan=\"2\" class=\"text\" bgcolor=\"#F4F4F0\">" . format_comment($user["info"]) . "</td>\n".
+		"    </tr>\n";
+}
+
+if($CURUSER["id"] != $user["id"]){
+	if(get_user_class() >= UC_GUTEAM){
+		$showpmbutton = true;
+		$showemailbutton = true;
+	}else{
+		if($user["acceptpms"] == "yes"){
+			$b = $database->row_count("blocks", "userid= " . $user["id"] . " AND blockid= " . $CURUSER["id"] . "");
+			$showpmbutton = (($b == 1) ? false : true);
+		}elseif($user["acceptpms"] == "friends"){
+			$f = $database->row_count("friends", "userid= " . $user["id"] . " AND friendid= " . $CURUSER["id"] . "");
+			$showpmbutton = (($f == 1) ? true : false);
+		}
+
+		if($user["accept_email"] == "yes"){
+			$b = $database->row_count("blocks", "userid= " . $user["id"] . " AND blockid= " . $CURUSER["id"] . "");
+			$showemailbutton = (($b == 1) ? false : true);
+		}elseif($user["accept_email"] == "friends"){
+			$f = $database->row_count("friends", "userid= " . $user["id"] . " AND friendid= " . $CURUSER["id"] . "");
+			$showemailbutton = (($f == 1) ? true : false);
+		}
+	}
+}else{
+	$showpmbutton = false;
+	$showemailbutton = false;
+}
+
+if($showpmbutton || $showemailbutton){
+	echo "    <tr>\n".
+		"        <td class=\"tablea\" colspan=\"2\" style=\"text-align:center\">";
+	if($showpmbutton){
+		echo "<form method=\"get\" action=\"messages.php\" style=\"display:inline\">".
+			"<input type=\"hidden\" name=\"action\" value=\"send\">".
+			"<input type=\"hidden\" name=\"receiver\" value=\"" . $user["id"] . "\">".
+			"<input type=\"submit\" value=\"Nachricht senden\" style=\"height: 23px\">".
+			"</form>&nbsp;&nbsp;";
+	}
+	if($showemailbutton){
+		echo "<form method=\"get\" action=\"email-gateway.php\" style=\"display:inline\">".
+			"<input type=\"hidden\" name=\"id\" value=\"" . $user["id"] . "\">".
+			"<input type=\"submit\" value=\"E-Mail senden\" style=\"height: 23px\">".
+			"</form>";
+	}
+	echo "        </td>\n".
+		"    </tr>\n";
 } 
-if ($user["info"])
-    print("<tr valign=top><td class=inposttable align=left colspan=2 class=text bgcolor=#F4F4F0>" . format_comment($user["info"]) . "</td></tr>\n");
 
-if ($CURUSER["id"] != $user["id"]) {
-    if (get_user_class() >= UC_GUTEAM) {
-        $showpmbutton = true;
-        $showemailbutton = true;
-    } else {
-        if ($user["acceptpms"] == "yes") {
-            $r = mysql_query("SELECT id FROM blocks WHERE userid=$user[id] AND blockid=$CURUSER[id]") or sqlerr(__FILE__, __LINE__);
-            $showpmbutton = (mysql_num_rows($r) == 1 ? false : true);
-        } elseif ($user["acceptpms"] == "friends") {
-            $r = mysql_query("SELECT id FROM friends WHERE userid=$user[id] AND friendid=$CURUSER[id]") or sqlerr(__FILE__, __LINE__);
-            $showpmbutton = (mysql_num_rows($r) == 1 ? true : false);
-        } 
-
-        if ($user["accept_email"] == "yes") {
-            $r = mysql_query("SELECT id FROM blocks WHERE userid=$user[id] AND blockid=$CURUSER[id]") or sqlerr(__FILE__, __LINE__);
-            $showemailbutton = (mysql_num_rows($r) == 1 ? false : true);
-        } elseif ($user["accept_email"] == "friends") {
-            $r = mysql_query("SELECT id FROM friends WHERE userid=$user[id] AND friendid=$CURUSER[id]") or sqlerr(__FILE__, __LINE__);
-            $showemailbutton = (mysql_num_rows($r) == 1 ? true : false);
-        } 
-    } 
-} 
-if ($showpmbutton || $showemailbutton) {
-    print("<tr><td class=\"tablea\" colspan=\"2\" style=\"text-align:center\">");
-
-    if ($showpmbutton)
-        print('<form method="get" action="messages.php" style="display:inline"><input type="hidden" name="action" value="send"><input type="hidden" name="receiver" value="' . $user["id"] . '"><input type="submit" value="Nachricht senden" style="height: 23px"></form>&nbsp;&nbsp;');
-
-    if ($showemailbutton)
-        print('<form method="get" action="email-gateway.php" style="display:inline"><input type="hidden" name="id" value="' . $user["id"] . '"><input type="submit" value="E-Mail senden" style="height: 23px"></form>');
-
-    print ("</td></tr>");
-} 
-
-print("</table></td></tr></table><br>\n");
+echo "</table>\n".
+	"</td></tr></table><br>\n";
 
 if((get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()) || get_user_class() == UC_SYSOP){
 	echo "<script type=\"text/javascript\">\n".
@@ -541,9 +627,8 @@ function get_domain($ip){
 	}
 }
 
-//function maketable($res){
 function maketable($data){
-	$ret = "<table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" width=\"100%\">\n".
+	$ret = "\n<table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" width=\"100%\">\n".
 		"    <tr>\n".
 		"        <td class=\"tablecat\" align=\"center\">Typ</td>\n".
 		"        <td class=\"tablecat\" width=\"100%\">Name</td>\n".
@@ -555,7 +640,6 @@ function maketable($data){
 		"        <td class=\"tablecat\" align=\"center\">Runtergel.</td>\n".
 		"        <td class=\"tablecat\" align=\"center\">Ratio</td>\n".
 		"    </tr>\n";
-	//while($arr = mysql_fetch_assoc($res)){
 	foreach($data as $arr){
 		if ($arr["downloaded"] > 0){
 			$ratio = number_format($arr["uploaded"] / $arr["downloaded"], 3);
@@ -594,9 +678,8 @@ function maketable($data){
 	return $ret;
 }
 
-//function makecomptable($res){
 function makecomptable($data){
-	$ret = "<table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" width=\"100%\">\n".
+	$ret = "\n<table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" width=\"100%\">\n".
 		"    <tr>\n".
 		"        <td class=\"tablecat\" style=\"text-align:center\">Typ</td>\n".
 		"        <td class=\"tablecat\" width=\"100%\">Name</td>\n".
@@ -606,7 +689,6 @@ function makecomptable($data){
 		"        <td class=\"tablecat\">Hochgel.</td>\n".
 		"        <td class=\"tablecat\">Runtergel.</td>\n".
 		"    </tr>\n";
-	//while($arr = mysql_fetch_assoc($res)){
 	foreach($data as $arr){
 		$catimage = htmlspecialchars($arr["image"]);
 		$catname = htmlspecialchars($arr["catname"]);
@@ -633,5 +715,4 @@ function makecomptable($data){
 	$ret .= "</table>\n";
 	return $ret;
 }
-
 ?>
