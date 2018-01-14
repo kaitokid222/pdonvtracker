@@ -33,105 +33,147 @@ dbconn(false);
 loggedinorreturn();
 
 // --------------------->
-
-
-
-// <---------------------
-
-$id = intval($_GET["id"]);
-
-if (!is_valid_id($id))
-    bark("Bad ID $id.");
-
-$r = @mysql_query("SELECT * FROM users WHERE id=$id") or sqlerr();
-$user = mysql_fetch_array($r) or bark("No user with ID $id.");
-if ($user["status"] == "pending") die;
-$r = mysql_query("SELECT id, name, added, seeders, leechers, category FROM torrents WHERE `activated`='yes' AND owner=$id ORDER BY added DESC") or sqlerr();
-if (mysql_num_rows($r) > 0) {
-    $torrents = "<table class=tableinborder border=0 cellspacing=1 cellpadding=4 width=\"100%\">\n" . "<tr><td class=tablecat>Typ</td><td class=tablecat width=\"100%\">Name</td><td class=tablecat>Hochgeladen</td><td class=tablecat>Seeder</td><td class=tablecat>Leecher</td></tr>\n";
-    while ($a = mysql_fetch_assoc($r)) {
-        $r2 = mysql_query("SELECT name, image FROM categories WHERE id=$a[category]") or sqlerr(__FILE__, __LINE__);
-        $a2 = mysql_fetch_assoc($r2);
-        $cat = "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $a2["image"] . "\" alt=\"$a2[name]\" title=\"$a2[name]\">";
-        $torrents .= "<tr><td class=tableb style='padding: 0px'>$cat</td><td class=tablea><a href=details.php?id=" . $a["id"] . "&hit=1><b>" . htmlspecialchars($a["name"]) . "</b></a></td>" . "<td class=tableb align=center>" . str_replace(" ", "<br />", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($a["added"]))) . "</td>" . "<td class=tablea align=right>$a[seeders]</td><td class=tableb align=right>$a[leechers]</td></tr>\n";
-    } 
-    $torrents .= "</table>";
-} 
-
-if ($GLOBALS["CLIENT_AUTH"] == CLIENT_AUTH_PASSKEY)
-    $announceurl = preg_replace("/\\{KEY\\}/", preg_replace_callback('/./s', "hex_esc", str_pad($user["passkey"], 8)), $GLOBALS["PASSKEY_ANNOUNCE_URL"]);
+if(isset($_GET["id"]))
+	$id = intval($_GET["id"]);
 else
-    $announceurl = $GLOBALS["ANNOUNCE_URLS"][0];
+	$id = $CURUSER["id"];
+
+if(!is_valid_id($id))
+	bark("Bad ID " . $id . ".");
+
+$qry = $GLOBALS['DB']->prepare("SELECT users.* FROM users WHERE id= :id");
+$qry->bindParam(':id', $id, PDO::PARAM_INT);
+$qry->execute();
+if($qry->rowCount() > 0)
+	$user = $qry->Fetch(PDO::FETCH_ASSOC);
+else
+	bark("Es existiert kein User mit der ID " . $id . ".");
+
+if($user["status"] == "pending")
+	bark("Der Account wurde noch nicht freigeschaltet.");
+	
+$qry = $GLOBALS['DB']->prepare("SELECT torrents.id, torrents.name, torrents.added, torrents.seeders, torrents.leechers, torrents.category, categories.name as catname, categories.image as catimage FROM torrents LEFT JOIN categories ON categories.id = torrents.category WHERE `activated`='yes' AND owner= :id ORDER BY added DESC");
+$qry->bindParam(':id', $id, PDO::PARAM_INT);
+$qry->execute();
+if($qry->rowCount() > 0){
+	$ownTorrents = $qry->FetchAll(PDO::FETCH_ASSOC);
+	$torrents = "<table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" width=\"100%\">\n".
+		"    <tr>\n".
+		"        <td class=\"tablecat\">Typ</td>\n".
+		"        <td class=\"tablecat\" width=\"100%\">Name</td>\n".
+		"        <td class=\"tablecat\">Hochgeladen</td>\n".
+		"        <td class=\"tablecat\">Seeder</td>\n".
+		"        <td class=\"tablecat\">Leecher</td>\n".
+		"    </tr>\n";
+	foreach($ownTorrents as $a){
+        $cat = "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $a["catimage"] . "\" alt=\"" . $a["catname"] . "\" title=\"" . $a["catname"] . "\">";
+        $torrents .= "    <tr>\n".
+			"        <td class=\"tableb\" style=\"padding: 0px\">" . $cat . "</td>\n".
+			"        <td class=\"tablea\"><a href=\"details.php?id=" . $a["id"] . "&hit=1\"><b>" . htmlspecialchars($a["name"]) . "</b></a></td>\n".
+			"        <td class=\"tableb\" align=\"center\">" . str_replace(" ", "<br />", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($a["added"]))) . "</td>\n".
+			"        <td class=\"tablea\" align=\"right\">" . $a["seeders"] . "</td>\n".
+			"        <td class=\"tableb\" align=\"right\">" . $a["leechers"] . "</td>\n".
+			"    </tr>\n";
+	}
+	$torrents .= "</table>";
+}
+
+if($GLOBALS["CLIENT_AUTH"] == CLIENT_AUTH_PASSKEY)
+	$announceurl = preg_replace("/\\{KEY\\}/", preg_replace_callback('/./s', "hex_esc", str_pad($user["passkey"], 8)), $GLOBALS["PASSKEY_ANNOUNCE_URL"]);
+else
+	$announceurl = $GLOBALS["ANNOUNCE_URLS"][0];
 
 $addr = "";
 $peer_addr = "";
-if ($user["ip"] && (get_user_class() >= UC_MODERATOR || $user["id"] == $CURUSER["id"])) {
-    $ip = $user["ip"];
-    $addr = get_domain($ip);
-
-    $res = mysql_query("SELECT DISTINCT(ip) AS ip FROM peers WHERE userid=$id");
-    if (mysql_num_rows($res)) {
-        while ($peer_ip = mysql_fetch_assoc($res)) {
-            if ($peer_addr != "")
-                $peer_addr .= "<br>";
-            $peer_addr .= get_domain($peer_ip["ip"]);
-        } 
-    } 
-} 
-if ($user["added"] == "0000-00-00 00:00:00") {
-    $joindate = 'N/A';
-    $down_per_day = "";
-    $upped_per_day = "";
-} else {
-    $joindate = "$user[added] (Vor " . get_elapsed_time(sql_timestamp_to_unix_timestamp($user["added"])) . ")";
-    $days_regged = round((time() - sql_timestamp_to_unix_timestamp($user["added"])) / 86400);
-    if ($days_regged) {
-        $down_per_day = "(" . mksize(floor($user["downloaded"] / $days_regged)) . " / Tag)";
-        $upped_per_day = "(" . mksize(floor($user["uploaded"] / $days_regged)) . " / Tag)";
-    } else{
-        $down_per_day = "(0,00 KB / Tag)";
-        $upped_per_day = "(0,00 KB / Tag)";
+if($user["ip"] && (get_user_class() >= UC_MODERATOR || $user["id"] == $CURUSER["id"])){
+	$ip = $user["ip"];
+	$addr = get_domain($ip);
+	$qry = $GLOBALS['DB']->prepare("SELECT DISTINCT(ip) AS ip FROM peers WHERE userid= :id");
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$qry->execute();
+	if($qry->rowCount() > 0){
+		$p = $qry->FetchAll(PDO::FETCH_ASSOC);
+		foreach($p as $peer_ip){
+			if($peer_addr != "")
+				$peer_addr .= "<br>";
+			$peer_addr .= get_domain($peer_ip["ip"]);
+		}
 	}
-} 
-$lastseen = $user["last_access"];
-if ($lastseen == "0000-00-00 00:00:00")
-    $lastseen = "nie";
-else {
-    $lastseen .= " (Vor " . get_elapsed_time(sql_timestamp_to_unix_timestamp($lastseen)) . ")";
 }
 
-//SELECT COUNT(*) FROM comments WHERE user= {$user['id']}');
+if($user["added"] == "0000-00-00 00:00:00"){
+	$joindate = 'N/A';
+	$down_per_day = "";
+	$upped_per_day = "";
+}else{
+	$joindate = "" . $user["added"] . " (Vor " . get_elapsed_time(sql_timestamp_to_unix_timestamp($user["added"])) . ")";
+	$days_regged = round((time() - sql_timestamp_to_unix_timestamp($user["added"])) / 86400);
+	if($days_regged){
+		$down_per_day = "(" . mksize(floor($user["downloaded"] / $days_regged)) . " / Tag)";
+		$upped_per_day = "(" . mksize(floor($user["uploaded"] / $days_regged)) . " / Tag)";
+	}else{
+		$down_per_day = "(0,00 KB / Tag)";
+		$upped_per_day = "(0,00 KB / Tag)";
+	}
+}
+$lastseen = $user["last_access"];
+if($lastseen == "0000-00-00 00:00:00")
+	$lastseen = "nie";
+else
+	$lastseen .= " (Vor " . get_elapsed_time(sql_timestamp_to_unix_timestamp($lastseen)) . ")";
+
 $torrentcomments = $database->row_count('comments', 'user = ' . $user['id']);
 $forumposts = $database->row_count('posts', 'userid = ' . $user['id']);
 
-
-// if ($user['donated'] > 0)
-// $don = "<img src=\"".$GLOBALS["PIC_BASE_URL"]."starbig.gif\">";
-$res = mysql_query("SELECT name,flagpic FROM countries WHERE id=$user[country] LIMIT 1") or sqlerr();
-if (mysql_num_rows($res) == 1) {
-    $arr = mysql_fetch_assoc($res);
-    $country = "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "flag/" . $arr["flagpic"] . "\" alt=\"" . $arr["name"] . "\" style=\"margin-left: 8pt;vertical-align: middle;\">";
-} 
-// if ($user["donor"] == "yes") $donor = "<td class=embedded><img src=\"".$GLOBALS["PIC_BASE_URL"]."starbig.gif\" alt='Donor' style='margin-left: 4pt'></td>";
-// if ($user["warned"] == "yes") $warned = "<td class=embedded><img src=\"".$GLOBALS["PIC_BASE_URL"]."warnedbig.gif\" alt='Warned' style='margin-left: 4pt'></td>";
-$res = mysql_query("SELECT torrent,added,traffic.uploaded,traffic.downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers JOIN traffic ON peers.userid = traffic.userid AND peers.torrent = traffic.torrentid JOIN torrents ON peers.torrent = torrents.id JOIN categories ON torrents.category = categories.id WHERE peers.userid=$id AND seeder='no'") or sqlerr();
+$qry = $GLOBALS['DB']->prepare("SELECT name, flagpic FROM countries WHERE id= :c LIMIT 1");
+$qry->bindParam(':c', $user["country"], PDO::PARAM_INT);
+$qry->execute();
+if($qry->rowCount() == 1){
+	$arr = $qry->Fetch(PDO::FETCH_ASSOC);
+	$country = "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "flag/" . $arr["flagpic"] . "\" alt=\"" . $arr["name"] . "\" style=\"margin-left: 8pt;vertical-align: middle;\">";
+}else
+	$country = "";
+// <---------------------
+$leeching = "";
+$qry = $GLOBALS['DB']->prepare("SELECT torrent,added,traffic.uploaded,traffic.downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers JOIN traffic ON peers.userid = traffic.userid AND peers.torrent = traffic.torrentid JOIN torrents ON peers.torrent = torrents.id JOIN categories ON torrents.category = categories.id WHERE peers.userid= :id AND seeder='no'");
+$qry->bindParam(':id', $id, PDO::PARAM_INT);
+$qry->execute();
+if($qry->rowCount() > 0){
+	$arr = $qry->FetchAll(PDO::FETCH_ASSOC);
+	$leeching = maketable($arr);
+}
+/*$res = mysql_query("SELECT torrent,added,traffic.uploaded,traffic.downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers JOIN traffic ON peers.userid = traffic.userid AND peers.torrent = traffic.torrentid JOIN torrents ON peers.torrent = torrents.id JOIN categories ON torrents.category = categories.id WHERE peers.userid=$id AND seeder='no'") or sqlerr();
 $leeching = "";
 if (mysql_num_rows($res) > 0)
-    $leeching = maketable($res);
-$res = mysql_query("SELECT torrent,added,traffic.uploaded,traffic.downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers JOIN traffic ON peers.userid = traffic.userid AND peers.torrent = traffic.torrentid JOIN torrents ON peers.torrent = torrents.id JOIN categories ON torrents.category = categories.id WHERE peers.userid=$id AND seeder='yes'") or sqlerr();
+    $leeching = maketable($res);*/
+$seeding = "";
+$qry = $GLOBALS['DB']->prepare("SELECT torrent,added,traffic.uploaded,traffic.downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers JOIN traffic ON peers.userid = traffic.userid AND peers.torrent = traffic.torrentid JOIN torrents ON peers.torrent = torrents.id JOIN categories ON torrents.category = categories.id WHERE peers.userid= :id AND seeder='yes'");
+$qry->bindParam(':id', $id, PDO::PARAM_INT);
+$qry->execute();
+if($qry->rowCount() > 0){
+	$arr = $qry->FetchAll(PDO::FETCH_ASSOC);
+	$seeding = maketable($arr);
+}
+/*$res = mysql_query("SELECT torrent,added,traffic.uploaded,traffic.downloaded,torrents.name as torrentname,categories.name as catname,size,image,category,seeders,leechers FROM peers JOIN traffic ON peers.userid = traffic.userid AND peers.torrent = traffic.torrentid JOIN torrents ON peers.torrent = torrents.id JOIN categories ON torrents.category = categories.id WHERE peers.userid=$id AND seeder='yes'") or sqlerr();
 $seeding = "";
 if (mysql_num_rows($res) > 0)
-    $seeding = maketable($res);
+    $seeding = maketable($res);*/
+
 $completed = "";
-if (get_user_class() >= UC_MODERATOR || (isset($CURUSER) && $CURUSER["id"] == $user["id"])) {
-    if (!isset($_GET["allcompleted"]))
-        $limit_comp = " LIMIT 3";
-    else
-        $limit_comp = "";
-    $res = mysql_query("SELECT torrent_id as torrent,torrent_name,complete_time,torrents.seeders as seeders,torrents.leechers as leechers,torrents.id as torrent_origid,categories.name as catname,image,traffic.uploaded,traffic.downloaded,traffic.uploadtime,traffic.downloadtime FROM completed LEFT JOIN traffic ON completed.torrent_id = traffic.torrentid AND completed.user_id = traffic.userid LEFT JOIN torrents ON completed.torrent_id = torrents.id LEFT JOIN categories ON completed.torrent_category = categories.id WHERE user_id=$id ORDER BY complete_time DESC$limit_comp");
-    if (mysql_num_rows($res) > 0)
-        $completed = makecomptable($res);
-} 
+if(get_user_class() >= UC_MODERATOR || (isset($CURUSER) && $CURUSER["id"] == $user["id"])){
+	if(!isset($_GET["allcompleted"]))
+		$limit_comp = " LIMIT 3";
+	else
+		$limit_comp = "";
+	$sql = "SELECT torrent_id as torrent,torrent_name,complete_time,torrents.seeders as seeders,torrents.leechers as leechers,torrents.id as torrent_origid,categories.name as catname,image,traffic.uploaded,traffic.downloaded,traffic.uploadtime,traffic.downloadtime FROM completed LEFT JOIN traffic ON completed.torrent_id = traffic.torrentid AND completed.user_id = traffic.userid LEFT JOIN torrents ON completed.torrent_id = torrents.id LEFT JOIN categories ON completed.torrent_category = categories.id WHERE user_id= :id ORDER BY complete_time DESC" . $limit_comp;
+	$qry = $GLOBALS['DB']->prepare($sql);
+	$qry->bindParam(':id', $id, PDO::PARAM_INT);
+	$qry->execute();
+	if($qry->rowCount() > 0){
+		$data = $qry->FetchAll(PDO::FETCH_ASSOC);
+		$completed = makecomptable($data);
+	}
+}
 
 stdhead("Benutzerprofil von " . $user["username"]);
 $enabled = $user["enabled"] == 'yes';
@@ -176,7 +218,7 @@ if ($addr)
 if ($peer_addr)
     print("<tr><td class=tableb>Peer-Adressen</td><td class=tablea align=left>$peer_addr</td></tr>\n");
 if ($CURUSER["id"] == $user["id"] || get_user_class() == UC_SYSOP)
-    print("<tr><td class=tableb>Announce-URL</td><td class=tablea align=left>$announceurl</td></tr>");
+    print("<tr><td class=tableb>Announce-URL</td><td class=tablea align=left>$announceurl</td></tr>\n");
 // if ($user["id"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR)
 // {
 ?>
@@ -499,7 +541,8 @@ function get_domain($ip){
 	}
 }
 
-function maketable($res){
+//function maketable($res){
+function maketable($data){
 	$ret = "<table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" width=\"100%\">\n".
 		"    <tr>\n".
 		"        <td class=\"tablecat\" align=\"center\">Typ</td>\n".
@@ -512,10 +555,11 @@ function maketable($res){
 		"        <td class=\"tablecat\" align=\"center\">Runtergel.</td>\n".
 		"        <td class=\"tablecat\" align=\"center\">Ratio</td>\n".
 		"    </tr>\n";
-	while($arr = mysql_fetch_assoc($res)){
+	//while($arr = mysql_fetch_assoc($res)){
+	foreach($data as $arr){
 		if ($arr["downloaded"] > 0){
 			$ratio = number_format($arr["uploaded"] / $arr["downloaded"], 3);
-			$ratio = "<font color=" . get_ratio_color($ratio) . ">$ratio</font>";
+			$ratio = "<font color=" . get_ratio_color($ratio) . ">" . $ratio . "</font>";
 		}else{
 			if($arr["uploaded"] > 0)
 				$ratio = "Inf.";
@@ -550,7 +594,8 @@ function maketable($res){
 	return $ret;
 }
 
-function makecomptable($res){
+//function makecomptable($res){
+function makecomptable($data){
 	$ret = "<table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" width=\"100%\">\n".
 		"    <tr>\n".
 		"        <td class=\"tablecat\" style=\"text-align:center\">Typ</td>\n".
@@ -561,7 +606,8 @@ function makecomptable($res){
 		"        <td class=\"tablecat\">Hochgel.</td>\n".
 		"        <td class=\"tablecat\">Runtergel.</td>\n".
 		"    </tr>\n";
-	while($arr = mysql_fetch_assoc($res)){
+	//while($arr = mysql_fetch_assoc($res)){
+	foreach($data as $arr){
 		$catimage = htmlspecialchars($arr["image"]);
 		$catname = htmlspecialchars($arr["catname"]);
 		$ret .= "    <tr>\n".
