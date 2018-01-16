@@ -201,12 +201,8 @@ if($CURUSER){
 				$p = round($count / $tvotes * 100);
 
 			echo "<tr>".
-				"    <td nowrap align=\"left\">" . $poll['answers'][$answerid] . "&nbsp;&nbsp;</td>".
-				"    <td align=\"left\">".
-				"        <img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_left" . (($answerid%5)+1) . ".gif\">".
-				"        <img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_middle" . (($answerid%5)+1) . ".gif\" height=\"9\" width=" . (($p * 5)+1) .">".
-				"        <img src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_right" . (($answerid%5)+1) . ".gif\"> " . $p . "%".
-				"    </td>".
+				"    <td class=\"nowrap\" align=\"left\">" . $poll['answers'][$answerid] . "&nbsp;&nbsp;</td>".
+				"    <td class=\"nowrap\" align=\"left\"><img border=\"0\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_left" . (($answerid%5)+1) . ".gif\"><img border=\"0\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_middle" . (($answerid%5)+1) . ".gif\" height=\"9\" width=" . (($p * 5)+1) ."><img border=\"0\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/vote_right" . (($answerid%5)+1) . ".gif\"> " . $p . "%</td>\n".
 				"</tr>\n";
 		}
 		echo "<p align=\"center\">Abgebene Stimmen: " . $tvotes . "</p>\n".

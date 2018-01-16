@@ -35,7 +35,8 @@ if(isset($_GET['socket'], $_GET['operator']) && $_GET['socket'] == 1 && $_GET['o
 
 userlogin();
 loggedinorreturn();
-
+// in PHP7
+// $action = $_GET["action"] ?? false;
 if(isset($_GET["action"]) && $_GET["action"] == "kill"){
 	if(isset($_GET['sure']) && $_GET['sure'] == 1){
 		$response = @file_get_contents($GLOBALS["SOCKET_URL"] . "/control?action=kill&operator=admin");
