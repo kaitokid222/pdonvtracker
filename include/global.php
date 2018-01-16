@@ -459,6 +459,8 @@ function get_wait_time($userid, $torrentid, $only_wait_check = false, $left = -1
 			// Format [#w][#d] or *
 			// eg: 1w or 1w2d or 2d or * or 0
 			preg_match("/([0-9]+w)?([0-9]+d)?|([\\*0])?/", $rule[2], $regrule);
+			$regrule[1] = (isset($regrule[1])) ? $regrule[1] : 0;
+			$regrule[2] = (isset($regrule[2])) ? $regrule[1] : 0;
 			$regruledays = intval($regrule[1])*7 + intval($regrule[2]);
 			if(($ratio < $rule[0] || $gigs < $rule[1]) && ($regruledays==0 || ($regruledays>0 && $regdays < $regruledays)))
 				$wait = max($wait, $rule[3], 0);

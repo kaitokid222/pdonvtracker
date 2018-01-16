@@ -36,14 +36,14 @@ function stdhead($title = "", $msgalert = true){
 		if ($ss_a)
 			$GLOBALS["ss_uri"] = $ss_a->uri;
 	}else{
-		if (!isset($GLOBALS["ss_uri"])) {
+		if(!isset($GLOBALS["ss_uri"])){
 			$qry = $GLOBALS['DB']->prepare("SELECT `uri` FROM `stylesheets` WHERE `default`='yes'");
 			$qry->execute();
 			if($qry->rowCount() > 0){
 				$row = $qry->fetchObject();
 			}
 			$GLOBALS["ss_uri"] = $row->uri;
-		} 
+		}
 	}
 
 	if($msgalert && $CURUSER){
@@ -54,8 +54,8 @@ function stdhead($title = "", $msgalert = true){
 			$unread_mod = $GLOBALS['database']->row_count("messages","sender=0 AND receiver=0 && mod_flag= 'open'");
 			if($unread_mod < 1)
 				unset($unread_mod);
-		} 
-	} 
+		}
+	}
 
 	$fn = substr($PHP_SELF, strrpos($PHP_SELF, "/") + 1);
 	$logo_pic = $GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/";
@@ -78,7 +78,7 @@ function stdhead($title = "", $msgalert = true){
 		"<html>\n".
 		"<head>\n".
 		"    <title>" . $title . "</title>\n".
-		"    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">\n".
+		"    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n".
 		"    <meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\">\n".
 		"    <meta http-equiv=\"pragma\" content=\"no-cache\">\n".
 		"    <meta http-equiv=\"expires\" content=\"300\">\n".
@@ -207,7 +207,7 @@ function stdhead($title = "", $msgalert = true){
 			echo "&nbsp;&nbsp;";
 		if(isset($unread)){
 			echo "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "multipage.gif\" border=\"0\"> <b>" . $unread . "</b>";
-			if ($unread_mod)
+			if(isset($unread_mod))
 				echo "&nbsp;&nbsp;";
 		}
         if(isset($unread_mod)){

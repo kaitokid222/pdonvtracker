@@ -846,7 +846,7 @@ function torrenttable_row($torrent_info){
 
 	$seedercolor = get_slr_color($ratio);
 	
-	$qry = $this->con->prepare("SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid FROM completed,users LEFT JOIN peers ON peers.userid=users.id AND peers.torrent= :ptid AND peers.seeder='yes' WHERE completed.user_id=users.id AND completed.torrent_id= :ctid ORDER BY complete_time DESC LIMIT 10");
+	$qry = $GLOBALS["DB"]->prepare("SELECT DISTINCT(user_id) as id, username, class, peers.id as peerid FROM completed,users LEFT JOIN peers ON peers.userid=users.id AND peers.torrent= :ptid AND peers.seeder='yes' WHERE completed.user_id=users.id AND completed.torrent_id= :ctid ORDER BY complete_time DESC LIMIT 10");
 	$qry->bindParam(':ptid', $torrent_info["id"], PDO::PARAM_INT);
 	$qry->bindParam(':ctid', $torrent_info["id"], PDO::PARAM_INT);
 	$qry->execute();
