@@ -38,7 +38,7 @@ if(isset($_GET['id'])){
 }else
 	die("ID nicht lesbar!");
 
-if($_GET["dl"]=="1"){
+if(isset($_GET["dl"]) && $_GET["dl"] == "1"){
 	$qry = $GLOBALS['DB']->prepare('SELECT nfo FROM torrents WHERE id = :id');
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
 	$qry->execute();
@@ -61,7 +61,7 @@ $qry->execute();
 $a = $qry->fetchAll()[0];
 
 stdhead();
-begin_frame("NFO zu <a href=details.php?id=" . $id . ">" . $a['name'] . "</a>\n", FALSE, "500px");
+begin_frame("NFO zu <a href=details.php?id=" . $id . ">" . $a['name'] . "</a>", FALSE, "500px");
 begin_table(TRUE);
 print("<tr>\n".
 	"    <td class=tableb style=\"text-align: center\">\n".
