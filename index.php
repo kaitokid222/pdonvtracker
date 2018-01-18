@@ -33,7 +33,7 @@ userlogin();
 stdhead();
 echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
-	"        <td colspan=\"10\" width=\"100%\">\n".
+	"        <td width=\"100%\">\n".
 	"            <span class=\"normalfont\"><center>\n".
 	"            <b><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"> <a href=\"donate.php\">Spende, um den Tracker zu erhalten!</a> <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"></b>\n".
 	"            </center></span>\n".
@@ -44,7 +44,7 @@ echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%
 	"<script language='JavaScript' src='js/expandCollapse.js' type='text/javascript'></script>".
 	"<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
-	"        <td colspan=\"10\" width=\"100%\"><span class=\"normalfont\">\n".
+	"        <td width=\"100%\"><span class=\"normalfont\">\n".
 	"            <center>\n".
 	"            <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "newsticker.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\"> <b>Neuigkeiten\n";
 if(get_user_class() >= UC_ADMINISTRATOR)
@@ -143,7 +143,7 @@ if($activeusers_no > 0){
 echo "<br>\n".
 	"<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
-	"        <td colspan=\"10\" width=\"100%\">\n".
+	"        <td width=\"100%\">\n".
 	"            <span class=\"normalfont\">\n".
 	"            <center>\n".
 	"                <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "user.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\"><b>Momentan aktive Mitglieder (" . $activeusers_no . ") </b>\n".
@@ -175,19 +175,13 @@ if($CURUSER){
 	$check = $polls->has_answered($poll['id'],$CURUSER['id']);
 	$tvotes = $polls->get_answer_count($poll['id']);
 
-	begin_table(); 
-	echo "<table cellspacing=\"5\" cellpadding=\"0\" border=\"0\" style=\"width:100%\">\n".
+	echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+		"    <tr class=\"tabletitle\" width=\"100%\">\n".
+		"        <td width=\"100%\"><span class=\"normalfont\"><center><b> Aktuelle Umfrage</b></center></span></td>\n".
+		"    </tr>\n".
 		"    <tr>\n".
-		"        <td valign=\"top\" width=\"50%\">\n".
-		"            <table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
-		"                <tr class=\"tabletitle\" width=\"100%\">\n".
-		"                    <td colspan=\"10\" width=\"100%\"><span class=\"normalfont\">\n".
-		"                        <center><b> Aktuelle Umfrage</b></center></span>\n".
-		"                    </td>\n".
-		"                </tr>\n".
-		"                <tr>\n".
-		"                    <td width=\"100%\" class=\"tablea\">\n".
-		"                    <p align=center><b>" . $poll['question'] . "</b></p>\n";
+		"        <td width=\"100%\" class=\"tablea\">\n".
+		"        <p align=center><b>" . $poll['question'] . "</b></p>\n";
 	if($check){
 		echo "<center><table border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n";
 		foreach($poll['result'] as $answerid => $users){
@@ -221,7 +215,6 @@ if($CURUSER){
 	echo "        </td>\n".
 		"    </tr>\n".
 		"</table>\n";
-	end_table();
 	// eof umfrage
 }
 

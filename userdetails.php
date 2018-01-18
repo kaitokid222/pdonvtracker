@@ -423,7 +423,7 @@ if((get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()) || ge
 		"    }\n".
 		"</script>\n";
     $bbfilecount = $database->row_count('bitbucket','`user`='.$id);
-	$bb_str = ($bbfilecount > 0) ? "    <tr>\n        <td class=\"tableb\">BitBucket</td>\n        <td class=\"tablea\" colspan=\"2\" align=\"left\"><a href=\"bitbucket.php?id=" . $id . "\">BitBucket-Inhalt dieses Benutzers anzeigen / bearbeiten</a> (" . $bbfilecount . " Datei(en))</td>\n    </tr>\n" : "";
+	$bb_str = (($bbfilecount > 0) ? "    <tr>\n        <td class=\"tableb\">BitBucket</td>\n        <td class=\"tablea\" colspan=\"2\" align=\"left\"><a href=\"bitbucket.php?id=" . $id . "\">BitBucket-Inhalt dieses Benutzers anzeigen / bearbeiten</a> (" . $bbfilecount . " Datei(en))</td>\n    </tr>\n" : "");
 	$avatar = htmlspecialchars($user["avatar"]);
     begin_frame("Profil bearbeiten", false, "750px");
 	echo "    <form method=\"post\" action=\"modtask.php\">\n".

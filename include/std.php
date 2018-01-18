@@ -389,7 +389,7 @@ function stderr($heading, $text){
 function stdmsg($heading, $text){
 	echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 		"    <tr>\n".
-		"        <td class=\"tabletitle\" colspan=\"10\" width=\"100%\"><b>" . $heading . "</b></td>\n". 
+		"        <td class=\"tabletitle\" width=\"100%\"><b>" . $heading . "</b></td>\n". 
 		"    </tr>\n".
 		"    <tr>\n".
 		"        <td width=\"100%\" class=\"tablea\">" . $text . "</td>\n".
@@ -418,7 +418,7 @@ function begin_frame($caption = "", $center = false, $width = "100%"){
 
 	echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:" . $width . "\" class=\"tableinborder\">\n".
 		"    <tr>\n".
-		"        <td class=\"tabletitle\" colspan=\"10\" width=\"100%\" style=\"text-align: center\"><b>" . $caption . "</b></td>\n".
+		"        <td class=\"tabletitle\" width=\"100%\" style=\"text-align: center\"><b>" . $caption . "</b></td>\n".
 		"    </tr>\n".
 		"    <tr>\n".
 		"        <td width=\"100%\" class=\"tablea\"" . $tdextra . ">\n";

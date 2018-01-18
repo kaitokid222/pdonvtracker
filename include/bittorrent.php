@@ -667,7 +667,7 @@ function commenttable($rows){
 				$title = get_user_class_name($row["class"]);
 			else
 				$title = htmlspecialchars($title);
-			echo "<a name=\"comm" . $row["id"] . "\" href=\"userdetails.php?id=" . $row["user"] . "\"><b>" . htmlspecialchars($row["username"]) . "</b></a>" . get_user_icons(array("donor" => $row["donor"], "enabled" => $row["enabled"], "warned" => $row["warned"])) . " (" . $title . ")";
+			echo "<a name=\"comm" . $row["id"] . "\" href=\"userdetails.php?id=" . $row["user"] . "\"><b>" . htmlspecialchars($row["username"]) . "</b></a>" . get_user_icons(array("donor" => $row["donor"], "enabled" => $row["enabled"], "warned" => $row["warned"], "added" => $row["uadded"])) . " (" . $title . ")";
 		}else
 			echo "<a name=\"comm" . $row["id"] . "\"><i>(Gelöscht)</i></a>";
 		echo " am " . $row["added"] . ($row["user"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=edit&amp;cid=" . $row["id"] . "\">Bearbeiten</a>]" : "") .
@@ -682,8 +682,8 @@ function commenttable($rows){
 		if($row["editedby"])
 			$text .= "<p><font size=\"1\" class=\"small\">Zuletzt von <a href=\"userdetails.php?id=" . $row["editedby"] . "\"><b>" . $row["username"] . "</b></a> am " . $row["editedat"] . " bearbeitet</font></p>";
 		echo "    <tr valign=\"top\">\n".
-			"        <td class=\"tableb\" align=\"center\" style=\"padding: 0px;width: 150px\"><img width=\"150\" src=\"" . $avatar . "\" alt=\"Avatar von " . $row["username"] . "\"></td>\n";
-			"        <td class=\"tablea\">" . $text . "</td>\n";
+			"        <td class=\"tableb\" align=\"center\" style=\"padding: 0px;width: 150px\"><img width=\"150\" src=\"" . $avatar . "\" alt=\"Avatar von " . $row["username"] . "\"></td>\n".
+			"        <td class=\"tablea\">" . $text . "</td>\n".
 			"    </tr>\n";
 		end_table();
 	} 
@@ -1232,4 +1232,100 @@ function get_user_icons($arr, $big = false){
 		$pics .= "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . $newbiepic . "\" alt=\"Newbie\" title=\"Ist noch neu hier\" border=\"0\" " . $style . ">";
 	return $pics;
 }
+
+// aus der details.php
+
+function dltable($name, $arr, $torrent){
+	global $CURUSER;
+
+	$s = "<b>" . count($arr) . " " . $name . "</b>\n";
+	if (!count($arr))
+		return $s;
+
+	$s .= "\n";
+	$s .= "<table width=\"100%\" class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\">\n";
+	$s .= "    <tr>\n";
+	$s .= "        <td class=\"tablecat\">Benutzer/IP</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Erreichbar</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Hochgeladen</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Rate</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Runtergeladen</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Rate</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Ratio</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Fertig</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Verbunden</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Unt&auml;tig</td>\n";
+	$s .= "        <td class=\"tablecat\" style=\"text-align:center\">Client</td>";
+	$s .= "    </tr>\n";
+
+	$mod = get_user_class() >= UC_MODERATOR;
+	$now = time();
+
+	foreach($arr as $e){
+		$qry = $GLOBALS['DB']->prepare("SELECT username, privacy, class, donor, enabled, warned, added FROM users WHERE id= :id ORDER BY last_access DESC LIMIT 1");
+		$qry->bindParam(':id', $e["userid"], PDO::PARAM_INT);
+		$qry->execute();
+		$una = $qry->Fetch(PDO::FETCH_ASSOC);
+		$tdclass = $CURUSER && $e["userid"] == $CURUSER["id"] ? " class=\"inposttable\"": " class=\"tableb\"";
+
+		if($una["privacy"] == "strong")
+			continue;
+
+		$s .= "    <tr>\n";
+
+		if ($una["username"])
+			$s .= "        <td" . $tdclass . " nowrap=\"nowrap\"><a href=\"userdetails.php?id=" . $e["userid"] . "\"><font class=\"" . get_class_color($una["class"]) . "\"><b>" . $una["username"] . "</b></font></a>&nbsp;" . get_user_icons($una) . "</td>\n";
+		else
+			$s .= "        <td" . $tdclass . ">" . ($mod ? $e["ip"] : preg_replace('/\.\d+$/', ".xxx", $e["ip"])) . "</td>\n";
+
+		$s .= "        <td" . $tdclass . " style=\"text-align:center\">" . ($e["connectable"] == "yes" ? "Ja" : "<font color=\"red\">Nein</font>") . "</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\">" . mksize($e["uploaded"]) . "</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\" nowrap=\"nowrap\">" . mksize($e["uploaded"] / max(1, $e["uploadtime"])) . "/s</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\">" . mksize($e["downloaded"]) . "</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\" nowrap=\"nowrap\">" . mksize($e["downloaded"] / max(1, $e["downloadtime"])) . "/s</td>\n";
+
+		if($e["downloaded"]){
+			$ratio = floor(($e["uploaded"] / $e["downloaded"]) * 1000) / 1000;
+			$s .= "        <td" . $tdclass . " style=\"text-align:right\"><font color=\"" . get_ratio_color($ratio) . "\">" . number_format($ratio, 3) . "</font></td>\n";
+		}else{
+			if($e["uploaded"])
+			$s .= "        <td" . $tdclass . " style=\"text-align:right\">Inf.</td>\n";
+			else
+			$s .= "        <td" . $tdclass . " style=\"text-align:right\">---</td>\n";
+		}
+
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\"><div title=\"" . sprintf("%.2f%%", 100 * (1 - ($e["to_go"] / $torrent["size"]))) . "\"style=\"border:1px solid black;padding:0px;width:40px;height:10px;\"><div style=\"border:none;width:" . sprintf("%.2f", 40 * (1 - ($e["to_go"] / $torrent["size"]))) . "px;height:10px;background-image:url(" . $GLOBALS["PIC_BASE_URL"] . "ryg-verlauf-small.png);background-repeat:no-repeat;\"></div></div></td>\n";
+		$s .= "        <td" . $tdclass . " nowrap style=\"text-align:right\">" . mkprettytime($now - $e["st"]) . "</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:right\">" . mkprettytime($now - $e["la"]) . "</td>\n";
+		$s .= "        <td" . $tdclass . " style=\"text-align:left\">" . htmlspecialchars(getagent($e["agent"], $e["peer_id"])) . "</td>\n";
+		$s .= "    </tr>\n";
+	}
+	$s .= "</table>\n";
+	return $s;
+}
+
+function leech_sort($a, $b){
+	if(isset($_GET["usort"]))
+		return seed_sort($a, $b);
+	$x = $a["to_go"];
+	$y = $b["to_go"];
+	if($x == $y)
+		return 0;
+	if($x < $y)
+		return -1;
+	return 1;
+}
+
+function seed_sort($a, $b){
+	$x = $a["uploaded"];
+	$y = $b["uploaded"];
+	if($x == $y)
+		return 0;
+	if($x < $y)
+		return 1;
+	return -1;
+}
+
+// end of details.php funktionen
+
 ?>

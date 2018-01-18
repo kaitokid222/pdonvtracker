@@ -27,7 +27,8 @@
  */
 
 require "include/bittorrent.php";
-dbconn();
+//dbconn();
+userlogin();
 loggedinorreturn();
 if (get_user_class() < UC_MODERATOR)
     stderr("Fehler", "Dir ist der Zugang zu dieser Seite nicht gestattet!");
@@ -49,7 +50,11 @@ else{
 	echo $pagertop;
 	//while ($user = mysql_fetch_assoc($userres)) {
 	foreach($userres as $user){
-		$res = mysql_query("SELECT * FROM bitbucket WHERE user=".$user["id"]);
+		$qry = $GLOBALS['DB']->prepare("SELECT * FROM bitbucket WHERE user = :user");
+		$qry->bindParam(':user', $user["id"], PDO::PARAM_INT);
+		$qry->execute();
+		$res = $qry->FetchAll();
+		//$res = mysql_query("SELECT * FROM bitbucket WHERE user=".$user["id"]);
 		begin_table(TRUE);
 		echo "    <colgroup>\n".
 			"        <col width=\"25%\">\n".
@@ -61,7 +66,8 @@ else{
 			"        <td class=\"tablecat\" align=\"center\" colspan=\"4\"><b>".htmlspecialchars($user["username"])."</b> [<a href=\"bitbucket.php?id=".$user["id"]."\">BitBucket bearbeiten</a>]</td>\n".
 			"    </tr>";
 		$I=0;
-		while($pics = mysql_fetch_assoc($res)){
+		foreach($res as $pics){
+		//while($pics = mysql_fetch_assoc($res)){
 			if ($I>0 && $I%4==0)
 				echo "    </tr>\n".
 					"    <tr>";
