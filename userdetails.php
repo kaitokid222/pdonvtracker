@@ -205,8 +205,8 @@ if($CURUSER["id"] != $user["id"] && $enabled){
 			"        <td class=\"tablea\" align=\"center\"><a href=\"friends.php?action=add&type=block&targetid=" . $id . "\">Zu Blockliste hinzufügen</a></td>\n".
 			"    </tr>\n";
 	}
+	end_table();
 }
-end_table();
 
 echo "<table cellspacing=\"1\" cellpadding=\"5\" border=\"0\" class=\"tableinborder\" style=\"width: 100%\">\n".
 	"    <tr>\n".

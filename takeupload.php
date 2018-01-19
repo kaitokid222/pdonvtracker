@@ -249,7 +249,7 @@ $qry->bindParam(':activated', $activated, PDO::PARAM_STR);
 $qry->execute();
 if(!$qry->rowCount()){
 	tr_status("err");
-	print_r($qry->errorInfo());
+	//print_r($qry->errorInfo());
 	abort("Torrent konnte nicht in die DB geschrieben werden.");
 } 
 $id = $GLOBALS['DB']->lastInsertId();
