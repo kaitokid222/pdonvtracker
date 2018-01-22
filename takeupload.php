@@ -196,11 +196,7 @@ $dict["info"]["unique id"] = mksecret();
 
 $infohash = pack("H*", sha1(benc($dict["info"])));
 $torrent = str_replace("_", " ", $torrent);
-
-// save info_hash as hex
-// leichteres abgleichen! :D
 $infohash_hex = bin2hex($infohash);
-
 
 tr_msg("Torrent-Informationen in die Datenbank schreiben");
 $nfo = str_replace("\x0d\x0d\x0a", "\x0d\x0a", @file_get_contents($nfofilename));
@@ -211,23 +207,6 @@ $cat_qv = 0 + $_POST["type"];
 $dt_qv = get_date_time();
 $dtla_qv = get_date_time();
 $fname = $tupload->get_fname();
-/*$ret = mysql_query("INSERT INTO torrents (search_text, filename, owner, visible, info_hash, name, size, numfiles, type, descr, ori_descr, category, save_as, added, last_action, nfo, activated) VALUES (" .
-    implode(",", array_map("sqlesc", array(
-	searchfield("$shortfname $dname $torrent"),
-	$fname,
-	$CURUSER["id"],
-	"no",
-	$infohash_hex,
-	$torrent,
-	$totallen,
-	count($filelist),
-	$type,
-	$descr,
-	$descr,
-	0 + $_POST["type"],
-	$dname)
-    )) . ", '" . get_date_time() . "', '" . get_date_time() . "', ".sqlesc($nfo).", '$activated')");*/
-	
 $qry = $GLOBALS["DB"]->prepare("INSERT INTO torrents (search_text, filename, owner, visible, info_hash, name, size, numfiles, type, descr, ori_descr, category, save_as, added, last_action, nfo, activated) VALUES (:searchfield, :fname, :owner, :visible, :hexhash, :tname, :size, :fcount, :ttype, :descr, :odescr, :cat, :saveas, :dt, :dtla, :nfo, :activated)");
 $qry->bindParam(':searchfield', $searchfield_v, PDO::PARAM_STR);
 $qry->bindParam(':fname', $fname, PDO::PARAM_STR);
@@ -339,7 +318,7 @@ begin_frame("Torrent-Upload war erfolgreich!", FALSE, "650px");
 echo "<p>Dein Torrent wurde erfolgreich hochgeladen. <b>Beachte</b> dass Dein Torrent erst".
 	"sichtbar wird, wenn der erste Seeder verfügbar ist!</p>\n";
 
-if ($tupload->get_uploaderrors_pic() !== false) {
+if($tupload->get_uploaderrors_pic() !== false){
 	echo "<p>Beim Upload des Torrents ist mindestens ein unkritischer Fehler aufgetreten:</p>\n".
 		"<ul>\n";
 	foreach($tupload->get_uploaderrors_pic() as $pic)
