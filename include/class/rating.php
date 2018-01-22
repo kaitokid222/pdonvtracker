@@ -79,7 +79,7 @@ class rating
 	}
 
 	public function output($tid,$uid){
-		$ratings = array(5 => "Genial!!",4 => "Einfach gut",3 => "Ist O.K",2 => "Gerade so",1 => "Finger weg!");
+		$ratings = array(5 => "Genial!!",4 => "Einfach gut",3 => "Ist O.K.",2 => "Gerade so",1 => "Finger weg!");
 		$r_arr = $this->getRating($tid);
 		if($r_arr["rating"] > 0 && $r_arr["count"] > 0){
 			$r_pic_str = $this->getStarString($r_arr["rating"]);

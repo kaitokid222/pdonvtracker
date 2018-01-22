@@ -680,8 +680,15 @@ function commenttable($rows){
 		if(!$avatar)
 			$avatar = $GLOBALS["PIC_BASE_URL"] . "default_avatar.gif";
 		$text = stripslashes(format_comment($row["text"]));
-		if($row["editedby"])
-			$text .= "<p><font size=\"1\" class=\"small\">Zuletzt von <a href=\"userdetails.php?id=" . $row["editedby"] . "\"><b>" . $row["username"] . "</b></a> am " . $row["editedat"] . " bearbeitet</font></p>";
+		if($row["editedby"] > 0){
+			$sql = "SELECT username FROM users WHERE id = :id";
+			$qry = $GLOBALS['DB']->prepare($sql);
+			$qry->bindParam(':id', $row["editedby"], PDO::PARAM_INT);
+			$qry->execute();
+			$d = $qry->Fetch(PDO::FETCH_ASSOC);
+			$un = $d["username"];
+			$text .= "<p><font size=\"1\" class=\"small\">Zuletzt von <a href=\"userdetails.php?id=" . $row["editedby"] . "\"><b>" . $un . "</b></a> am " . $row["editedat"] . " bearbeitet</font></p>";
+		}
 		echo "    <tr valign=\"top\">\n".
 			"        <td class=\"tableb\" align=\"center\" style=\"padding: 0px;width: 150px\"><img width=\"150\" src=\"" . $avatar . "\" alt=\"Avatar von " . $row["username"] . "\"></td>\n".
 			"        <td class=\"tablea\">" . $text . "</td>\n".
