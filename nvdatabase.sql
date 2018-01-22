@@ -653,6 +653,21 @@ CREATE TABLE `torrents` (
 ALTER TABLE `torrents`
 	CHANGE COLUMN `info_hash` `info_hash` VARCHAR(50) NOT NULL DEFAULT '' COLLATE 'latin1_bin' AFTER `id`;
 
+-- Exportiere Struktur von Tabelle nvtracker.torrents_ratings
+CREATE TABLE IF NOT EXISTS `torrents_ratings` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `tid` int(10) unsigned NOT NULL DEFAULT '0',
+  `uid` int(10) unsigned NOT NULL DEFAULT '0',
+  `rating` int(11) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `torrents_ratings`
+	CHANGE COLUMN `tid` `torrent` INT(10) UNSIGNED NOT NULL DEFAULT '0' AFTER `id`;
+	
+ALTER TABLE `torrents`
+	DROP COLUMN `numratings`,
+	DROP COLUMN `ratingsum`;
 --
 -- Table structure for table `traffic`
 --

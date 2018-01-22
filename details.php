@@ -37,8 +37,7 @@ if(!isset($id) || !$id)
 
 $t_query = "SELECT torrents.seeders, torrents.banned, torrents.leechers, torrents.info_hash, ";
 $t_query .= "torrents.filename, LENGTH(torrents.nfo) AS nfosz, UNIX_TIMESTAMP() - UNIX_TIMESTAMP(";
-$t_query .= "torrents.last_action) AS lastseed, torrents.numratings, torrents.name, IF(torrents.numratings";
-$t_query .= " < " . $GLOBALS["MINVOTES"] . ", NULL, ROUND(torrents.ratingsum / torrents.numratings, 1)) AS rating, ";
+$t_query .= "torrents.last_action) AS lastseed, torrents.name, ";
 $t_query .= "torrents.owner, torrents.gu_agent, torrents.save_as, torrents.descr, torrents.visible, torrents.size, torrents.activated, ";
 $t_query .= "torrents.added, torrents.views, torrents.hits, torrents.times_completed, torrents.id, ";
 $t_query .= "torrents.type, torrents.numfiles, torrents.numpics, categories.name AS cat_name, users.username, users.class FROM ";
@@ -61,6 +60,20 @@ if(!$row || ($row["banned"] == "yes" && !$moderator))
 
 if(!$owned && $row["activated"] != "yes")
 	stderr("Fehler", "Es existiert kein Torrent mit der ID " . $id . ".");
+
+$rating = new rating($GLOBALS["DB"]);
+if($_SERVER["REQUEST_METHOD"] == "POST"){
+	if(isset($_POST["rating"])){
+		$wantRating = $_POST["rating"];
+		if($wantRating > 5 || $wantRating < 1)
+			stderr("Fehler","Du kannst nicht mit Null stimmen!");
+		else{
+			$rating->vote($id,$CURUSER["id"],$wantRating);
+			header("Refresh: 0; url=details.php?id=" . $id . "&rated=1");
+		}
+	}
+}
+
 
 if(isset($_GET["hit"])){
 	$sql = "UPDATE torrents SET views = views + 1 WHERE id = :id";
@@ -99,6 +112,7 @@ if(isset($_GET["activate"]) && $moderator && $row["activated"] != "yes"){
 	write_log("torrentgranted", "Der Torrent <a href=\"details.php?id=" . $row["id"] . "\">" . htmlspecialchars($row["name"]) . "</a> wurde von '<a href=\"userdetails.php?id=$CURUSER[id]\">$CURUSER[username]</a>' freigeschaltet.");
 	stderr("Torrent freigeschaltet", "Der Torrent wurde freigeschaltet, und ist nun über die Torrent-Suche auffindbar. Ebenso kann der Besitzer nun beginnen, den Torrent zu seeden. Eine Persönliche Nachricht wurde an den Uploader versendet, die ihn über die Freischaltung informiert.");
 }
+
 if(isset($_GET["agenttakeover"]) && $_GET["agenttakeover"] == "acquire" && $row["gu_agent"] == 0 && $moderator && $row["activated"] != "yes") {
 	$row["gu_agent"] = $CURUSER["id"];
 	$sql = "UPDATE `torrents` SET `gu_agent`= :gua WHERE `id`= :tid";
@@ -106,14 +120,15 @@ if(isset($_GET["agenttakeover"]) && $_GET["agenttakeover"] == "acquire" && $row[
 	$qry->bindParam(':gua', $CURUSER["id"], PDO::PARAM_INT);
 	$qry->bindParam(':tid', $row["id"], PDO::PARAM_INT);
 	$qry->execute();
-} 
+}
+
 if(isset($_GET["agenttakeover"]) && $_GET["agenttakeover"] == "release" && $row["gu_agent"] == $CURUSER["id"] && $moderator && $row["activated"] != "yes") {
 	$row["gu_agent"] = 0;
 	$sql = "UPDATE `torrents` SET `gu_agent`=0 WHERE `id`= :tid";
 	$qry = $GLOBALS['DB']->prepare($sql);
 	$qry->bindParam(':tid', $row["id"], PDO::PARAM_INT);
 	$qry->execute();
-} 
+}
 
 if(!isset($_GET["page"])){
 	stdhead("Details zu Torrent \"" . $row["name"] . "\"");
@@ -172,6 +187,7 @@ if(!isset($_GET["page"])){
 		"            <table width=\"750px\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\" class=\"tableinborder\">\n";
 
 	$url = "edit.php?id=" . $row["id"];
+	$keepget = "";
 	if(isset($_GET["returnto"])){
 		$addthis = "&amp;returnto=" . urlencode($_GET["returnto"]);
 		$url .= $addthis;
@@ -313,6 +329,10 @@ if(!isset($_GET["page"])){
 		"                <tr>\n".
 		"                    <td class=\"tableb\" width=\"1%\">Hinzugefügt</td>\n".
 		"                    <td class=\"tableb\" width=\"99%\" style=\"text-align:left\">" . $row["added"] . "</td>\n".
+		"                </tr>\n".
+		"                <tr>\n".
+		"                    <td class=\"tableb\" width=\"1%\">Bewertung</td>\n".
+		"                    <td class=\"tableb\" width=\"99%\" style=\"text-align:left\">" . $rating->output($id, $CURUSER["id"]) . "</td>\n".
 		"                </tr>\n".
 		"                <tr>\n".
 		"                    <td class=\"tableb\" width=\"1%\">Aufrufe</td>\n".

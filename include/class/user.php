@@ -14,8 +14,12 @@
 
 class user
 {
+	protected $id;
+	protected $username;
 	function __construct() {
 	}
+	
+	
 	
 	public static function addUser($wantusername,$wantpasshash,$passkey,$secret,$editsecret = "",$email = "",$status = "confirmed",$stylesheet = 1,$dt = ""){
 		if($email == "")
@@ -38,5 +42,21 @@ class user
 		else
 			return false;
 	}
+
+	public static function refreshSession($uid){
+		session_unset();
+		$sql = "SELECT * FROM `users` WHERE `id` = :uid";
+		$qry = $GLOBALS['DB']->prepare($sql);
+		$qry->bindParam(':uid', $uid, PDO::PARAM_INT);
+		$qry->execute();
+		$_SESSION["userdata"] = $qry->Fetch(PDO::FETCH_ASSOC);
+	}
+
+	/*public static function hasToAcceptRules($uid,$page){
+		if($GLOBALS["CURUSER"]["accept_rules"] == "no" && !preg_match("/(my|rules|faq|logout|delacct)\\.php$/", $_SERVER["PHP_SELF"])) {
+			header("Location: rules.php?accept_rules");
+	}*/
+
+	
 }
 ?>

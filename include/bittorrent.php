@@ -62,6 +62,7 @@ require_once("include/class/polls.php");
 require_once("include/class/shoutbox.php");
 require_once("include/class/tupload.php");
 require_once("include/class/user.php");
+require_once("include/class/rating.php");
 
 function set_last_access($id){
 	$latime = date("Y-m-d H:i:s");
@@ -302,10 +303,10 @@ function userlogin(){
 	$qry->bindParam(':id', $GLOBALS["CURUSER"]["id"], PDO::PARAM_STR);
 	$qry->execute();
 
-    if ($GLOBALS["CURUSER"]["accept_rules"] == "no" && !preg_match("/(takeprofedit|rules|faq|logout|delacct)\\.php$/", $_SERVER["PHP_SELF"])) {
+    if($GLOBALS["CURUSER"]["accept_rules"] == "no" && !preg_match("/(my|rules|faq|logout|delacct)\\.php$/", $_SERVER["PHP_SELF"])) {
         header("Location: rules.php?accept_rules");
         die();
-    } 
+    }
 }
 
 function logincookie($id, $passhash, $updatedb = 1, $expires = 0x7fffffff){
@@ -525,7 +526,7 @@ function deletetorrent($id, $owner = 0, $comment = "")
 	$qry = $GLOBALS['DB']->prepare('DELETE FROM traffic WHERE torrentid = :id');
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
 	$qry->execute();
-    foreach(explode(".", "peers.files.comments.ratings.nowait") as $x){
+    foreach(explode(".", "peers.files.comments.torrents_ratings.nowait") as $x){
 		$qry = $GLOBALS['DB']->prepare('DELETE FROM :x WHERE torrent = :id');
 		$qry->bindParam(':x', $x, PDO::PARAM_INT);
 		$qry->bindParam(':id', $id, PDO::PARAM_INT);
@@ -693,28 +694,18 @@ function searchfield($s){
     return preg_replace(array('/[^a-z0-9]/si', '/^\s*/s', '/\s*$/s', '/\s+/s'), array(" ", "", "", " "), $s);
 } 
 
-function genrelist()
-{
+function genrelist(){
     $ret = array();
 	$rows = $GLOBALS['DB']->query('SELECT id, name FROM categories ORDER BY name')->fetchAll();
-	foreach($rows as $row)
-		$ret[] = $row;
-    return $ret;
+	//foreach($rows as $row)
+	//	$ret[] = $row;
+    return $rows;
 } 
 
-function linkcolor($num)
-{
+function linkcolor($num){
     if ($num == 0)
         return "red";
     return "black";
-} 
-
-function ratingpic($num)
-{
-    $r = round($num * 2) / 2;
-    if ($r < 1 || $r > 5)
-        return;
-    return "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "$r.gif\" border=\"0\" alt=\"rating: $num / 5\" />";
 } 
 
 function browse_sortlink($field, $params)
@@ -727,6 +718,8 @@ function browse_sortlink($field, $params)
 } 
 
 function torrenttable_row_oldschool($torrent_info){
+	$torrent_info["is_new"] = "no";
+	$torrent_info["has_wait"] = "no";
 	global $CURUSER;
 
 	if(strlen($torrent_info["name"]) > 45)
@@ -775,7 +768,7 @@ function torrenttable_row_oldschool($torrent_info){
 	else
 		$gu = "";
 		
-	if($torrent_info["variant"] != "guestuploads" && $torrent_info["is_new"])
+	if($torrent_info["variant"] != "guestuploads" && $torrent_info["is_new"] != "no")
 		$isnew = " <font style=\"color:red\">(NEU)</font>";
 	else
 		$isnew = "";
@@ -790,8 +783,10 @@ function torrenttable_row_oldschool($torrent_info){
 				"        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\">" . ($torrent_info["visible"] == "yes"?"Ja":"Nein") . "</td>\n";
 	}elseif($torrent_info["variant"] == "guestuploads")
 		$trex = "        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\">" . $gua . "</td>\n";
-	elseif($torrent_info["has_wait"])
+	elseif($torrent_info["has_wait"] != "no")
 		$trex = "        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\"><font color=\"" . $torrent_info["wait_color"] . "\">" . $torrent_info["wait_left"] . "<br>Std.</font></td>\n";
+	else
+		$trex = "        <td class=\"tablea\" style=\"text-align:center;vertical-align:middle;\" nowrap=\"nowrap\"></td>\n";
 
 	if($torrent_info["variant"] == "index")
 		$inde = "<td class=\"tablea\" style=\"text-align:left;vertical-align:middle;\" nowrap=\"nowrap\">" . $torrent_info["uploaderlink"] . "</td>\n";
@@ -1013,6 +1008,7 @@ function torrenttable_row($torrent_info){
 }
 
 function torrenttable($res, $variant = "index", $addparam = ""){
+	$has_wait = "no";
 	global $CURUSER; 
 	// Sortierkriterien entfernen
 	$addparam_nosort = preg_replace(array("/orderby=(.*?)&amp;/i", "/sort=(.*?)&amp;/i"), array("", ""), $addparam); 
@@ -1024,8 +1020,10 @@ function torrenttable($res, $variant = "index", $addparam = ""){
 				"        <td class=\"tablecat\" align=\"center\">Sichtbar</td>\n";
 	}elseif($variant == "guestuploads")
 		$vrtt = "        <td class=\"tablecat\" align=\"center\">In&nbsp;Bearbeitung</td>\n";
-	elseif($has_wait)
+	elseif($has_wait != "no")
 		$vrtt = "        <td class=\"tablecat\" align=\"center\">Wartez.</td>\n";
+	else
+		$vrtt = "        <td class=\"tablecat\" align=\"center\"></td>\n";
 		
 	if($variant == "index")
 		$vrtti = "        <td class=\"tablecat\" align=\"center\">Uploader</td>\n";
@@ -1145,7 +1143,7 @@ function torrenttable($res, $variant = "index", $addparam = ""){
 		"        <td align=\"right\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/untenrechts.gif\" alt=\"\" title=\"\" /></td>\n".
 		"    </tr>\n".
 		"</table>\n";
-	return $rows;
+	//return $rows;
 } 
 
 function hit_start(){

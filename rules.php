@@ -35,7 +35,7 @@ dbconn();
 stdhead("Regeln");
 
 
-if (isset($_GET["accept_rules"])) {
+if (isset($_GET["accept_rules"])){
 ?>
 <table cellpadding="4" cellspacing="1" border="0" style="width:750px" class="tableinborder">
 <tr><td width="100%" class="tablea" style="font-weight:bold;color:red;">
@@ -357,7 +357,7 @@ if (isset($_GET["accept_rules"])) { ?>
 Bitte denke daran, Dich auch daran zu halten!</p>
 <p>Wenn Du die Regeln nicht akzepierst, kannst Deinen Account <a href="delacct.php">hier umgehend
 löschen</a>.</p>
-<form action="takeprofedit.php" method="post">
+<form action="my.php" method="post">
 <center>
 <table>
 <tr><td><input type="checkbox" id="accept" name="acceptrules" value="yes"></td><td><label for="accept">Ich habe die Regeln gelesen, und bin damit einverstanden.</label></td></tr>

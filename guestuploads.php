@@ -54,7 +54,7 @@ end_frame();
 else {
 	list($pagertop, $pagerbottom, $limit) = pager(20, $count, "mytorrents.php?");
 
-	$res = mysql_query("SELECT torrents.type, torrents.activated, torrents.comments, torrents.leechers, torrents.seeders, IF(torrents.numratings < ".$GLOBALS["MINVOTES"].", NULL, ROUND(torrents.ratingsum / torrents.numratings, 1)) AS rating, torrents.id, torrents.last_action, categories.name AS cat_name, categories.image AS cat_pic, torrents.name, torrents.filename, torrents.gu_agent, torrents.save_as, torrents.numfiles, torrents.added, torrents.owner, torrents.size, torrents.views, torrents.visible, torrents.hits, torrents.times_completed, torrents.category, users.username FROM torrents LEFT JOIN categories ON torrents.category = categories.id LEFT JOIN users ON users.id=torrents.owner $where ORDER BY id DESC $limit");
+	$res = mysql_query("SELECT torrents.type, torrents.activated, torrents.comments, torrents.leechers, torrents.seeders, torrents.id, torrents.last_action, categories.name AS cat_name, categories.image AS cat_pic, torrents.name, torrents.filename, torrents.gu_agent, torrents.save_as, torrents.numfiles, torrents.added, torrents.owner, torrents.size, torrents.views, torrents.visible, torrents.hits, torrents.times_completed, torrents.category, users.username FROM torrents LEFT JOIN categories ON torrents.category = categories.id LEFT JOIN users ON users.id=torrents.owner $where ORDER BY id DESC $limit");
     
 	print($pagertop);
 

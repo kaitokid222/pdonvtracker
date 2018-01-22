@@ -279,8 +279,8 @@ if($action == "edituser"){
 	$updateset[] = "avatar = '" . $avatar . "'";
 	$updateset[] = "title = '" . $title . "'";
 	$updateset[] = "accept_rules = '" . $acceptrules . "'";
-	$sql = "UPDATE users SET  " . implode(", ", $updateset) . " WHERE id= :uid";
-	//mysql_query("UPDATE users SET  " . implode(", ", $updateset) . " WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
+	$sql = "UPDATE users SET " . implode(", ", $updateset) . " WHERE id= :uid";
+	//mysql_query("UPDATE users SET " . implode(", ", $updateset) . " WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
 	$qry = $GLOBALS['DB']->prepare($sql);
 	$qry->bindParam(':uid', $userid, PDO::PARAM_INT);
 	$qry->execute();

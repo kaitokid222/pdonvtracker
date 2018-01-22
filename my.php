@@ -38,6 +38,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 			$qry = $GLOBALS['DB']->prepare($sql);
 			$qry->bindParam(':id', $CURUSER["id"], PDO::PARAM_INT);
 			$qry->execute();
+			user::refreshSession($CURUSER["id"]);
 			stderr("Regeln akzeptiert!", "<p>Du hast die Regeln akzeptiert, und kannst nun den Tracker weiter verwenden.</p><p>Bitte halte Dich auch an die Regeln!</p>");
 		}else
 			bark("Du musst die geänderten Regeln akzeptieren, bevor Du diesen Tracker weiterhin verwenden darfst!");
@@ -167,13 +168,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 	$qry->bindParam(':uid', $CURUSER["id"], PDO::PARAM_INT);
 	$qry->execute();
 	// Session aktualisieren
-	session_unset();
-	$sql = "SELECT * FROM `users` WHERE `id` = :uid";
-	$qry = $GLOBALS['DB']->prepare($sql);
-	$qry->bindParam(':uid', $CURUSER["id"], PDO::PARAM_INT);
-	$qry->execute();
-	$_SESSION["userdata"] = $qry->Fetch(PDO::FETCH_ASSOC);
-
+	user::refreshSession($CURUSER["id"]);
 	header("Location: " . $BASEURL . "/my.php?edited=1".$urladd);
 }
 

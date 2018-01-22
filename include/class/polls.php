@@ -12,6 +12,7 @@
 // +--------------------------------------------------------------------------+
  */
 
+
 class polls
 {
 	private $con;
@@ -54,7 +55,6 @@ class polls
 		foreach($this->data[$poll]['result'] as $arr){
 			if(in_array($id, $arr)){
 				return true;
-				break;
 			}
 		}
 		return false;
@@ -96,7 +96,7 @@ class polls
 		$qry->bindParam(':id', $pollid, PDO::PARAM_INT);
 		$qry->execute();
 	}
-	
+
 	public function delete_answer($poll, $user){
 		foreach($this->data[$poll]['result'] as $question => $uarr){
 			$k = array_search($user, $uarr);
