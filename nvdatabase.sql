@@ -759,3 +759,9 @@ CREATE TABLE IF NOT EXISTS `shoutbox` (
   `visible` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `categories`
+	COLLATE='utf8_general_ci',
+	CONVERT TO CHARSET utf8;
+
+ALTER DATABASE `nvtracker` COLLATE 'utf8_general_ci';

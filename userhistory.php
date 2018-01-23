@@ -35,84 +35,76 @@ loggedinorreturn();
 
 $userid = $_GET["id"];
 
-if (!is_valid_id($userid)) stderr("Error", "Invalid ID");
+if(!is_valid_id($userid))
+	stderr("Error", "Invalid ID");
 
-if (get_user_class() < UC_POWER_USER || ($CURUSER["id"] != $userid && get_user_class() < UC_MODERATOR))
-    stderr("Fehler", "Zugriff verweigert");
+if(get_user_class() < UC_POWER_USER || ($CURUSER["id"] != $userid && get_user_class() < UC_MODERATOR))
+	stderr("Fehler", "Zugriff verweigert");
 
-$page = $_GET["page"];
+//$page = $_GET["page"];
 $action = $_GET["action"];
 // -------- Global variables
 $perpage = 25;
 // -------- Action: View posts
-if ($action == "viewposts") {
-    $select_is = "COUNT(DISTINCT p.id)";
-    $from_is = "posts AS p JOIN topics as t ON p.topicid = t.id JOIN forums AS f ON t.forumid = f.id";
-    $where_is = "p.userid = $userid AND f.minclassread <= " . $CURUSER['class'];
-    $order_is = "p.id DESC";
-    $query = "SELECT $select_is FROM $from_is WHERE $where_is";
-    $res = mysql_query($query) or sqlerr(__FILE__, __LINE__);
-    $arr = mysql_fetch_row($res) or stderr("Error", "No posts found");
-    $postcount = $arr[0]; 
-    // ------ Make page menu
-    list($pagertop, $pagerbottom, $limit) = pager($perpage, $postcount, $_SERVER["PHP_SELF"] . "?action=viewposts&id=$userid&"); 
-    // ------ Get user data
-    $res = mysql_query("SELECT username, donor, warned, enabled FROM users WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
-    if (mysql_num_rows($res) == 1) {
-        $arr = mysql_fetch_assoc($res);
-        $subject = "<a href=userdetails.php?id=$userid><b>$arr[username]</b></a>" . get_user_icons($arr, true);
-    } else
-        $subject = "unknown[$userid]"; 
-    // ------ Get posts
-    $from_is = "posts AS p JOIN topics as t ON p.topicid = t.id JOIN forums AS f ON t.forumid = f.id LEFT JOIN readposts as r ON p.topicid = r.topicid AND p.userid = r.userid";
-    $select_is = "f.id AS f_id, f.name, t.id AS t_id, t.subject, t.lastpost, r.lastpostread, p.*";
-    $query = "SELECT $select_is FROM $from_is WHERE $where_is ORDER BY $order_is $limit";
-    $res = mysql_query($query) or sqlerr(__FILE__, __LINE__);
-    if (mysql_num_rows($res) == 0) stderr("Error", "No posts found");
-    stdhead("Beitrags-History");
-    if ($postcount > $perpage) echo $pagertop; 
-    // ------ Print table
-    begin_main_frame();
-    begin_frame("Beitrags-History", false, "650px");
-    while ($arr = mysql_fetch_assoc($res)) {
-        $postid = $arr["id"];
-        $posterid = $arr["userid"];
-        $topicid = $arr["t_id"];
-        $topicname = stripslashes($arr["subject"]);
-        $forumid = $arr["f_id"];
-        $forumname = stripslashes($arr["name"]);
-        $newposts = ($arr["lastpostread"] < $arr["lastpost"]) && $CURUSER["id"] == $userid;
-        $added = $arr["added"] . " (Vor " . (get_elapsed_time(sql_timestamp_to_unix_timestamp($arr["added"]))) . ")";
+if($action == "viewposts"){
+	$select_is = "COUNT(DISTINCT p.id)";
+	$from_is = "posts AS p JOIN topics as t ON p.topicid = t.id JOIN forums AS f ON t.forumid = f.id";
+	$where_is = "p.userid = " . $userid . " AND f.minclassread <= " . $CURUSER['class'];
+	$order_is = "p.id DESC";
+	$query = "SELECT " . $select_is . " FROM " . $from_is . " WHERE " . $where_is;
+	$res = mysql_query($query) or sqlerr(__FILE__, __LINE__);
+	$arr = mysql_fetch_row($res) or stderr("Error", "No posts found");
+	$postcount = $arr[0]; 
+	// ------ Make page menu
+	list($pagertop, $pagerbottom, $limit) = pager($perpage, $postcount, $_SERVER["PHP_SELF"] . "?action=viewposts&id=$userid&"); 
+	// ------ Get user data
+	$res = mysql_query("SELECT username, added, donor, warned, enabled FROM users WHERE id=$userid") or sqlerr(__FILE__, __LINE__);
+	if(mysql_num_rows($res) == 1){
+		$arr = mysql_fetch_assoc($res);
+		$subject = "<a href=userdetails.php?id=$userid><b>$arr[username]</b></a>" . get_user_icons($arr, true);
+	}else
+		$subject = "unknown[$userid]"; 
+	// ------ Get posts
+	$from_is = "posts AS p JOIN topics as t ON p.topicid = t.id JOIN forums AS f ON t.forumid = f.id LEFT JOIN readposts as r ON p.topicid = r.topicid AND p.userid = r.userid";
+	$select_is = "f.id AS f_id, f.name, t.id AS t_id, t.subject, t.lastpost, r.lastpostread, p.*";
+	$query = "SELECT $select_is FROM $from_is WHERE $where_is ORDER BY $order_is $limit";
+	$res = mysql_query($query) or sqlerr(__FILE__, __LINE__);
+	if(mysql_num_rows($res) == 0)
+		stderr("Error", "No posts found");
+	stdhead("Beitrags-History");
+	if($postcount > $perpage)
+		echo $pagertop; 
+	// ------ Print table
+	begin_main_frame();
+	begin_frame("Beitrags-History", false, "650px");
+	while($arr = mysql_fetch_assoc($res)){
+		$postid = $arr["id"];
+		$posterid = $arr["userid"];
+		$topicid = $arr["t_id"];
+		$topicname = stripslashes($arr["subject"]);
+		$forumid = $arr["f_id"];
+		$forumname = stripslashes($arr["name"]);
+		$newposts = ($arr["lastpostread"] < $arr["lastpost"]) && $CURUSER["id"] == $userid;
+		$added = $arr["added"] . " (Vor " . (get_elapsed_time(sql_timestamp_to_unix_timestamp($arr["added"]))) . ")";
+		begin_table(TRUE);
+		print("<tr><td class=tableb>$added<br><b>Forum:&nbsp;</b><a href=/forums.php?action=viewforum&forumid=$forumid>$forumname</a>&nbsp;--&nbsp;<b>Thema:&nbsp;</b><a href=/forums.php?action=viewtopic&topicid=$topicid>$topicname</a>&nbsp;--&nbsp;<b>Beitrag:&nbsp;</b>#<a href=/forums.php?action=viewtopic&topicid=$topicid&page=p$postid#$postid>$postid</a>" . ($newposts ? " &nbsp;<b>(<font color=red>NEU!</font>)</b>" : "") . "</td></tr>\n");
+		$body = format_comment($arr["body"]);
+		if(is_valid_id($arr['editedby'])){
+			$subres = mysql_query("SELECT username FROM users WHERE id=$arr[editedby]");
+			if(mysql_num_rows($subres) == 1){
+				$subrow = mysql_fetch_assoc($subres);
+				$body .= "<p><font size=1 class=smallfont>Zuletzt bearbeitet von <a href=userdetails.php?id=$arr[editedby]><b>$subrow[username]</b></a> am $arr[editedat]</font></p>\n";
+			}
+		}
+		print("<tr valign=top><td class=tablea>$body</td></tr>\n");
+		end_table();
+	}
 
-        begin_table(TRUE);
-        print("<tr><td class=tableb>
-	    $added<br><b>Forum:&nbsp;</b>
-	    <a href=/forums.php?action=viewforum&forumid=$forumid>$forumname</a>
-	    &nbsp;--&nbsp;<b>Thema:&nbsp;</b>
-	    <a href=/forums.php?action=viewtopic&topicid=$topicid>$topicname</a>
-      &nbsp;--&nbsp;<b>Beitrag:&nbsp;</b>
-      #<a href=/forums.php?action=viewtopic&topicid=$topicid&page=p$postid#$postid>$postid</a>" .
-            ($newposts ? " &nbsp;<b>(<font color=red>NEU!</font>)</b>" : "") . "</td></tr>\n");
-        
-        $body = format_comment($arr["body"]);
-        if (is_valid_id($arr['editedby'])) {
-            $subres = mysql_query("SELECT username FROM users WHERE id=$arr[editedby]");
-            if (mysql_num_rows($subres) == 1) {
-                $subrow = mysql_fetch_assoc($subres);
-                $body .= "<p><font size=1 class=smallfont>Zuletzt bearbeitet von <a href=userdetails.php?id=$arr[editedby]><b>$subrow[username]</b></a> am $arr[editedat]</font></p>\n";
-            } 
-        } 
-
-        print("<tr valign=top><td class=tablea>$body</td></tr>\n");
-
-        end_table();
-    } 
-
-    end_frame();
-    end_main_frame();
-    if ($postcount > $perpage) echo $pagerbottom;
-    stdfoot();
-    die;
+	end_frame();
+	end_main_frame();
+	if($postcount > $perpage)
+		echo $pagerbottom;
+	stdfoot();
 } 
 // -------- Action: View comments
 if ($action == "viewcomments") {

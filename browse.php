@@ -21,15 +21,20 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 ob_start("ob_gzhandler");
 require_once("include/bittorrent.php");
-hit_start();
+
 dbconn(false);
 loggedinorreturn();
-hit_count();
+if(isset($_GET)){
+	$_GET["incldead"] = ((isset($_GET["incldead"])) ? $_GET["incldead"] : 0);
+	$_GET["sort"] = ((isset($_GET["sort"])) ? $_GET["sort"] : "desc");
+	$_GET["search"] = ((isset($_GET["search"])) ? $_GET["search"] : "");
+	$_GET["cat"] = ((isset($_GET["cat"])) ? $_GET["cat"] : 0);
+}
 $cats = genrelist();
 $searchstr = unesc($_GET["search"]);
 $cleansearchstr = searchfield($searchstr);
@@ -40,7 +45,7 @@ $wherea = array("`activated`='yes'");
 $wherecatina = array();
 if ($_GET["incldead"] == 1) {
     $addparam .= "incldead=1&amp;";
-    if (!isset($CURUSER) || get_user_class < UC_ADMINISTRATOR)
+    if (!isset($CURUSER) || get_user_class() < UC_ADMINISTRATOR)
         $wherea[] = "banned != 'yes'";
 } elseif ($_GET["incldead"] == 2) {
     $addparam .= "incldead=2&amp;";
@@ -48,29 +53,30 @@ if ($_GET["incldead"] == 1) {
 } else
     $wherea[] = "visible = 'yes'";
 $category = intval($_GET["cat"]);
-$all = $_GET["all"];
-if (!$all) {
-    if (!$_GET && $CURUSER["notifs"]) {
+$all = ((isset($_GET["all"])) ? $_GET["all"] : 0);
+if($all == 0){
+    if(count($_GET) == 0 && $CURUSER["notifs"]){
         $all = true;
-        foreach ($cats as $cat) {
-            $all &= $cat[id];
-            if (strpos($CURUSER["notifs"], "[cat" . $cat[id] . "]") !== false) {
-                $wherecatina[] = $cat[id];
-                $addparam .= "c$cat[id]=1&amp;";
+        foreach($cats as $cat){
+            $all &= $cat["id"];
+            if(strpos($CURUSER["notifs"], "[cat" . $cat["id"] . "]") !== false){
+                $wherecatina[] = $cat["id"];
+                $addparam .= "c" . $cat["id"] . "=1&amp;";
             } 
         } 
-    } elseif ($category) {
+    }elseif ($category > 0){
         if (!is_valid_id($category))
             stderr("Error", "Invalid category ID $category.");
         $wherecatina[] = $category;
         $addparam .= "cat=$category&amp;";
     } else {
         $all = true;
-        foreach ($cats as $cat) {
-            $all &= $_GET["c$cat[id]"];
-            if ($_GET["c$cat[id]"]) {
-                $wherecatina[] = $cat[id];
-                $addparam .= "c$cat[id]=1&amp;";
+        foreach($cats as $cat){
+			$_GET["c" . $cat["id"]] = ((isset($_GET["c" . $cat["id"]])) ? $_GET["c" . $cat["id"]] : 0);
+            $all &= $_GET["c" . $cat["id"]];
+            if($_GET["c" . $cat["id"]] > 0){
+                $wherecatina[] = $cat["id"];
+                $addparam .= "c" . $cat["id"] . "=1&amp;";
             } 
         } 
     } 
@@ -119,7 +125,7 @@ $orderby_sel = array("name" => "Torrent-Name",
     "files" => "Anzahl Dateien",
     "comments" => "Anzahl Kommentare",
     "added" => "Upload-Datum",
-    "size" => "Gesamtgröße",
+    "size" => "GesamtgrÃ¶ÃŸe",
     "snatched" => "Anzahl heruntergeladen",
     "seeds" => "Anzahl Seeder",
     "leeches" => "Anzahl Leecher",
@@ -136,10 +142,11 @@ switch ($_GET["sort"]) {
         $orderby .= " DESC";
         break;
 } 
-if ($all) {
+if($all > 0){
     $wherecatina = array();
     $addparam = "";
-} 
+}
+
 if ($_GET["showsearch"] == 1) {
     $CURUSER["displaysearch"] = "yes";
     mysql_query("UPDATE users SET displaysearch='yes' WHERE id=".$CURUSER["id"]);
@@ -151,9 +158,9 @@ if ($_GET["showsearch"] == 1) {
 }
 if (count($wherecatina) > 1)
     $wherecatin = implode(",", $wherecatina);
-elseif (count($wherecatina) == 1)
+elseif(count($wherecatina) == 1)
     $wherea[] = "category = $wherecatina[0]";
-if ($CURUSER["hideuseruploads"]=="yes")
+if($CURUSER["hideuseruploads"]=="yes")
     $wherea[] = "users.class >= ".UC_UPLOADER;
 $wherebase = $wherea;
 if (isset($cleansearchstr)) {
@@ -207,7 +214,7 @@ if ($count) {
 } else
     unset($res);
 if (isset($cleansearchstr))
-    stdhead("Suchergebnisse für \"$searchstr\"");
+    stdhead("Suchergebnisse fÃ¼r \"$searchstr\"");
 else
     stdhead();
 ?>
@@ -228,11 +235,10 @@ else
   <tr>
 <?php
     $i = 0;
-    foreach ($cats as $cat) {
-        print(($i && $i % $GLOBALS["BROWSE_CATS_PER_ROW"] == 0) ? "</tr><tr>" : "");
-        print("<td class=\"tablea\" style=\"padding-bottom: 2px;padding-left: 7px\" nowrap><input name=\"c$cat[id]\" type=\"checkbox\" " . (in_array($cat[id], $wherecatina) ? "checked " : "") . "value=\"1\"><a class=\"catlink\" href=\"browse.php?cat=$cat[id]&amp;showsearch=1\">" . htmlspecialchars($cat[name]) . "</a></td>\n");
-        $i++;
-    } 
+	foreach ($cats as $cat){
+		echo (($i && $i % $GLOBALS["BROWSE_CATS_PER_ROW"] == 0) ? "</tr><tr>" : "") . "<td class=\"tablea\" style=\"padding-bottom: 2px;padding-left: 7px;white-space: nowrap\"><input name=\"c" . $cat["id"] . "\" type=\"checkbox\" " . (in_array($cat["id"], $wherecatina) ? "checked=\"checked\" " : "") . "value=\"1\"><a class=\"catlink\" href=\"browse.php?cat=" . $cat["id"] . "&amp;showsearch=1\">" . htmlspecialchars($cat["name"]) . "</a></td>\n";
+		$i++;
+	} 
     $alllink = "<a href=\"browse.php?all=1&amp;showsearch=1\"><b>Alle anzeigen</b></a>";
     $ncats = count($cats);
     $nrows = ceil($ncats / $GLOBALS["BROWSE_CATS_PER_ROW"]);
@@ -245,6 +251,7 @@ else
     } 
     if ($ncats % $GLOBALS["BROWSE_CATS_PER_ROW"] == 0)
         print("<tr><td class=\"tablea\" colspan=\"" . $GLOBALS["BROWSE_CATS_PER_ROW"] . "\" style=\"text-align:center;vertical-align:middle\">$alllink</td>\n");
+
     ?>
   </tr>
   <tr>
@@ -263,11 +270,12 @@ else
     <td colspan="<?=$GLOBALS["BROWSE_CATS_PER_ROW"]?>" class="tablea" nowrap="nowrap">Sortieren nach <select name="orderby" size="1">
     <?php
     foreach ($orderby_sel as $orderparam => $description) {
-        echo "<option value=\"$orderparam\"";
+        echo "<option value=\"" . $orderparam . "\"";
         if ($orderparam == $_GET["orderby"])
             echo " selected=\"selected\"";
-        echo ">$description</option>\n";
-    } 
+        echo ">" . $description . "</option>\n";
+    }
+	
     ?>
     </select> in <select name="sort" size="1">
       <option value="desc"<?php if ($_GET["sort"] == "desc") echo " selected=\"selected\"";

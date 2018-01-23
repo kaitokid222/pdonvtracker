@@ -8,7 +8,7 @@
 // | originally by RedBeard of TorrentBits, extensively modified by           |
 // | Gartenzwerg.                                                             |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -16,9 +16,9 @@ function stdhead($title = "", $msgalert = true){
 	global $CURUSER, $_SERVER, $PHP_SELF, $BASEURL;
 
 	if(!$GLOBALS["SITE_ONLINE"])
-		die("Die Seite ist momentan aufgrund von Wartungsarbeiten nicht verfügbar.<br>");
+		die("Die Seite ist momentan aufgrund von Wartungsarbeiten nicht verfÃ¼gbar.<br>");
 
-	header("Content-Type: text/html; charset=iso-8859-1");
+	header("Content-Type: text/html; charset=utf-8");
 	header("Pragma: No-cache");
 	header("Expires: 300");
 	header("Cache-Control: private");

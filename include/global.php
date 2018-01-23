@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -200,8 +200,8 @@ function format_comment($text, $strip_html = true){
 	$s = preg_replace("/\[nfo\]((\s|.)+?)\[\/nfo\]/i", "<tt><nobr><font face=\"MS Linedraw\" size=\"2\" style=\"font-size: 10pt; line-height: 10pt\">\\1</font></nobr></tt>", $s); 
 	// Maintain spacing
 	//$s = str_replace("  ", " &nbsp;", $s);
-	// Fix für Umlaute by Cerberus
-	$s = str_replace(array("  ", "&amp;acute;", "&amp;quot;","&amp;lt;","&amp;gt;", "Ä", "Ö", "Ü", "ä", "ö", "ü", "ß", "&amp;Auml;", "&amp;Ouml;", "&amp;Uuml;", "&amp;auml;", "&amp;ouml;", "&amp;uuml;", "&amp;szlig;"), array(" &nbsp;", "&acute;", "&quot;","&lt;","&gt;", "&Auml;", "&Ouml;", "&Uuml;", "&auml;", "&ouml;", "&uuml;", "&szlig;", "&Auml;", "&Ouml;", "&Uuml;", "&auml;", "&ouml;", "&uuml;", "&szlig;"),$s);  
+	// Fix fÃ¼r Umlaute by Cerberus
+	$s = str_replace(array("  ", "&amp;acute;", "&amp;quot;","&amp;lt;","&amp;gt;", "Ã„", "Ã–", "Ãœ", "Ã¤", "Ã¶", "Ã¼", "ÃŸ", "&amp;Auml;", "&amp;Ouml;", "&amp;Uuml;", "&amp;auml;", "&amp;ouml;", "&amp;uuml;", "&amp;szlig;"), array(" &nbsp;", "&acute;", "&quot;","&lt;","&gt;", "&Auml;", "&Ouml;", "&Uuml;", "&auml;", "&ouml;", "&uuml;", "&szlig;", "&Auml;", "&Ouml;", "&Uuml;", "&auml;", "&ouml;", "&uuml;", "&szlig;"),$s);  
 
 	reset($smilies);
 	while(list($code, $url) = each($smilies))
@@ -277,12 +277,12 @@ function delete_acct($id){
 		$userinfo = $qry->fetchObject();
 
 	if($userinfo->email && $userinfo->status == "confirmed"){
-		$mailbody = "Dein Account auf ".$GLOBALS["SITENAME"]." wurde gelöscht. Dies ist entweder passiert, ".
-					"weil Du Dich längere Zeit nicht mehr eingeloggt hast, oder Dein Account von einem ".
+		$mailbody = "Dein Account auf ".$GLOBALS["SITENAME"]." wurde gelÃ¶scht. Dies ist entweder passiert, ".
+					"weil Du Dich lÃ¤ngere Zeit nicht mehr eingeloggt hast, oder Dein Account von einem ".
 					"Administrator deaktiviert wurde. ".
-					"Diese E-Mail dient dazu, Dich darüber zu informieren, dass Du diesen Account nun nicht ".
+					"Diese E-Mail dient dazu, Dich darÃ¼ber zu informieren, dass Du diesen Account nun nicht ".
 					"mehr nutzen kannst. Bitte antworte nicht auf diese E-Mail!";
-		mail("\"" . $userinfo->username . "\" <" . $userinfo->email . ">", "Account gelöscht auf ".$GLOBALS["SITENAME"], $mailbody);
+		mail("\"" . $userinfo->username . "\" <" . $userinfo->email . ">", "Account gelÃ¶scht auf ".$GLOBALS["SITENAME"], $mailbody);
 	}
 
 	$sql = array();
@@ -308,7 +308,7 @@ function delete_acct($id){
 		}
 	}
 
-    // Nachrichten löschen
+    // Nachrichten lÃ¶schen
 	$msgids = array();
 	$qry = $GLOBALS['DB']->prepare('SELECT `id` FROM `messages` WHERE `sender`=$id OR `receiver`= :id');
 	$qry->bindParam(':id', $id, PDO::PARAM_INT);
@@ -321,7 +321,7 @@ function delete_acct($id){
 	}
     $msgids = implode(",", $msgids);
 	deletePersonalMessages($msgids, $id);
-    write_log("accdeleted", "Der Benutzer '".htmlspecialchars($userinfo->username)."' mit der ID " . $id . " wurde aus der Datenbank gelöscht.");
+    write_log("accdeleted", "Der Benutzer '".htmlspecialchars($userinfo->username)."' mit der ID " . $id . " wurde aus der Datenbank gelÃ¶scht.");
 	return TRUE;
 } 
 
@@ -432,7 +432,7 @@ function hex_esc($matches){
 
 function getagent($httpagent, $peer_id){
 	global $client_uas, $clean_uas; 
-	// Spezialfälle mittels Peer-ID bestimmen
+	// SpezialfÃ¤lle mittels Peer-ID bestimmen
 	if(substr($peer_id, 0, 4) == "exbc")
 		$httpagent = "BitComet/" . ord(substr($peer_id, 4, 1)) . "." . ord(substr($peer_id, 5, 1));
 	if(preg_match("/^-BC(\d\d)(\d\d)-/", $peer_id, $matches))
@@ -567,14 +567,14 @@ function resize_image($origfn, $tmpfile, $target_filename){
 		
 	if($file["size"] > $GLOBALS["MAX_UPLOAD_FILESIZE"]){
 		tr_status("err");
-		array_push($GLOBALS["uploaderrors"], "Die Bilddatei '".$file["name"]."' ist zu groß (max. ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")!");
+		array_push($GLOBALS["uploaderrors"], "Die Bilddatei '".$file["name"]."' ist zu groÃŸ (max. ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")!");
 		return FALSE;
 	}
 
 	$it = exif_imagetype($file["tmp_name"]);
 	if ($it != IMAGETYPE_GIF && $it != IMAGETYPE_JPEG && $it != IMAGETYPE_PNG){
 		tr_status("err");
-		array_push($GLOBALS["uploaderrors"], "Sorry, die hochgeladene Datei '".$file["name"]."' konnte nicht als gültige Bilddatei verifiziert werden.");
+		array_push($GLOBALS["uploaderrors"], "Sorry, die hochgeladene Datei '".$file["name"]."' konnte nicht als gÃ¼ltige Bilddatei verifiziert werden.");
 		return FALSE;
 	}
 
@@ -612,14 +612,14 @@ function resize_image($origfn, $tmpfile, $target_filename){
 
 function strip_ascii_art($text){
 	// First, remove all "weird" characters.
-	$text = preg_replace("/[^a-zA-Z0-9öäüÖÄÜß\\-_?!&[\\]().,;:+=#*~@\\/\\\\'\"><\\s]/", "", $text);
+	$text = preg_replace("/[^a-zA-Z0-9Ã¶Ã¤Ã¼Ã–Ã„ÃœÃŸ\\-_?!&[\\]().,;:+=#*~@\\/\\\\'\"><\\s]/", "", $text);
 	$oldtext = "";
 	while($text != $oldtext){
 		$oldtext = $text; 
 		// Remove all repeating umlauts
-		$text = preg_replace("/[öäüÖÄÜß]{2,}/", "", $text);
+		$text = preg_replace("/[Ã¶Ã¤Ã¼Ã–Ã„ÃœÃŸ]{2,}/", "", $text);
 		// Remove all "free" umlauts, not enclosed by other word chars
-		$text = preg_replace("/(^|\\s)[öäüÖÄÜß]+(\\s|$)/sm", "", $text);
+		$text = preg_replace("/(^|\\s)[Ã¶Ã¤Ã¼Ã–Ã„ÃœÃŸ]+(\\s|$)/sm", "", $text);
 	}
 	// Remove trailing spaces at end of line
 	$text = preg_replace("/([\\t ]+)(\\s$)/m", "\\2", $text);

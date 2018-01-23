@@ -24,7 +24,7 @@ ini_set('display_errors', 1);
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -152,7 +152,7 @@ function getip(){
 	return $ip;
 }
 
-// die quelle des bösen
+// die quelle des bÃ¶sen
 function dbconn($autoclean = false){
     global $mysql_host, $mysql_user, $mysql_pass, $mysql_db, $_SERVER;
 	trigger_error("Veraltete Funktion dbconn wurde aufgerufen!");
@@ -175,9 +175,9 @@ function dbconn($autoclean = false){
     mysql_select_db($mysql_db)
     or die('dbconn: mysql_select_db: ' + mysql_error());
 
-	// userlogin() ersetzt in überarbeiteten dateien dbconn()
+	// userlogin() ersetzt in Ã¼berarbeiteten dateien dbconn()
 	// userlogin selbst ist pdo aber eine sehr schwache
-	// lösung. hier muss eine klasse "das ruder übernehmen"
+	// lÃ¶sung. hier muss eine klasse "das ruder Ã¼bernehmen"
     userlogin();
 
     if ($autoclean)
@@ -221,7 +221,7 @@ function userlogin(){
 			} 
 		}
 		// hier ist der angriffspunkt um rework zu vermeiden
-		// geschätzte kompatibilität 99%
+		// geschÃ¤tzte kompatibilitÃ¤t 99%
         $GLOBALS["CURUSER"] = $_SESSION["userdata"];
     } else {
         // Keine Session aktiv, login via Cookie
@@ -535,8 +535,8 @@ function deletetorrent($id, $owner = 0, $comment = "")
     @unlink($GLOBALS["TORRENT_DIR"] . "/" . $id . ".torrent");
 
     if ($CURUSER && $owner > 0 && $CURUSER["id"] != $owner) {
-        $msg = "Dein Torrent '" . $torrent['name'] . "' wurde von [url=" . $DEFAULTBASEURL . "/userdetails.php?id=" . $CURUSER["id"] . "]" . $CURUSER["username"] . "[/url] gelöscht.\n\n[b]Grund:[/b]\n" . $comment;
-        sendPersonalMessage(0, $owner, "Einer Deiner Torrents wurde gelöscht", $msg, PM_FOLDERID_SYSTEM, 0);
+        $msg = "Dein Torrent '" . $torrent['name'] . "' wurde von [url=" . $DEFAULTBASEURL . "/userdetails.php?id=" . $CURUSER["id"] . "]" . $CURUSER["username"] . "[/url] gelÃ¶scht.\n\n[b]Grund:[/b]\n" . $comment;
+        sendPersonalMessage(0, $owner, "Einer Deiner Torrents wurde gelÃ¶scht", $msg, PM_FOLDERID_SYSTEM, 0);
     } 
 } 
 
@@ -562,7 +562,7 @@ function pager($rpp, $count, $href, $opts = array())
     $pager = "";
 
     $mp = $pages - 1;
-    $as = "<b>&lt;&lt;&nbsp;Zurück</b>";
+    $as = "<b>&lt;&lt;&nbsp;ZurÃ¼ck</b>";
     if ($page >= 1) {
         $pager .= "<a href=\"{$href}page=" . ($page - 1) . "\">";
         $pager .= $as;
@@ -670,9 +670,9 @@ function commenttable($rows){
 				$title = htmlspecialchars($title);
 			echo "<a name=\"comm" . $row["id"] . "\" href=\"userdetails.php?id=" . $row["user"] . "\"><b>" . htmlspecialchars($row["username"]) . "</b></a>" . get_user_icons(array("donor" => $row["donor"], "enabled" => $row["enabled"], "warned" => $row["warned"], "added" => $row["uadded"])) . " (" . $title . ")";
 		}else
-			echo "<a name=\"comm" . $row["id"] . "\"><i>(Gelöscht)</i></a>";
+			echo "<a name=\"comm" . $row["id"] . "\"><i>(GelÃ¶scht)</i></a>";
 		echo " am " . $row["added"] . ($row["user"] == $CURUSER["id"] || get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=edit&amp;cid=" . $row["id"] . "\">Bearbeiten</a>]" : "") .
-			(get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=delete&amp;cid=" . $row["id"] . "\">Löschen</a>]" : "") .
+			(get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=delete&amp;cid=" . $row["id"] . "\">LÃ¶schen</a>]" : "") .
 			($row["editedby"] && get_user_class() >= UC_MODERATOR ? " - [<a href=\"comment.php?action=vieworiginal&amp;cid=" . $row["id"] . "\">Original anzeigen</a>]" : "") . "\n" . 
 			"        </td>\n".
 			"    </tr>\n";
@@ -909,9 +909,9 @@ function torrenttable_row($torrent_info){
 		$guagent = "";
 		
 	if ($torrent_info["seeders"] == 0 && $torrent_info["variant"] == "index"){
-		$deadtext = "<div style=\"padding:4px;\"><b><font color=\"red\">HINWEIS:</font></b> Es sind keine Seeder für diesen Torrent aktiv. ".
+		$deadtext = "<div style=\"padding:4px;\"><b><font color=\"red\">HINWEIS:</font></b> Es sind keine Seeder fÃ¼r diesen Torrent aktiv. ".
 					"Dies bedeutet, dass Du diesen Torrent wahrscheinlich nicht fertigstellen kannst, solange nicht wieder ein Seeder aktiv wird. ".
-					"Sollte der Torrent längere Zeit inaktiv gewesen und als \"Tot\" markiert worden sein, solltest Du im Forum um einen Reseed bitten, ".
+					"Sollte der Torrent lÃ¤ngere Zeit inaktiv gewesen und als \"Tot\" markiert worden sein, solltest Du im Forum um einen Reseed bitten, ".
 					"Falls Du noch Interesse daran hast.</div>";
 	}else
 		$deadtext = "";
@@ -1089,7 +1089,7 @@ function torrenttable($res, $variant = "index", $addparam = ""){
 		$torrent_info["times_completed"] = intval($row["times_completed"]);
 		$torrent_info["seeders"] = $row["seeders"];
 		$torrent_info["leechers"] = $row["leechers"];
-		$torrent_info["uploaderlink"] = (isset($row["username"]) ? ("<a href=\"userdetails.php?id=" . $row["owner"] . "\"><b>" . htmlspecialchars($row["username"]) . "</b></a>") : "<i>(Gelöscht)</i>");
+		$torrent_info["uploaderlink"] = (isset($row["username"]) ? ("<a href=\"userdetails.php?id=" . $row["owner"] . "\"><b>" . htmlspecialchars($row["username"]) . "</b></a>") : "<i>(GelÃ¶scht)</i>");
 		$torrent_info["added"] = str_replace(" ", "&nbsp;", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($row["added"])));
 		$torrent_info["comments"] = $row["comments"];
 		$torrent_info["visible"] = $row["visible"];
@@ -1203,7 +1203,7 @@ function hash_pad($hash){
 	return str_pad($hash, 20);
 } 
 
-/* nur für announce.php und scrape nötig
+/* nur fÃ¼r announce.php und scrape nÃ¶tig
 function hash_where($name, $hash){
 	$shhash = preg_replace('/ *$/s', "", $hash);
 	return "(" . $name . " = '" . $hash . "' OR " . $name . " = '" . $shhash . "')";
