@@ -14,13 +14,9 @@
 
 class user
 {
-	protected $id;
-	protected $username;
-	function __construct() {
+	function __construct(){
 	}
-	
-	
-	
+
 	public static function addUser($wantusername,$wantpasshash,$passkey,$secret,$editsecret = "",$email = "",$status = "confirmed",$stylesheet = 1,$dt = ""){
 		if($email == "")
 			$email = "system@" . $GLOBALS["SITENAME"];
@@ -51,6 +47,26 @@ class user
 		$qry->execute();
 		$_SESSION["userdata"] = $qry->Fetch(PDO::FETCH_ASSOC);
 	}
+
+	public static function showSearch($uid){
+		$sql = "UPDATE users SET displaysearch='yes' WHERE id= :uid";
+		$qry = $GLOBALS['DB']->prepare($sql);
+		$qry->bindParam(':uid', $uid, PDO::PARAM_INT);
+		$qry->execute();
+		$GLOBALS["CURUSER"]["displaysearch"] = "yes";
+		$_SESSION["userdata"]["displaysearch"] = "yes";
+	}
+
+	public static function hideSearch($uid){
+		$sql = "UPDATE users SET displaysearch='no' WHERE id= :uid";
+		$qry = $GLOBALS['DB']->prepare($sql);
+		$qry->bindParam(':uid', $uid, PDO::PARAM_INT);
+		$qry->execute();
+		$GLOBALS["CURUSER"]["displaysearch"] = "no";
+		$_SESSION["userdata"]["displaysearch"] = "no";
+	}
+
+	
 
 	/*public static function hasToAcceptRules($uid,$page){
 		if($GLOBALS["CURUSER"]["accept_rules"] == "no" && !preg_match("/(my|rules|faq|logout|delacct)\\.php$/", $_SERVER["PHP_SELF"])) {

@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -41,7 +41,7 @@ if($action == "add"){
 			$text = trim($_POST["text"]);
 			$torrentid = $_POST["tid"];
 		}else
-			stderr("Fehler", "Eingabe ungültig!");
+			stderr("Fehler", "Eingabe ungÃ¼ltig!");
 		$dt = get_date_time();
 		$sql = "INSERT INTO comments (user, torrent, added, text, ori_text) VALUES (:uid, :tid, :dt, :text, :otext)";
 		$qry = $GLOBALS["DB"]->prepare($sql);
@@ -60,7 +60,7 @@ if($action == "add"){
 	}else{
 		$torrentid = 0 + $_GET["tid"];
 		if(!is_valid_id($torrentid))
-			stderr("Fehler", "Ungültige ID " . $torrentid . ".");
+			stderr("Fehler", "UngÃ¼ltige ID " . $torrentid . ".");
 
 		$sql = "SELECT name FROM torrents WHERE id = :id";
 		$qry = $GLOBALS['DB']->prepare($sql);
@@ -73,8 +73,8 @@ if($action == "add"){
 		if(strlen($arr["name"])>50)
 			$arr["name"] = substr($arr["name"], 0, 50)."...";
 		
-		stdhead("Einen Kommentar für \"" . $arr["name"] . "\" hinzufügen");
-		begin_frame("Einen Kommentar für \"" . htmlspecialchars($arr["name"]) . "\" hinzufügen", FALSE, "500px");
+		stdhead("Einen Kommentar fÃ¼r \"" . $arr["name"] . "\" hinzufÃ¼gen");
+		begin_frame("Einen Kommentar fÃ¼r \"" . htmlspecialchars($arr["name"]) . "\" hinzufÃ¼gen", FALSE, "500px");
 		echo "<form method=\"post\" action=\"comment.php?action=add\">\n".
 			"<p>\n".
 			"    <input type=\"hidden\" name=\"tid\" value=\"" . $torrentid . "\"/>\n".
@@ -102,7 +102,7 @@ if($action == "add"){
 }elseif($action == "edit"){
 	$commentid = 0 + $_GET["cid"];
 	if(!is_valid_id($commentid))
-		stderr("Fehler", "Ungültige ID " . $commentid . ".");
+		stderr("Fehler", "UngÃ¼ltige ID " . $commentid . ".");
 
 	$sql = "SELECT c.*, t.id as tid, t.name FROM comments AS c JOIN torrents AS t ON c.torrent = t.id WHERE c.id= :id";
 	$qry = $GLOBALS['DB']->prepare($sql);
@@ -111,7 +111,7 @@ if($action == "add"){
 	if($qry->rowCount())
 		$arr = $qry->Fetch(PDO::FETCH_ASSOC);
 	else
-		stderr("Fehler", "Ungültige ID " . $commentid . ".");
+		stderr("Fehler", "UngÃ¼ltige ID " . $commentid . ".");
 
 	if($arr["user"] != $CURUSER["id"] && get_user_class() < UC_MODERATOR)
 		stderr("Fehler", "Zugriff verweigert.");
@@ -137,8 +137,8 @@ if($action == "add"){
 		else
 			header("Location: " . $BASEURL . "/" . $_SERVER['PHP_SELF'] . "?tid=" . $arr["tid"]);
 	}else{
-		stdhead("Kommentar für \"" . $arr["name"] . "\" bearbeiten");
-		begin_frame("Kommentar für \"" . htmlspecialchars($arr["name"]) . "\" bearbeiten", FALSE, "500px");
+		stdhead("Kommentar fÃ¼r \"" . $arr["name"] . "\" bearbeiten");
+		begin_frame("Kommentar fÃ¼r \"" . htmlspecialchars($arr["name"]) . "\" bearbeiten", FALSE, "500px");
 		echo "<form method=\"post\" action=\"comment.php?action=edit&amp;cid=" . $commentid . "\">\n".
 			"    <input type=\"hidden\" name=\"returnto\" value=\"" . $_SERVER["HTTP_REFERER"] . "\" />\n".
 			"    <input type=\"hidden\" name=\"cid\" value=\"" . $commentid . "\" />\n".
@@ -156,12 +156,12 @@ if($action == "add"){
 
 	$commentid = 0 + $_GET["cid"];
 	if(!is_valid_id($commentid))
-		stderr("Fehler", "Ungültige ID " . $commentid . ".");
+		stderr("Fehler", "UngÃ¼ltige ID " . $commentid . ".");
 
 	$sure = ((isset($_GET["sure"])) ? $_GET["sure"] : 0);
 	if($sure < 1){
 		$referer = $_SERVER["HTTP_REFERER"];
-		stderr("Kommentar löschen", "Du bist im Begriff, einen Kommentar zu Löschen. Klicke <a href=\"?action=delete&cid=" . $commentid . "&sure=1" . ($referer ? "&returnto=" . urlencode($referer) : "") . "\">hier</a> wenn Du Dir sicher bist.");
+		stderr("Kommentar lÃ¶schen", "Du bist im Begriff, einen Kommentar zu LÃ¶schen. Klicke <a href=\"?action=delete&cid=" . $commentid . "&sure=1" . ($referer ? "&returnto=" . urlencode($referer) : "") . "\">hier</a> wenn Du Dir sicher bist.");
 	}
 
 	$sql = "SELECT torrent FROM comments WHERE id= :id";
@@ -193,7 +193,7 @@ if($action == "add"){
 
 	$commentid = 0 + $_GET["cid"];
 	if(!is_valid_id($commentid))
-		stderr("Fehler", "Ungültige ID " . $commentid . ".");
+		stderr("Fehler", "UngÃ¼ltige ID " . $commentid . ".");
 
 	$sql = "SELECT c.*, t.name FROM comments AS c JOIN torrents AS t ON c.torrent = t.id WHERE c.id= :id";
 	$qry = $GLOBALS['DB']->prepare($sql);
@@ -202,16 +202,16 @@ if($action == "add"){
 	if($qry->rowCount())
 		$arr = $qry->Fetch(PDO::FETCH_ASSOC);
 	else
-		stderr("Fehler", "Ungültige ID " . $commentid . ".");
+		stderr("Fehler", "UngÃ¼ltige ID " . $commentid . ".");
 
 	$returnto = ((isset($_GET["returnto"])) ? $_GET["returnto"] : $_SERVER['PHP_SELF']);
 	if($returnto)
-		$rt_str = "<br><br><center>(<a href=" . $returnto . ">Zurück</a>)</center>\n";
+		$rt_str = "<br><br><center>(<a href=" . $returnto . ">ZurÃ¼ck</a>)</center>\n";
 	else
 		$rt_str = "";
 
 	stdhead("Originaler Kommentar");
-	begin_frame("Ursprünglicher Inhalt des Kommentars #" . $commentid, FALSE, "500px");
+	begin_frame("UrsprÃ¼nglicher Inhalt des Kommentars #" . $commentid, FALSE, "500px");
 	begin_table();
 	echo "<center>" . htmlspecialchars(stripslashes($arr["ori_text"])) . "</center>\n" . $rt_str;
 	end_table();

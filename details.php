@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -110,7 +110,7 @@ if(isset($_GET["activate"]) && $moderator && $row["activated"] != "yes"){
 		$qry->execute();
 	}
 	write_log("torrentgranted", "Der Torrent <a href=\"details.php?id=" . $row["id"] . "\">" . htmlspecialchars($row["name"]) . "</a> wurde von '<a href=\"userdetails.php?id=$CURUSER[id]\">$CURUSER[username]</a>' freigeschaltet.");
-	stderr("Torrent freigeschaltet", "Der Torrent wurde freigeschaltet, und ist nun über die Torrent-Suche auffindbar. Ebenso kann der Besitzer nun beginnen, den Torrent zu seeden. Eine Persönliche Nachricht wurde an den Uploader versendet, die ihn über die Freischaltung informiert.");
+	stderr("Torrent freigeschaltet", "Der Torrent wurde freigeschaltet, und ist nun Ã¼ber die Torrent-Suche auffindbar. Ebenso kann der Besitzer nun beginnen, den Torrent zu seeden. Eine PersÃ¶nliche Nachricht wurde an den Uploader versendet, die ihn Ã¼ber die Freischaltung informiert.");
 }
 
 if(isset($_GET["agenttakeover"]) && $_GET["agenttakeover"] == "acquire" && $row["gu_agent"] == 0 && $moderator && $row["activated"] != "yes") {
@@ -163,7 +163,7 @@ if(!isset($_GET["page"])){
 
 	if(isset($_GET["edited"])){
 		begin_frame("Erfolgreich bearbeitet!", false, "650px");
-		echo "<p>Der Torrent wurde erfolgreich geändert. Die Änderungen sind sofort für andere sichtbar.</p>";
+		echo "<p>Der Torrent wurde erfolgreich geÃ¤ndert. Die Ã„nderungen sind sofort fÃ¼r andere sichtbar.</p>";
 		if(isset($_GET["returnto"]))
 			echo "<p><b>Gehe dorthin zur&uuml;ck, von <a href=\"" . htmlspecialchars($_GET["returnto"]) . "\">wo Du gekommen bist</a>.</b></p>\n";
 		end_frame();
@@ -214,7 +214,7 @@ if(!isset($_GET["page"])){
 				}
 				echo "<br>";
 			}else{
-				echo "<a class=\"index\" href=\"details.php?id=" . $row["id"] . "&amp;agenttakeover=acquire\">Bearbeitung dieses Gastuploads übernehmen</a><br>";
+				echo "<a class=\"index\" href=\"details.php?id=" . $row["id"] . "&amp;agenttakeover=acquire\">Bearbeitung dieses Gastuploads Ã¼bernehmen</a><br>";
 			}
 			echo "<a class=\"index\" href=\"details.php?id=" . $row["id"] . "&amp;activate=1\">Torrent freischalten</a></td>\n.".
 				"                </tr>\n";
@@ -257,7 +257,7 @@ if(!isset($_GET["page"])){
 			"                    <td class=\"tableb\" width=\"1%\">Hash-Wert</td>\n".
 			"                    <td class=\"tableb\" width=\"99%\" style=\"text-align:left\">";
 		if($row["activated"] != "yes" && $owned)
-			echo "Du benötigst eine Wartezeitaufhebung für diesen Torrent. Diese wird beim Freischalten des Torrents jedoch automatisch erteilt.";
+			echo "Du benÃ¶tigst eine Wartezeitaufhebung fÃ¼r diesen Torrent. Diese wird beim Freischalten des Torrents jedoch automatisch erteilt.";
 		else{
 			if($waittime > 2){
 				echo "<form action=\"requestnowait.php\" method=\"post\">Antragsgrund: ".
@@ -266,7 +266,7 @@ if(!isset($_GET["page"])){
 					"<input type=\"submit\" value=\"Beantragen\">".
 					"</form><br><a href=\"faq.php#dlf\">Bitte beachte die Regeln zur Wartezeitaufhebung!</a>";
 			}elseif($waittime){
-				echo "Du musst noch min. 3 Stunden Wartezeit übrig haben, um eine Aufhebung beantragen zu können. (<a href=\"faq.php#dlf\">Hilfe</a>)";
+				echo "Du musst noch min. 3 Stunden Wartezeit Ã¼brig haben, um eine Aufhebung beantragen zu kÃ¶nnen. (<a href=\"faq.php#dlf\">Hilfe</a>)";
 			}
 		}
 		echo "</td>\n".
@@ -307,7 +307,7 @@ if(!isset($_GET["page"])){
 			"                    <td class=\"tableb\" width=\"99%\" style=\"text-align:left\">" . $row["banned"] . "</td>\n".
 			"                </tr>\n";
 	}
-	$cname = ((isset($row["cat_name"])) ? $row["cat_name"] : "(nicht ausgewählt)");
+	$cname = ((isset($row["cat_name"])) ? $row["cat_name"] : "(nicht ausgewÃ¤hlt)");
 	$kg_str = ((isset($keepget)) ? $keepget : "");
 	$sna_left_str = ((!isset($_GET["snatcher"])) ? "<a name=\"snatcher\"></a>Letzte 10<br /><a href=\"details.php?id=" . $id . "&amp;snatcher=1" . $kg_str . "#snatcher\" class=\"sublink\">[Alle anzeigen]</a>" : "<a name=\"snatcher\"></a>Fertiggestellt<br />(Benutzer)<br /><a href=\"details.php?id=" . $id . $kg_str . "#snatcher\" class=\"sublink\">[Liste verbergen]</a>" );
 	$uprow = ((isset($row["username"])) ? ("<a href=\"userdetails.php?id=" . $row["owner"] . "\"><b>" . htmlspecialchars($row["username"]) . "</b></a>") : "<i>Unbekannt</i>");
@@ -320,14 +320,14 @@ if(!isset($_GET["page"])){
 		"                </tr>\n".
 		"                <tr>\n".
 		"                    <td class=\"tableb\" width=\"1%\">Letzter Seeder</td>\n".
-		"                    <td class=\"tableb\" width=\"99%\" style=\"text-align:left\">Letzte Aktivität ist " . mkprettytime($row["lastseed"]) . " her</td>\n".
+		"                    <td class=\"tableb\" width=\"99%\" style=\"text-align:left\">Letzte AktivitÃ¤t ist " . mkprettytime($row["lastseed"]) . " her</td>\n".
 		"                </tr>\n".
 		"                <tr>\n".
-		"                    <td class=\"tableb\" width=\"1%\">Größe</td>\n".
+		"                    <td class=\"tableb\" width=\"1%\">GrÃ¶ÃŸe</td>\n".
 		"                    <td class=\"tableb\" width=\"99%\" style=\"text-align:left\">" . mksize($row["size"]) . " (" . number_format($row["size"]) . " Bytes)" . "</td>\n".
 		"                </tr>\n".
 		"                <tr>\n".
-		"                    <td class=\"tableb\" width=\"1%\">Hinzugefügt</td>\n".
+		"                    <td class=\"tableb\" width=\"1%\">HinzugefÃ¼gt</td>\n".
 		"                    <td class=\"tableb\" width=\"99%\" style=\"text-align:left\">" . $row["added"] . "</td>\n".
 		"                </tr>\n".
 		"                <tr>\n".
@@ -367,7 +367,7 @@ if(!isset($_GET["page"])){
 			$qry->execute();
 			$data = $qry->FetchAll(PDO::FETCH_ASSOC);
 			$s = "<table class=\"tableinborder\" border=\"0\" cellspacing=\"1\" cellpadding=\"4\">";
-			$s .= "<tr>"."<td class=\"tablecat\">Pfad</td>"."<td class=\"tablecat\" align=\"right\">Größe</td>"."</tr>";
+			$s .= "<tr>"."<td class=\"tablecat\">Pfad</td>"."<td class=\"tablecat\" align=\"right\">GrÃ¶ÃŸe</td>"."</tr>";
 			foreach($data as $subrow)
 				$s .= "<tr>"."<td class=\"tablea\">" . $subrow["filename"] . "</td>"."<td class=\"tableb\" align=\"right\">" . mksize($subrow["size"]) . "</td>"."</tr>";
 			$s .= "</table>\n";
@@ -424,7 +424,7 @@ if(!isset($_GET["page"])){
 echo "<a name=\"startcomments\"></a>\n";
 $commentbar = "<table class=\"tableinborder\" border=\"0\" cellpadding=\"4\" cellspacing=\"1\" width=\"100%\">\n".
 	"    <tr>\n".
-	"        <td class=\"tablea\" width=\"100%\" style=\"text-align: center\"><b><a class=\"index\" href=\"comment.php?action=add&amp;tid=" . $id . "\">"."Kommentar hinzufügen</a></b></td>\n".
+	"        <td class=\"tablea\" width=\"100%\" style=\"text-align: center\"><b><a class=\"index\" href=\"comment.php?action=add&amp;tid=" . $id . "\">"."Kommentar hinzufÃ¼gen</a></b></td>\n".
 	"    </tr>\n".
 	"</table><br>\n";
 $count = $database->row_count('comments', 'torrent = ' . $id);
