@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -72,7 +72,7 @@ else{
 				echo "    </tr>\n".
 					"    <tr>";
 			$pics["originalname"] = htmlspecialchars($pics["originalname"]);
-			echo "        <td class=\"tablea\" align=\"center\" valign=\"middle\"><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$pics["filename"]."\"><img src=\"".$GLOBALS["BITBUCKET_DIR"]."/".$pics["filename"]."\" width=\"150\" border=\"0\" alt=\"".$pics["originalname"]."\" title=\"".$pics["originalname"]."\"></a></td>\n";
+			echo "        <td class=\"tablea\" align=\"center\" valign=\"middle\"><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$pics["filename"]."\" data-lightbox=\"preview\"><img src=\"".$GLOBALS["BITBUCKET_DIR"]."/".$pics["filename"]."\" width=\"150\" border=\"0\" alt=\"".$pics["originalname"]."\" title=\"".$pics["originalname"]."\"></a></td>\n";
 			$I++;
 		}
 		if($I%4){

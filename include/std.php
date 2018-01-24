@@ -85,12 +85,13 @@ function stdhead($title = "", $msgalert = true){
 		"    <meta http-equiv=\"cache-control\" content=\"private\">\n".
 		"    <meta name=\"robots\" content=\"noindex, nofollow, noarchive\">\n".
 		"    <meta name=\"MSSmartTagsPreventParsing\" content=\"true\">\n".
-		"    <link rel=\"stylesheet\" href=\"" . $GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/" . $GLOBALS["ss_uri"] . ".css\" type=\"text/css\">\n";
-
-	if(date('m') == 12 || date('m') == 1){
-		echo "    <script type=\"text/javascript\" src=\"/js/jquery-3.2.1.min.js\"></script>\n";
+		"    <link rel=\"stylesheet\" href=\"" . $GLOBALS["PIC_BASE_URL"] . $GLOBALS["ss_uri"] . "/" . $GLOBALS["ss_uri"] . ".css\" type=\"text/css\">\n".
+		"    <script type=\"text/javascript\" src=\"/js/jquery-3.2.1.min.js\"></script>\n";
+	if(date('m') == 12 || date('m') == 1)
 		echo "    <script type=\"text/javascript\" src=\"/js/jsnow.js\"></script>\n";
-	}
+	if($_SERVER["SCRIPT_NAME"] == "/details.php" || $_SERVER["SCRIPT_NAME"] == "/bitbucket.php" || $_SERVER["SCRIPT_NAME"] == "/bitbucket-gallery.php")
+		echo "    <link href=\"css/lightbox.min.css\" rel=\"stylesheet\">\n";
+
 
 	if($GLOBALS["DYNAMIC_RSS"]){
 		echo "    <link rel=\"alternate\" title=\"NetVision RSS\" href=\"" . $BASEURL . "/rss.php\" type=\"application/rss+xml\">\n".
@@ -369,6 +370,8 @@ function ratiostatbox(){
 }
 
 function stdfoot(){
+	if($_SERVER["SCRIPT_NAME"] == "/details.php" || $_SERVER["SCRIPT_NAME"] == "/bitbucket.php" || $_SERVER["SCRIPT_NAME"] == "/bitbucket-gallery.php")
+		echo "                        <script type=\"text/javascript\" src=\"/js/lightbox.min.js\"></script>\n";
 	echo "                        </td>\n".
 		"                    </tr>\n".
 		"                </table>\n".
@@ -984,7 +987,7 @@ function torrenttable_row($torrent_info){
 		"                </tr>\n".
 		"                <tr>\n".
 		"                    <td style=\"font-size:90%\"><b>" . mksize($torrent_info["size"]) . "</b> in <b>" . $torrent_info["numfiles"] . "</b> <a href=\"" . $filelistlink . "\">Datei(en)</a></td>\n".
-		"                    <td style=\"font-size:90%\"><b><font color=\"" . $seedercolor . "\">" . intval($torrent_info["seeders"]) . "</font></b> <a href=\"" . $seederlink . "\">Seeder</a> &amp;<b><font color=\"" . linkcolor($torrent_info["seeders"]) . "\">" . intval($torrent_info["leechers"]) . "</font></b> <a href=\"" . $leecherlink . "\">Leecher</a></td>\n".
+		"                    <td style=\"font-size:90%\"><b><font color=\"" . $seedercolor . "\">" . intval($torrent_info["seeders"]) . "</font></b> <a href=\"" . $seederlink . "\">Seeder</a> &amp; <b><font color=\"" . linkcolor($torrent_info["seeders"]) . "\">" . intval($torrent_info["leechers"]) . "</font></b> <a href=\"" . $leecherlink . "\">Leecher</a></td>\n".
 		"                    <td style=\"font-size:90%\"><b>" . $torrent_info["times_completed"] . "</b>x <a href=\"" . $snatcherlink . "\">heruntergeladen</a></td>\n".
 		"                    <td style=\"font-size:90%\"><b>" . $torrent_info["comments"] . "</b> <a href=\"" . $commlink . "\">Kommentare</a></td>\n".
 		"                    <td style=\"font-size:90%\">" . $torrent_info["added"] . "</td>\n".

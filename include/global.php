@@ -180,7 +180,10 @@ function format_comment($text, $strip_html = true){
 	// [color=#ffcc99]Text[/color]
 	$s = preg_replace("/\[color=(#[a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9][a-f0-9])\]((\s|.)+?)\[\/color\]/i", "<font color=\\1>\\2</font>", $s); 
 	// [url=http://www.example.com]Text[/url]
-	$s = preg_replace("/\[url=([^()<>\s]+?)\]((\s|.)+?)\[\/url\]/i", "<a href=\"\\1\">\\2</a>", $s); 
+	if($_SERVER["SCRIPT_NAME"] == "/details.php" && strpos($s, ".jpg") !== false)
+		$s = preg_replace("/\[url=([^()<>\s]+?)\]((\s|.)+?)\[\/url\]/i", "<a href=\"\\1\" data-lightbox=\"preview\">\\2</a>", $s);
+	else
+		$s = preg_replace("/\[url=([^()<>\s]+?)\]((\s|.)+?)\[\/url\]/i", "<a href=\"\\1\">\\2</a>", $s); 
 	// [url]http://www.example.com[/url]
 	$s = preg_replace("/\[url\]([^()<>\s]+?)\[\/url\]/i", "<a href=\"\\1\">\\1</a>", $s); 
 	// [size=4]Text[/size]

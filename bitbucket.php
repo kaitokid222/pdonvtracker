@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -40,7 +40,7 @@ if(isset($_GET["id"]) && intval($_GET["id"]) != $CURUSER["id"]){
 	else 
 		stderr("Fehler", "Es existiert kein User mit der ID " . $userid . "!");
 	if($CURUSER["class"] < UC_MODERATOR || $CURUSER["class"]<=$obj->class)
-		stderr("Fehler", "Du hast keine Rechte, den BitBucket-Inhalt dieses Benutzers anzusehen oder zu ändern!");
+		stderr("Fehler", "Du hast keine Rechte, den BitBucket-Inhalt dieses Benutzers anzusehen oder zu Ã¤ndern!");
 	$username = $obj->username;
 	$userclass = $obj->class;  
 }else{
@@ -65,7 +65,7 @@ if(isset($_GET["delete"])){
 		if($qry->rowCount() > 0)
 			$bucketfile = $qry->fetchObject();
 		if(!isset($_GET["sure"]))
-			stderr("Datei wirklich löschen?", "Bist Du Dir wirklich sicher, dass die Datei '".$bucketfile->originalname."' aus dem BitBucket gelöscht werden soll? Wenn ja, dann <a href=\"bitbucket.php?".(isset($_GET["id"])?"id=$userid&amp;":"")."delete=$file_id&amp;sure=1\">klicke hier</a>.");
+			stderr("Datei wirklich lÃ¶schen?", "Bist Du Dir wirklich sicher, dass die Datei '".$bucketfile->originalname."' aus dem BitBucket gelÃ¶scht werden soll? Wenn ja, dann <a href=\"bitbucket.php?".(isset($_GET["id"])?"id=" . $userid . "&amp;":"")."delete=$file_id&amp;sure=1\">klicke hier</a>.");
 		else{
 			@unlink($GLOBALS["BITBUCKET_DIR"]."/".$bucketfile->filename);
 			$qry = $GLOBALS['DB']->prepare('DELETE FROM bitbucket WHERE `id`= :fid');
@@ -77,7 +77,7 @@ if(isset($_GET["delete"])){
 				$qry->execute();
 				if($qry->rowCount() > 0)
 					$obj = $qry->fetchObject();
-				$obj->modcomment = date("Y-m-d") . " - Die Datei '".$bucketfile->originalname."' wurde von ".$CURUSER["username"]." aus dem BitBucket gelöscht.\n" . $obj->modcomment;
+				$obj->modcomment = date("Y-m-d") . " - Die Datei '".$bucketfile->originalname."' wurde von ".$CURUSER["username"]." aus dem BitBucket gelÃ¶scht.\n" . $obj->modcomment;
 				$qry = $GLOBALS['DB']->prepare('UPDATE users SET modcomment= :cmt WHERE id= :id');
 				$qry->bindParam(':id', $userid, PDO::PARAM_INT);
 				$qry->bindParam(':cmt', $obj->modcomment, PDO::PARAM_STR);
@@ -117,7 +117,7 @@ if($userid == $CURUSER["id"]){
 		"<br>\n";
 }else{
 	echo "    <tr>\n".
-		"        <td class=tablea align=center><a href=\"userdetails.php?id=" . $userid . "\">Zurück zum Profil</a></td>\n".
+		"        <td class=tablea align=center><a href=\"userdetails.php?id=" . $userid . "\">ZurÃ¼ck zum Profil</a></td>\n".
 		"    </tr>";
 	end_table();
 }
@@ -155,8 +155,8 @@ if($database->row_count('bitbucket','`user`='.$userid) == 0){
 			$descline = "    <tr>\n";	    
 		}
 
-		$imgline .= "        <td class=\"tablea\" align=\"center\" valign=\"middle\"><img src=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" width=\"100\" alt=\"".htmlspecialchars($fileinfo["originalname"])."\" title=\"".htmlspecialchars($fileinfo["originalname"])."\"></td>\n";
-		$descline .= "        <td class=\"tableb\" align=\"center\" valign=\"top\"><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\">".htmlspecialchars($fileinfo["originalname"])."</a><br>(". mksize($fileinfo["size"]).") <a href=\"bitbucket.php?" . (isset($_GET["id"]) ? "id=" . $userid . "&amp;" : "") . "delete=" . $fileinfo["id"] . "\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."/editdelete.png\" width=\"16\" height=\"16\" alt=\"L&ouml;schen\" style=\"border:none;vertical-align:middle;\"></a></td>\n";
+		$imgline .= "        <td class=\"tablea\" align=\"center\" valign=\"middle\"><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" data-lightbox=\"preview\"><img src=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" width=\"100\" alt=\"".htmlspecialchars($fileinfo["originalname"])."\" title=\"".htmlspecialchars($fileinfo["originalname"])."\"></a></td>\n";
+		$descline .= "        <td class=\"tableb\" align=\"center\" valign=\"top\"><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" data-lightbox=\"preview\">".htmlspecialchars($fileinfo["originalname"])."</a><br>(". mksize($fileinfo["size"]).") <a href=\"bitbucket.php?" . (isset($_GET["id"]) ? "id=" . $userid . "&amp;" : "") . "delete=" . $fileinfo["id"] . "\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."/editdelete.png\" width=\"16\" height=\"16\" alt=\"L&ouml;schen\" style=\"border:none;vertical-align:middle;\"></a></td>\n";
 		$cnt++;
 	}
 

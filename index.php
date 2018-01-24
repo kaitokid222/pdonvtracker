@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -48,7 +48,7 @@ echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%
 	"            <center>\n".
 	"            <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "newsticker.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\"> <b>Neuigkeiten\n";
 if(get_user_class() >= UC_ADMINISTRATOR)
-	echo " <a href=\"news.php\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "news_add.png\" width=\"22\" height=\"22\" alt=\"News hinzufügen\" title=\"News hinzufügen\" style=\"vertical-align: middle;border:none\"></a>";
+	echo " <a href=\"news.php\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "news_add.png\" width=\"22\" height=\"22\" alt=\"News hinzufÃ¼gen\" title=\"News hinzufÃ¼gen\" style=\"vertical-align: middle;border:none\"></a>";
 echo "            </b>\n".
 	"            </center>\n".
 	"        </span></td> \n".
@@ -211,7 +211,7 @@ if($CURUSER){
 			"<br><p align=\"center\"><input type=\"submit\" value=\"'Vote!'\" class=\"btn\"></p></center>\n";
 	}
 	if ($check)
-		echo "<p align=center><a href=\"polls.php\">Alle Umfragen</a> <a href=\"polls.php?action=revoke&pollid=" . $poll['id'] . "\">Stimme zurückziehen</a></p>\n";
+		echo "<p align=center><a href=\"polls.php\">Alle Umfragen</a> <a href=\"polls.php?action=revoke&pollid=" . $poll['id'] . "\">Stimme zurÃ¼ckziehen</a></p>\n";
 	echo "        </td>\n".
 		"    </tr>\n".
 		"</table>\n";
@@ -244,10 +244,8 @@ function textbbcode_edit($text, $aktive = TRUE){
 echo "<br>\n".
 	"<table align=\"center\" width=\"100%\">\n".
 	"    <tr>\n".
-	"        <td>\n";
-if(date('m') != 12 && date('m') != 1)
-	echo "            <script type=\"text/javascript\" src=\"/js/jquery-3.2.1.min.js\"></script>\n";
-echo "            <script type=\"text/javascript\" src=\"/js/shoutbox.js\"></script>\n".
+	"        <td>\n".
+	"            <script type=\"text/javascript\" src=\"/js/shoutbox.js\"></script>\n".
 	"            <script type=\"text/javascript\" src=\"/js/ajax.js\"></script>\n".
 	"            <link rel=\"stylesheet\" href=\"css/shoutbox.css\" type=\"text/css\">\n".
 	"            <table summary=\"\" cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:97%\" class=\"tableinborder\">\n".
