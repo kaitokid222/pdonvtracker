@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -201,8 +201,8 @@ if($CURUSER["id"] != $user["id"] && $enabled){
 			"    </tr>\n";
 	}else{
 		echo "    <tr>\n".
-			"        <td class=\"tablea\" align=\"center\"><a href=\"friends.php?action=add&type=friend&targetid=" . $id . "\">Zu Freunden hinzufügen</a></td>\n".
-			"        <td class=\"tablea\" align=\"center\"><a href=\"friends.php?action=add&type=block&targetid=" . $id . "\">Zu Blockliste hinzufügen</a></td>\n".
+			"        <td class=\"tablea\" align=\"center\"><a href=\"friends.php?action=add&type=friend&targetid=" . $id . "\">Zu Freunden hinzufÃ¼gen</a></td>\n".
+			"        <td class=\"tablea\" align=\"center\"><a href=\"friends.php?action=add&type=block&targetid=" . $id . "\">Zu Blockliste hinzufÃ¼gen</a></td>\n".
 			"    </tr>\n";
 	}
 	end_table();
@@ -313,7 +313,7 @@ if($torrentcomments && (($user["class"] >= UC_POWER_USER && $user["id"] == $CURU
 		"    </tr>\n";
 }
 echo "    <tr>\n".
-	"        <td class=\"tableb\">Forumbeiträge</td>\n";
+	"        <td class=\"tableb\">ForumbeitrÃ¤ge</td>\n";
 if($forumposts && (($user["class"] >= UC_POWER_USER && $user["id"] == $CURUSER["id"]) || get_user_class() >= UC_MODERATOR))
 	echo "        <td class=\"tablea\" align=\"left\"><a href=\"userhistory.php?action=viewposts&id=" . $id . "\">" . $forumposts . "</a></td>\n".
 		"    </tr>\n";
@@ -540,7 +540,7 @@ if((get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()) || ge
 		if($comment["moduid"] == 0)
 			echo "System";
 		elseif ($comment["username"] == "")
-			echo "<i>Gelöscht</i>";
+			echo "<i>GelÃ¶scht</i>";
 		else
 			echo "<a href=\"userdetails.php?id=".$comment["moduid"]."\">".$comment["username"]."</a>";
 		echo "</td>\n".
@@ -548,7 +548,7 @@ if((get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()) || ge
 			"                </tr>\n";
 	}   
 	echo "</table>\n".
-		"            </div><br>Hinzufügen: <input type=\"text\" size=\"50\" name=\"modcomment\"></td>\n".
+		"            </div><br>HinzufÃ¼gen: <input type=\"text\" size=\"50\" name=\"modcomment\"></td>\n".
 		"    </tr>\n";
 
     $warned = $user["warned"] == "yes";
@@ -559,14 +559,14 @@ if((get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()) || ge
 	if($warned){
 		$warneduntil = $user['warneduntil'];
 		if($warneduntil == '0000-00-00 00:00:00'){
-			echo "        <td class=\"tablea\" align=\"center\">(willkürliche Dauer)</td>\n".
+			echo "        <td class=\"tablea\" align=\"center\">(willkÃ¼rliche Dauer)</td>\n".
 				"    </tr>\n";
 		}else{
 			echo "        <td class=\"tablea\" align=\"center\">Bis " . $warneduntil . " (noch " . mkprettytime(strtotime($warneduntil) - time()) . ")</td>\n".
 				"    </tr>\n";
 		}
 	}else{
-		echo "        <td class=\"tablea\">Verwarnen für \n".
+		echo "        <td class=\"tablea\">Verwarnen fÃ¼r \n".
 			"            <select name=\"warnlength\">\n".
 			"                <option value=\"0\">------</option>\n".
 			"                <option value=\"1\">1 Woche</option>\n".
@@ -578,11 +578,11 @@ if((get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()) || ge
 			"        </td>\n".
 			"    </tr>\n".
 			"    <tr>\n".
-			"        <td class=\"tablea\" colspan=\"2\" align=\"left\">PM Kommentar (BBCode erlaubt):<br><textarea cols=\"60\" rows=\"4\" name=\"warnpm\"></textarea><br><input id=\"addwarnratio\" type=\"checkbox\" name=\"addwarnratio\" value=\"yes\"><label for=\"addwarnratio\">&nbsp;Ratiostats zu Mod-Kommentar hinzufügen</label></td>\n".
+			"        <td class=\"tablea\" colspan=\"2\" align=\"left\">PM Kommentar (BBCode erlaubt):<br><textarea cols=\"60\" rows=\"4\" name=\"warnpm\"></textarea><br><input id=\"addwarnratio\" type=\"checkbox\" name=\"addwarnratio\" value=\"yes\"><label for=\"addwarnratio\">&nbsp;Ratiostats zu Mod-Kommentar hinzufÃ¼gen</label></td>\n".
 			"    </tr>";
 	}
     echo "    <tr>\n".
-		"        <td class=\"tableb\">Muss Regeln bestätigen</td>\n".
+		"        <td class=\"tableb\">Muss Regeln bestÃ¤tigen</td>\n".
 		"        <td class=\"tablea\" colspan=\"2\" align=\"left\"><input name=\"acceptrules\" value=\"no\" type=\"radio\"" . (($acceptrules) ? " checked=\"checked\"" : "") . ">Ja <input name=\"acceptrules\" value=\"yes\" type=\"radio\"" . ((!$acceptrules) ? " checked=\"checked\"" : "") . ">Nein</td>\n".
 		"    </tr>\n".
 		"    <tr>\n".
@@ -590,7 +590,7 @@ if((get_user_class() >= UC_MODERATOR && $user["class"] < get_user_class()) || ge
 		"        <td class=\"tablea\" align=\"left\" colspan=\"2\"><input name=\"denyupload\" value=\"yes\" type=\"radio\"" . ((!$allowupload) ? " checked=\"checked\"" : "") . ">Ja <input name=\"denyupload\" value=\"no\" type=\"radio\"" . (($allowupload) ? " checked=\"checked\"" : "") . ">Nein</td>\n".
 		"    </tr>\n".
 		"    <tr>\n".
-		"        <td class=\"tableb\">Bad User <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "help.png\" style=\"vertical-align:middle;\" title=\"Bewirkt, dass dieser Benutzer nur ungültige Peer-IPs erhält\" alt=\"Bewirkt, dass dieser Benutzer nur ungültige Peer-IPs erhält\"></td>\n".
+		"        <td class=\"tableb\">Bad User <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "help.png\" style=\"vertical-align:middle;\" title=\"Bewirkt, dass dieser Benutzer nur ungÃ¼ltige Peer-IPs erhÃ¤lt\" alt=\"Bewirkt, dass dieser Benutzer nur ungÃ¼ltige Peer-IPs erhÃ¤lt\"></td>\n".
 		"        <td class=\"tablea\" align=\"left\"><input name=\"baduser\" value=\"yes\" type=\"radio\"" . (($baduser) ? " checked=\"checked\"" : "") . ">Ja <input name=\"baduser\" value=\"no\" type=\"radio\"" . ((!$baduser) ? " checked=\"checked\"" : "") . ">Nein</td>\n".
 		"        <td class=\"tablea\" align=\"left\"><a href=\"startstoplog.php?op=acclist&amp;id=" . $id . "\">Liste ehem. Accounts anzeigen</a></td>\n".
 		"    </tr>\n".
@@ -633,7 +633,7 @@ function maketable($data){
 		"        <td class=\"tablecat\" align=\"center\">Typ</td>\n".
 		"        <td class=\"tablecat\" width=\"100%\">Name</td>\n".
 		"        <td class=\"tablecat\" align=\"center\">TTL</td>\n".
-		"        <td class=\"tablecat\" align=\"center\">Größe</td>\n".
+		"        <td class=\"tablecat\" align=\"center\">GrÃ¶ÃŸe</td>\n".
 		"        <td class=\"tablecat\" align=\"right\">Se.</td>\n".
 		"        <td class=\"tablecat\" align=\"right\">Le.</td>\n".
 		"        <td class=\"tablecat\" align=\"center\">Hochgel.</td>\n".
@@ -708,7 +708,7 @@ function makecomptable($data){
 		}else{
 			$ret .= "<b>" . htmlspecialchars($arr["torrent_name"]) . "</b></td>\n".
 				"        <td class=\"tableb\" style=\"text-align:center\">" . str_replace(" ", "<br />", date("d.m.Y H:i:s", sql_timestamp_to_unix_timestamp($arr["complete_time"]))) . "</td>\n".
-				"        <td class=\"tablea\" style=\"text-align:center\" colspan=\"4\">Gelöscht</td>\n".
+				"        <td class=\"tablea\" style=\"text-align:center\" colspan=\"4\">GelÃ¶scht</td>\n".
 				"    </tr>\n";
 		}
 	}

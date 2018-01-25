@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -101,7 +101,7 @@ if (isset($_POST['action']) && $_POST['action'] == "ban") {
     $last = ipaddress_to_ipnumber($_POST['last']);
     mysql_query("INSERT INTO bans (first, last, comment, added, addedby) VALUES(" . $first . ", " . $last . ", " . sqlesc($_POST['comment']) . ", '" . get_date_time() . "', " . $CURUSER["id"] . ")") or sqlerr(__FILE__, __LINE__);
 
-    stderr("IP (Bereich) gesperrt", "<p>Die angegebene IP bzw. der Bereich wurde gesperrt.</p><p><a href=\"" . $_SERVER['PHP_SELF'] . "?act=ban\">Zurück</a></p>");
+    stderr("IP (Bereich) gesperrt", "<p>Die angegebene IP bzw. der Bereich wurde gesperrt.</p><p><a href=\"" . $_SERVER['PHP_SELF'] . "?act=ban\">ZurÃ¼ck</a></p>");
 } 
 // DELETE IP FROM BAN LIST
 if (isset($_GET['action']) && $_GET["action"] == "ipdel") {
@@ -109,7 +109,7 @@ if (isset($_GET['action']) && $_GET["action"] == "ipdel") {
         stderr("Error", "Permission denied.");
 
     if (!$_GET["id"]) {
-        stderr("Fehler", "Keine Einträge ausgewählt!");
+        stderr("Fehler", "Keine EintrÃ¤ge ausgewÃ¤hlt!");
     } 
     if (is_array($_GET["id"])) {
         foreach ($_GET["id"] As $id) {
@@ -118,7 +118,7 @@ if (isset($_GET['action']) && $_GET["action"] == "ipdel") {
     } else {
         mysql_query ("DELETE FROM bans where id = " . sqlesc($_GET['id'])) or sqlerr(__FILE__, __LINE__);
     } 
-    stderr("IPs (Bereiche) entsperrt", "<p>Die angegebenen IPs bzw. Bereiche wurde entsperrt.</p><p><a href=\"" . $_SERVER['PHP_SELF'] . "?act=ban\">Zurück</a></p>");
+    stderr("IPs (Bereiche) entsperrt", "<p>Die angegebenen IPs bzw. Bereiche wurde entsperrt.</p><p><a href=\"" . $_SERVER['PHP_SELF'] . "?act=ban\">ZurÃ¼ck</a></p>");
 } 
 
 
@@ -212,7 +212,7 @@ if(get_user_class() >= UC_MODERATOR){
 <table cellpadding="4" cellspacing="1" border="0" style="width:750px" class="tableinborder">
 <tr class="tabletitle" width="100%">
 <td colspan="10" width="100%"><span class="smallfont"><center>
-<b>Team-Werkzeuge</b> - Nur für Moderatoren sichtbar.
+<b>Team-Werkzeuge</b> - Nur fÃ¼r Moderatoren sichtbar.
 </center></span></td></tr><tr><td width="100%" class="tablea">
 <table cellspacing="1" cellpadding="4" class="tableinborder" style="width:100%">
 <colgroup>
@@ -374,9 +374,9 @@ function selectall() {
                     mysql_query("UPDATE users SET enabled = 'no' WHERE id=$userid");
                 } 
 
-                echo "<p style=\"color: red;\">Alle " . count($_POST["id"]) . " markierten Benutzeraccounts wurden deaktivert! Beim nächsten Durchlauf des CleanUp-Scripts sollten alle Benutzer entfernt werden, die länger als " . $GLOBALS["DISABLED_TIMEOUT"] . " Tage inaktiv waren (wahrscheinlich alle). <a href=\"docleanup.php\">Klicke hier</a>, um das CleanUp-Script direkt auszuführen.</p>";
+                echo "<p style=\"color: red;\">Alle " . count($_POST["id"]) . " markierten Benutzeraccounts wurden deaktivert! Beim nÃ¤chsten Durchlauf des CleanUp-Scripts sollten alle Benutzer entfernt werden, die lÃ¤nger als " . $GLOBALS["DISABLED_TIMEOUT"] . " Tage inaktiv waren (wahrscheinlich alle). <a href=\"docleanup.php\">Klicke hier</a>, um das CleanUp-Script direkt auszufÃ¼hren.</p>";
             } else {
-                echo "<p style=\"color: red;\">Keine Benutzer zum Löschen ausgewählt!</p>";
+                echo "<p style=\"color: red;\">Keine Benutzer zum LÃ¶schen ausgewÃ¤hlt!</p>";
             } 
         } elseif (isset($_POST["suchen"])) {
             if ($_POST["uplminmax"] == "min") $uplminmax = ">=";
@@ -475,7 +475,7 @@ function selectall() {
         if (mysql_num_rows($res) == 0)
             stdmsg("Sorry...", "Keine Uploader.");
         else {
-            begin_frame("Uploader-Aktivitäten", true);
+            begin_frame("Uploader-AktivitÃ¤ten", true);
             begin_table();
             print("<tr>\n
         <td class=tablecat><a href=\"" . $_SERVER['PHP_SELF'] . "?act=upstats&amp;uporder=uploader&amp;catorder=$catorder\" class=tablecatlink>Uploader</a></td>\n
@@ -513,7 +513,7 @@ function selectall() {
         FROM categories as c LEFT JOIN torrents as t ON t.category = c.id LEFT JOIN peers as p
         ON t.id = p.torrent GROUP BY c.id ORDER BY $orderby") or sqlerr(__FILE__, __LINE__);
 
-            begin_frame("Kategorie-Aktivität", true);
+            begin_frame("Kategorie-AktivitÃ¤t", true);
             begin_table();
             print("<tr><td class=tablecat><a href=\"" . $_SERVER['PHP_SELF'] . "?act=upstats&amp;uporder=$uporder&amp;catorder=category\" class=tablecatlink>Category</a></td>
         <td class=tablecat><a href=\"" . $_SERVER['PHP_SELF'] . "?act=upstats&amp;uporder=$uporder&amp;catorder=lastul\" class=tablecatlink>Letzter Upload</a></td>
@@ -858,7 +858,7 @@ function selectall()
 <input type="hidden" name="action" value="ipdel">
 <?php
         begin_table();
-        echo "<tr><td class=tablecat align=left>IP (Bereich)</td><td class=tablecat>Hinzugefügt</td><td class=tablecat>Von</td><td class=tablecat>Kommentar</td><td class=tablecat>Ändern</td></tr>";
+        echo "<tr><td class=tablecat align=left>IP (Bereich)</td><td class=tablecat>HinzugefÃ¼gt</td><td class=tablecat>Von</td><td class=tablecat>Kommentar</td><td class=tablecat>Ã„ndern</td></tr>";
 
         $result = mysql_query ("SELECT  * FROM bans ORDER BY added DESC");
         if ($row = mysql_fetch_array($result)) {
@@ -879,9 +879,9 @@ function selectall()
                 echo "<td class=tablea nowrap=nowrap><input type=\"checkbox\" id=\"delid" . $I . "\" name=\"id[]\" value=\"" . $row["id"] . "\">&nbsp;<a href=\"javascript:confirm_delete('" . $row["id"] . "');\"><b><font color=red>L&Ouml;SCHEN</font></a></b></td></tr>";
                 $I++;
             } while ($row = mysql_fetch_array($result));
-            echo "<tr><td colspan=5 class=tablea style=\"text-align:center\"><input type=\"button\" onclick=\"selectall();\" value=\"Alle markieren\">&nbsp;<input type=\"submit\" value=\"Markierte Bans löschen\"></td></tr>\n";
+            echo "<tr><td colspan=5 class=tablea style=\"text-align:center\"><input type=\"button\" onclick=\"selectall();\" value=\"Alle markieren\">&nbsp;<input type=\"submit\" value=\"Markierte Bans lÃ¶schen\"></td></tr>\n";
         } else {
-            print "<tr><td colspan=5 class=tablea align=center><b>Es wurden keine Einträge gefunden!</td></tr>";
+            print "<tr><td colspan=5 class=tablea align=center><b>Es wurden keine EintrÃ¤ge gefunden!</td></tr>";
         } 
         end_table();
 

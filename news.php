@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -50,7 +50,7 @@ else
 if ($action == 'delete') {
     $newsid = $_GET["newsid"];
     if (!is_valid_id($newsid))
-        stderr("Error", "Ungültige News-ID - Code 1.");
+        stderr("Error", "UngÃ¼ltige News-ID - Code 1.");
 
     if (isset($_GET["returnto"])){
 		$returnto_str = "&returnto=" . str_replace("/", "", $_GET["returnto"]);
@@ -61,7 +61,7 @@ if ($action == 'delete') {
 	}
 
     if (!isset($_GET["sure"]))
-        stderr("News-Eintrag löschen", "Willst Du wirklich einen News-Eintrag löschen? Klicke\n" . "<a href=\"news.php?action=delete&newsid=" . $newsid . $returnto_str . "&sure=1\">hier</a>, wenn Du Dir sicher bist.");
+        stderr("News-Eintrag lÃ¶schen", "Willst Du wirklich einen News-Eintrag lÃ¶schen? Klicke\n" . "<a href=\"news.php?action=delete&newsid=" . $newsid . $returnto_str . "&sure=1\">hier</a>, wenn Du Dir sicher bist.");
 
 	$qry = $GLOBALS['DB']->prepare('DELETE FROM news WHERE id= :id');
 	$qry->bindParam(':id', $newsid, PDO::PARAM_INT);
@@ -70,7 +70,7 @@ if ($action == 'delete') {
     if ($returnto != "")
         header("Location: " . $returnto);
     else
-        $warning = "Der News-Eintrag wurde erfolgreich gelöscht.";
+        $warning = "Der News-Eintrag wurde erfolgreich gelÃ¶scht.";
 } 
 // Add News Item    /////////////////////////////////////////////////////////
 if ($action == 'add') {
@@ -96,16 +96,16 @@ if ($action == 'add') {
 	$qry->bindParam(':body', $body, PDO::PARAM_STR);
 	$qry->execute();
 	if($qry->rowCount())
-		$warning = "News-Beitrag erfolgreich hinzugefügt.";
+		$warning = "News-Beitrag erfolgreich hinzugefÃ¼gt.";
     else
-        stderr("Fehler", "Gerade ist irgendetwas merkwürdiges passiert.");
+        stderr("Fehler", "Gerade ist irgendetwas merkwÃ¼rdiges passiert.");
 } 
 // Edit News Item    ////////////////////////////////////////////////////////
 if ($action == 'edit') {
     $newsid = $_GET["newsid"];
 
     if (!is_valid_id($newsid))
-        stderr("Fehler", "Ungültige News-ID - Code 2.");
+        stderr("Fehler", "UngÃ¼ltige News-ID - Code 2.");
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 		if (!isset($_POST["title"]) || $_POST["title"] == "")
@@ -132,7 +132,7 @@ if ($action == 'edit') {
         if ($returnto != "")
             header("Location: " . $returnto);
         else
-            $warning = "Der News-Beitrag wurde erfolgreich geändert.";
+            $warning = "Der News-Beitrag wurde erfolgreich geÃ¤ndert.";
     } else {
 		if (isset($_GET["returnto"]))
 			$returnto = $_GET["returnto"];
@@ -166,7 +166,7 @@ if ($action == 'edit') {
 } 
 // Other Actions and followup    ////////////////////////////////////////////
 stdhead("Site news");
-begin_frame("<img src=\"".$GLOBALS["PIC_BASE_URL"]."news_add.png\" width=\"22\" height=\"22\" alt=\"News hinzufügen\" title=\"News hinzufügen\" style=\"vertical-align: middle;border:none\"> Neuen News-Beitrag schreiben", false, "600px;");
+begin_frame("<img src=\"".$GLOBALS["PIC_BASE_URL"]."news_add.png\" width=\"22\" height=\"22\" alt=\"News hinzufÃ¼gen\" title=\"News hinzufÃ¼gen\" style=\"vertical-align: middle;border:none\"> Neuen News-Beitrag schreiben", false, "600px;");
 if (isset($warning))
 	echo "<p><font size=-3>(" . $warning . ")</font></p>";
 print("<form method=\"post\" action=\"news.php?action=add\">\n");

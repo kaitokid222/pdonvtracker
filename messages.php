@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen d¸rfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen d√ºrfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -64,7 +64,7 @@ else {
 }
 
 if (mysql_num_rows($res) == 0)
-    stderr("Fehler", "Der angegebene Ordner ist ung¸ltig!");
+    stderr("Fehler", "Der angegebene Ordner ist ung√ºltig!");
 
 $finfo = mysql_fetch_assoc($res);
 
@@ -107,7 +107,7 @@ if (isset($_REQUEST["action"])) {
     }
 
     if ((!isset($_REQUEST["id"]) || intval($_REQUEST["id"]) == 0) && !is_array($_REQUEST["selids"]))
-        stderr("Fehler", "Keine Nachricht f¸r diese Aktion ausgew‰hlt!");
+        stderr("Fehler", "Keine Nachricht f√ºr diese Aktion ausgew√§hlt!");
     
     // selids numerisch machen!
     if (is_array($_REQUEST["selids"])) {
@@ -139,7 +139,7 @@ if (isset($_REQUEST["action"])) {
             break;
         case "reply":
             if ((!isset($_REQUEST["id"]) || intval($_REQUEST["id"]) == 0))
-                stderr("Fehler", "Die Nachrichten-ID kann nur ¸ber den Parameter 'id' ¸bergeben werden - was probierst Du da?!?");
+                stderr("Fehler", "Die Nachrichten-ID kann nur √ºber den Parameter 'id' √ºbergeben werden - was probierst Du da?!?");
             sendMessageDialog(intval($_REQUEST["id"]));
             die();
         case "read":
@@ -150,7 +150,7 @@ if (isset($_REQUEST["action"])) {
             break;
         case "move":
             if ($GLOBALS["FOLDER"] == PM_FOLDERID_SYSTEM || $GLOBALS["FOLDER"] == PM_FOLDERID_MOD)
-                stderr("Fehler", "Aus diesem Ordner kˆnnen keine Nachrichten verschoben werden!");
+                stderr("Fehler", "Aus diesem Ordner k√∂nnen keine Nachrichten verschoben werden!");
             
             $target_folder = intval($_REQUEST["to_folder"]);
             if ($target_folder == 0) {
@@ -159,7 +159,7 @@ if (isset($_REQUEST["action"])) {
             }
             
             if ($target_folder == PM_FOLDERID_SYSTEM || $target_folder == PM_FOLDERID_MOD)
-                stderr("Fehler", "In diesen Ordner kˆnnen keine Nachrichten verschoben werden!");
+                stderr("Fehler", "In diesen Ordner k√∂nnen keine Nachrichten verschoben werden!");
                 
             if ($target_folder != PM_FOLDERID_INBOX && $target_folder != PM_FOLDERID_OUTBOX)
                 checkFolderOwner($target_folder);
@@ -186,7 +186,7 @@ switch ($GLOBALS["FOLDER"]) {
         break;
 }
 
-stdhead("Persˆnliche Nachrichten");
+stdhead("Pers√∂nliche Nachrichten");
 ?>
 <script type="text/javascript">
 
@@ -228,21 +228,21 @@ begin_table(TRUE);
   <th class="tablecat"><input onclick="selectAll();" type="checkbox" id="selall" name="selall" value="1"></th>
   <th class="tablecat" nowrap="nowrap"><?php if ($finfo["sortfield"] == "subject") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=subject&amp;sortorder=<?php if ($finfo["sortfield"] == "subject") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Betreff</a></th>
   <th class="tablecat" nowrap="nowrap"><?php if ($finfo["sortfield"] == "sendername") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=sendername&amp;sortorder=<?php if ($finfo["sortfield"] == "sendername") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Absender</a></th>
-  <th class="tablecat" nowrap="nowrap"><?php if ($finfo["sortfield"] == "receivername") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=receivername&amp;sortorder=<?php if ($finfo["sortfield"] == "receivername") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Empf‰nger</a></th>
+  <th class="tablecat" nowrap="nowrap"><?php if ($finfo["sortfield"] == "receivername") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=receivername&amp;sortorder=<?php if ($finfo["sortfield"] == "receivername") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Empf√§nger</a></th>
   <th class="tablecat" nowrap="nowrap"><?php if ($finfo["sortfield"] == "added") echo ($finfo["sortorder"]=="ASC"?'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/up.png" style="vertical-align:middle">&nbsp;':'<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/down.png" style="vertical-align:middle">&nbsp;'); ?><a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;sortfield=added&amp;sortorder=<?php if ($finfo["sortfield"] == "added") echo ($finfo["sortorder"]=="ASC"?"DESC":"ASC"); else echo $finfo["sortorder"]; ?>">Datum</a></th>
   <th class="tablecat">&nbsp;</th>
 </tr>
 <?php
 
 if ($GLOBALS["FOLDER"] == PM_FOLDERID_MOD) {
-    // Nachrichten ‰lter als 7 Tage lˆschen
+    // Nachrichten √§lter als 7 Tage l√∂schen
     mysql_query("DELETE FROM `messages` WHERE `folder_in`=".PM_FOLDERID_MOD." AND `sender`=0 AND `receiver`=0 AND UNIX_TIMESTAMP(`added`)<".(time()-7*86400));
     if ($_REQUEST["closed"]==1)
         $msgres = mysql_query("SELECT `messages`.`id`,`messages`.`folder_in`,`messages`.`folder_out`,`messages`.`mod_flag`,'0' AS `sender`,'0' AS`receiver`,`messages`.`unread`,`messages`.`subject`,`messages`.`added`,'System' AS `sendername`,'Tracker-Team' AS `receivername`  FROM `messages` WHERE `folder_in`=".PM_FOLDERID_MOD." AND `receiver`=0 AND `mod_flag`='closed' ORDER BY ".$finfo["sortfield"]." ".$finfo["sortorder"]);
     else
         $msgres = mysql_query("SELECT `messages`.`id`,`messages`.`folder_in`,`messages`.`folder_out`,`messages`.`mod_flag`,'0' AS `sender`,'0' AS`receiver`,`messages`.`unread`,`messages`.`subject`,`messages`.`added`,'System' AS `sendername`,'Tracker-Team' AS `receivername`  FROM `messages` WHERE `folder_in`=".PM_FOLDERID_MOD." AND `receiver`=0 AND `mod_flag`='open' ORDER BY ".$finfo["sortfield"]." ".$finfo["sortorder"]);        
 } else {
-    // Nachrichten lˆschen, falls Pruning gew¸nscht
+    // Nachrichten l√∂schen, falls Pruning gew√ºnscht
     if ($finfo["prunedays"] > 0) {
         $prunetime = time()-$finfo["prunedays"]*86400;
         mysql_query("DELETE FROM `messages` WHERE `folder_out`=0 AND `folder_in`=".$GLOBALS["FOLDER"]." AND `receiver`=".$CURUSER["id"]." AND UNIX_TIMESTAMP(`added`)<".$prunetime);
@@ -254,7 +254,7 @@ if ($GLOBALS["FOLDER"] == PM_FOLDERID_MOD) {
 }
 
 if (mysql_num_rows($msgres) == 0) {
-    echo '<tr><td class="tablea" colspan="6">Dieser Ordner enth‰lt keine Nachrichten.</td></tr>'."\n";
+    echo '<tr><td class="tablea" colspan="6">Dieser Ordner enth√§lt keine Nachrichten.</td></tr>'."\n";
 } else {
     $msgnr = 1;
     while ($msg = mysql_fetch_assoc($msgres)) {
@@ -267,10 +267,10 @@ if (mysql_num_rows($msgres) == 0) {
   <td class="tablea" colspan="6">
     <table cellspacing="2" cellpadding="2" border="0">
       <tr>
-        <td>Ausgew‰hlte Nachrichten:</td>
+        <td>Ausgew√§hlte Nachrichten:</td>
 <?php if ($GLOBALS["FOLDER"] != PM_FOLDERID_MOD) { ?>
         <td>
-          <input type="submit" name="delete" value="Lˆschen">
+          <input type="submit" name="delete" value="L√∂schen">
           <input type="submit" name="markread" value="Als gelesen markieren">
           <input type="submit" name="markunread" value="Als ungelesen markieren"></td>
       </tr>
@@ -279,7 +279,7 @@ if (mysql_num_rows($msgres) == 0) {
         <td>...verschieben nach:</td>
         <td>
           <select name="to_folder" size="1">
-            <option>** Bitte Ordner ausw‰hlen **</option>
+            <option>** Bitte Ordner ausw√§hlen **</option>
             <option value="<?=PM_FOLDERID_INBOX?>">Posteingang</option>
             <option value="<?=PM_FOLDERID_OUTBOX?>">Postausgang</option>
 <?php
@@ -328,7 +328,7 @@ end_table();
         <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/folder_new.png" alt="Neuer Ordner" title="Neuer Ordner" style="vertical-align:middle">&nbsp;<a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=createfolder">Ordner erstellen</a><br>
         <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/configure.png" alt="Konfigurieren" title="Konfigurieren" style="vertical-align:middle">&nbsp;<a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=config">Ordner konfigurieren</a><br>
         <?php if ($GLOBALS["FOLDER"] > 0) { ?>
-        <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/editdelete.png" alt="Lˆschen" title="Lˆschen" style="vertical-align:middle">&nbsp;<a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=deletefolder">Ordner lˆschen</a><br>
+        <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/editdelete.png" alt="L√∂schen" title="L√∂schen" style="vertical-align:middle">&nbsp;<a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=deletefolder">Ordner l√∂schen</a><br>
         <?php } ?>
         <br>
         <?php

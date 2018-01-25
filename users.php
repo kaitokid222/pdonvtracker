@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -112,9 +112,9 @@ for ($i = 1; $i <= $pages; ++$i)
     $pagemenu .= "<a href=?$q&page=$i><b>$i</b></a>\n";
 
 if ($page == 1)
-  $browsemenu .= "<b>&lt;&lt; Zurück</b>";
+  $browsemenu .= "<b>&lt;&lt; ZurÃ¼ck</b>";
 else
-  $browsemenu .= "<a href=?$q&page=" . ($page - 1) . "><b>&lt;&lt; Zurück</b></a>";
+  $browsemenu .= "<a href=?$q&page=" . ($page - 1) . "><b>&lt;&lt; ZurÃ¼ck</b></a>";
 
 $browsemenu .= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 

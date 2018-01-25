@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -47,9 +47,9 @@ stdhead("Tags");
 begin_frame("Tags");
 $test = $_POST["test"];
 ?>
-<p>Dieser Tracker unterstützt eine Reihe <i>BBCodes</i>, die Du benutzen kannst, um deinen Beiträgen etc.
+<p>Dieser Tracker unterstÃ¼tzt eine Reihe <i>BBCodes</i>, die Du benutzen kannst, um deinen BeitrÃ¤gen etc.
 etwas mehr "Pfiff" zu verleihen. Diese Codes kannst Du in Kommentaren, Torrent-Beschreibungen,
-Signaturen, PMs und in Forum-Beiträgen benutzen.</p>
+Signaturen, PMs und in Forum-BeitrÃ¤gen benutzen.</p>
 
 <form method=post action=?>
 <p align="center">
@@ -88,26 +88,26 @@ insert_tag(
 
 insert_tag(
 	"Farbe (Alt. 1)",
-	"Ändert die Farbe des eingeschlossenen Textes.",
+	"Ã„ndert die Farbe des eingeschlossenen Textes.",
 	"[color=<i>Farbe</i>]<i>Text</i>[/color]",
 	"[color=red]Dieser Text ist rot.[/color]",
-	"Welche Farben gültig sind, hängt vom benutzten Browser ab. Eine Übersicht über gültige Farbnamen findest Du beim <a href=\"http://www.w3.org/TR/html4/types.html#type-color\">WorldWideWeb Consortium (W3C)</a>."
+	"Welche Farben gÃ¼ltig sind, hÃ¤ngt vom benutzten Browser ab. Eine Ãœbersicht Ã¼ber gÃ¼ltige Farbnamen findest Du beim <a href=\"http://www.w3.org/TR/html4/types.html#type-color\">WorldWideWeb Consortium (W3C)</a>."
 );
 
 insert_tag(
 	"Farbe (Alt. 2)",
-	"Ändert die Farbe des eingeschlossenen Textes.",
+	"Ã„ndert die Farbe des eingeschlossenen Textes.",
 	"[color=#<i>RGB</i>]<i>Text</i>[/color]",
 	"[color=#ff0000]Dieser Text ist rot.[/color]",
-	"<i>RGB</i> muss eine sechsstellige Hexadezimalzahl sein. Jeweils zwei Stellen definieren die Helligkeit der Grundfarben Rot, Grün und Blau (in dieser Reihenfolge). FF0000 ist Rot, 00FF00 volles Grün und 0000FF Blau."
+	"<i>RGB</i> muss eine sechsstellige Hexadezimalzahl sein. Jeweils zwei Stellen definieren die Helligkeit der Grundfarben Rot, GrÃ¼n und Blau (in dieser Reihenfolge). FF0000 ist Rot, 00FF00 volles GrÃ¼n und 0000FF Blau."
 );
 
 insert_tag(
-	"Größe",
-	"Bestimmt die Größe des angezeigten Textes.",
+	"GrÃ¶ÃŸe",
+	"Bestimmt die GrÃ¶ÃŸe des angezeigten Textes.",
 	"[size=<i>n</i>]<i>text</i>[/size]",
-	"[size=4]Dies ist Größe 4.[/size]",
-	"<i>n</i> muss eine Zahl von 1 (am kleinsten) bis 7 (am größten) sein. Die Standardgröße ist 2."
+	"[size=4]Dies ist GrÃ¶ÃŸe 4.[/size]",
+	"<i>n</i> muss eine Zahl von 1 (am kleinsten) bis 7 (am grÃ¶ÃŸten) sein. Die StandardgrÃ¶ÃŸe ist 2."
 );
 
 insert_tag(
@@ -131,7 +131,7 @@ insert_tag(
 	"Setzt einen Link auf eine andere Website.",
 	"[url]<i>URL</i>[/url]",
 	"[url]http://www.example.com/[/url]",
-	"Dieser Tag ist überflüssig. Alle URLs werden automatisch als Link dargestellt."
+	"Dieser Tag ist Ã¼berflÃ¼ssig. Alle URLs werden automatisch als Link dargestellt."
 );
 
 insert_tag(
@@ -144,7 +144,7 @@ insert_tag(
 
 insert_tag(
 	"Bild (Alt. 1)",
-	"Fügt eine Grafik ein.",
+	"FÃ¼gt eine Grafik ein.",
 	"[img=<i>URL</i>]",
 	"[img=http://tracker-netvision.ath.cx/".$GLOBALS["PIC_BASE_URL"]."cat_movies2.gif]",
 	"Die URL muss mit <b>.gif</b>, <b>.jpg</b> oder <b>.png</b> enden."
@@ -152,7 +152,7 @@ insert_tag(
 
 insert_tag(
 	"Bild (alt. 2)",
-	"Fügt eine Grafik ein.",
+	"FÃ¼gt eine Grafik ein.",
 	"[img]<i>URL</i>[/img]",
 	"[img]http://tracker-netvision.ath.cx/".$GLOBALS["PIC_BASE_URL"]."cat_movies2.gif[/img]",
 	"Die URL muss mit <b>.gif</b>, <b>.jpg</b> oder <b>.png</b> enden."
@@ -160,7 +160,7 @@ insert_tag(
 
 insert_tag(
 	"Zitat (Alt. 1)",
-	"Fügt ein Zitat ein.",
+	"FÃ¼gt ein Zitat ein.",
 	"[quote]<i>Zitierter Text</i>[/quote]",
 	"[quote]The quick brown fox jumps over the lazy dog.[/quote]",
 	""
@@ -168,18 +168,18 @@ insert_tag(
 
 insert_tag(
 	"Zitat (Alt. 2)",
-	"Fügt ein Zitat ein.",
+	"FÃ¼gt ein Zitat ein.",
 	"[quote=<i>Autor</i>]<i>Zitierter text</i>[/quote]",
 	"[quote=John Doe]The quick brown fox jumps over the lazy dog.[/quote]",
 	""
 );
 
 insert_tag(
-	"Aufzählungsliste",
-	"Zeigt eine Liste mit Aufzählungssymbolen an.",
+	"AufzÃ¤hlungsliste",
+	"Zeigt eine Liste mit AufzÃ¤hlungssymbolen an.",
 	"[list]<i>Listenelemente</i>[/list]<br>[list=disc|circle|square]<i>Listenelemente</i>[/list]",
-	"[list=circle][*]Aufzählung mit Kreis-Symbolen[/list]",
-	"Wird kein Symboltyp angegeben, wird das vom Browser voreingestellte Symbol für unsortierte Listen verwendet."
+	"[list=circle][*]AufzÃ¤hlung mit Kreis-Symbolen[/list]",
+	"Wird kein Symboltyp angegeben, wird das vom Browser voreingestellte Symbol fÃ¼r unsortierte Listen verwendet."
 );
 
 insert_tag(
@@ -192,10 +192,10 @@ insert_tag(
 
 insert_tag(
 	"Listeneintrag",
-	"Fügt einen Listeneintrag hinzu.",
+	"FÃ¼gt einen Listeneintrag hinzu.",
 	"[*]<i>Text</i>",
 	"[list][*]Punkt 1[*]Punkt 2[/list]",
-	"Bitte den [list]-Tag nicht vergessen, da sonst die Einträge nicht korrekt angezeigt werden."
+	"Bitte den [list]-Tag nicht vergessen, da sonst die EintrÃ¤ge nicht korrekt angezeigt werden."
 );
 
 insert_tag(

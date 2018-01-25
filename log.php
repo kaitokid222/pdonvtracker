@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -44,15 +44,15 @@ function get_typ_name($typ)
     switch ($typ) {
         case "torrentupload": return "Torrent hochgeladen";
         case "torrentedit": return "Torrent bearbeitet";
-        case "torrentdelete": return "Torrent gelöscht";
+        case "torrentdelete": return "Torrent gelÃ¶scht";
         case "torrentgranted":return "Torrent freigeschaltet";
-        case "promotion": return "Beförderung";
+        case "promotion": return "BefÃ¶rderung";
         case "demotion": return "Degradierung";
         case "addwarn": return "Verwarnung erteilt";
         case "remwarn": return "Verwarnung entfernt";
         case "accenabled": return "Account aktiviert";
         case "accdisabled": return "Account deaktiviert";
-        case "accdeleted": return "Account gelöscht";
+        case "accdeleted": return "Account gelÃ¶scht";
         case "waitgrant": return "Wartezzeitaufh. zugestimmt";
         case "waitreject": return "Wartezeitaufh. abgelehnt";
         case "passkeyreset": return "PassKey neu gesetzt";
@@ -133,9 +133,9 @@ if (isset($_GET["filter"])) {
     $res = mysql_query("SELECT typ, added, txt FROM sitelog $where ORDER BY added DESC") or sqlerr(__FILE__, __LINE__);
 
     if (mysql_num_rows($res) == 0)
-        print("<b>Es liegen keine Ereignisse mit den gewünschten Typen vor.</b>\n");
+        print("<b>Es liegen keine Ereignisse mit den gewÃ¼nschten Typen vor.</b>\n");
     else {
-        print("<b>Es wurden " . mysql_num_rows($res) . " Ereignisse mit den gewünschten Typen gefunden.</b>\n");
+        print("<b>Es wurden " . mysql_num_rows($res) . " Ereignisse mit den gewÃ¼nschten Typen gefunden.</b>\n");
         begin_table(true);
         print("<tr><td class=tablecat align=left>Datum</td><td class=tablecat align=left>Zeit</td><td class=tablecat align=left>Typ</td><td class=tablecat align=left>Ereignis</td></tr>\n");
         while ($arr = mysql_fetch_assoc($res)) {

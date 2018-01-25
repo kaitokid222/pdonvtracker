@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -45,13 +45,13 @@ session to see what's going on behind the scenes. The client communicates with t
 <br>
 Let's dissect this:<br>
 <br>
-• <b>info_hash</b> is just the hash identifying the torrent in question;<br>
-• <b>peer_id</b>, as the name suggests, identifies the client (the s588 part identifies Shad0w's 5.8.8, the rest is random);<br>
-• <b>port</b> just tells the tracker which port the client will listen to for incoming connections;<br>
-• <b>uploaded</b>=0; (this and the following are the relevant ones, and are self-explanatory)<br>
-• <b>downloaded</b>=0;<br>
-• <b>left</b>=753690875 (how much left); <br>
-• <b>event=started</b> (telling the tracker that the client has just started).<br>
+â€¢ <b>info_hash</b> is just the hash identifying the torrent in question;<br>
+â€¢ <b>peer_id</b>, as the name suggests, identifies the client (the s588 part identifies Shad0w's 5.8.8, the rest is random);<br>
+â€¢ <b>port</b> just tells the tracker which port the client will listen to for incoming connections;<br>
+â€¢ <b>uploaded</b>=0; (this and the following are the relevant ones, and are self-explanatory)<br>
+â€¢ <b>downloaded</b>=0;<br>
+â€¢ <b>left</b>=753690875 (how much left); <br>
+â€¢ <b>event=started</b> (telling the tracker that the client has just started).<br>
 <br>
 Notice that the client IP doesn't show up here (although it can be sent by the client if it configured to do so). 
 It's up to the tracker to see it and associate it with the user_id.<br>

@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -45,7 +45,7 @@ function validusername($username){
 
 $registered = number_format($database->row_count('users'));
 if($registered >= $GLOBALS["MAX_USERS"])
-	stderr("Sorry", "Das aktuelle Benutzerlimit (" . number_format($GLOBALS["MAX_USERS"]) . ") wurde erreicht. Inactive Accounts werden regelmäßig gelöscht, versuche es also einfach später nochmal...");
+	stderr("Sorry", "Das aktuelle Benutzerlimit (" . number_format($GLOBALS["MAX_USERS"]) . ") wurde erreicht. Inactive Accounts werden regelmÃ¤ÃŸig gelÃ¶scht, versuche es also einfach spÃ¤ter nochmal...");
 
 if($_SERVER["REQUEST_METHOD"] == "POST"){
 	foreach(explode(":","wantusername:wantpassword:passagain:email") as $k){
@@ -56,13 +56,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 	}
 
 	if(empty($wantusername) || empty($wantpassword) || empty($email))
-		bark("Du musst alle Felder ausfüllen.");
+		bark("Du musst alle Felder ausfÃ¼llen.");
 
 	if(strlen($wantusername) > 12)
 		bark("Sorry, Dein Benutzername ist zu lang (Maximum sind 12 Zeichen)");
 
 	if($wantpassword != $passagain)
-		bark("Die Passwörter stimmen nicht überein! Du musst Dich vertippt haben. bitte versuche es erneut!");
+		bark("Die PasswÃ¶rter stimmen nicht Ã¼berein! Du musst Dich vertippt haben. bitte versuche es erneut!");
 
 	if(strlen($wantpassword) < 6)
 		bark("Sorry, Dein Passwort ist zu kurz (Mindestens 6 Zeichen)");
@@ -74,24 +74,24 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 		bark("Sorry, Dein Passwort darf nicht mit Deinem Benutzernamen identisch sein.");
 
 	if(!validemail($email))
-		bark("Die E-Mail Adresse sieht nicht so aus, als ob sie gültig wäre.");
+		bark("Die E-Mail Adresse sieht nicht so aus, als ob sie gÃ¼ltig wÃ¤re.");
 
 	if(!validusername($wantusername))
-		bark("Ungültiger Benutzername.");
+		bark("UngÃ¼ltiger Benutzername.");
 
 	// make sure user agrees to everything...
 	if($_POST["rulesverify"] != "yes" || $_POST["faqverify"] != "yes" || $_POST["ageverify"] != "yes")
-		bark("Sorry, aber Du bist nicht dafür qualifiziert, ein Mitglied dieser Seite zu werden.");
+		bark("Sorry, aber Du bist nicht dafÃ¼r qualifiziert, ein Mitglied dieser Seite zu werden.");
 
 	$con = "email='" . $email . "' OR username='" . $wantusername . "'";
 	$c = number_format($database->row_count("users", $con));
 	if($c != 0)
 		bark("Der Username oder die E-Mail Adresse werden schon verwendet.");
 
-	// Trash-/Freemail Anbieter sind nicht gewünscht.
+	// Trash-/Freemail Anbieter sind nicht gewÃ¼nscht.
 	foreach($GLOBALS["EMAIL_BADWORDS"] as $badword){
 		if(preg_match("/".preg_quote($badword)."/i", $email))
-			bark("Diese E-Mail Adresse kann nicht für eine Anmeldung an diesem Tracker verwendet werden. Wir akzeptieren keine Wegwerf-Mailadressen!");
+			bark("Diese E-Mail Adresse kann nicht fÃ¼r eine Anmeldung an diesem Tracker verwendet werden. Wir akzeptieren keine Wegwerf-Mailadressen!");
 	}
 
 	$secret = mksecret();
@@ -111,13 +111,13 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 	if($res === false)
 		bark("db-error");
 	$psecret = md5($editsecret);
-	$body = "Du oder jemand anderes hat auf " . $GLOBALS["SITENAME"] . " einen neuen Account erstellt und diese E-Mail Adresse (" . $email . ") dafür verwendet.\n\n ".
+	$body = "Du oder jemand anderes hat auf " . $GLOBALS["SITENAME"] . " einen neuen Account erstellt und diese E-Mail Adresse (" . $email . ") dafÃ¼r verwendet.\n\n ".
 		"Wenn Du den Account nicht erstellt hast, ignoriere diese Mail. In diesem Falle wirst Du von uns keine weiteren Nachrichten mehr erhalten. Die Person,  ".
 		"die Deine E-Mail Adresse benutzt hat, hatte die IP-Adresse " . $_SERVER["REMOTE_ADDR"] . ". Bitte antworte nicht auf diese automatisch erstellte Nachricht.\n\n ".
-		"Um die Anmeldung zu bestätigen, folge bitte dem folgenden Link: " . $DEFAULTBASEURL . "/confirm.php?id=" . $res . "&secret=" . $psecret . "\n\n".
-		"Wenn du dies getan hast, wirst Du in der Lage sein, Deinen neuen Account zu verwenden. Wenn die Aktivierung fehlschlägt, oder Du diese nicht vornimmst, wird ".
-		"Dein Account innerhalb der nächsten Tage wieder gelöscht. Wir empfehlen Dir dringlichst, die Regeln und die FAQ zu lesen, bevor Du unseren Tracker verwendest.";
-	mail($email, $GLOBALS["SITENAME"]." Anmeldebestätigung", $body, "From: ".$GLOBALS["SITEEMAIL"]);
+		"Um die Anmeldung zu bestÃ¤tigen, folge bitte dem folgenden Link: " . $DEFAULTBASEURL . "/confirm.php?id=" . $res . "&secret=" . $psecret . "\n\n".
+		"Wenn du dies getan hast, wirst Du in der Lage sein, Deinen neuen Account zu verwenden. Wenn die Aktivierung fehlschlÃ¤gt, oder Du diese nicht vornimmst, wird ".
+		"Dein Account innerhalb der nÃ¤chsten Tage wieder gelÃ¶scht. Wir empfehlen Dir dringlichst, die Regeln und die FAQ zu lesen, bevor Du unseren Tracker verwendest.";
+	mail($email, $GLOBALS["SITENAME"]." AnmeldebestÃ¤tigung", $body, "From: ".$GLOBALS["SITEEMAIL"]);
 	header("Refresh: 0; url=ok.php?type=signup&email=" . urlencode($email));
 }
 

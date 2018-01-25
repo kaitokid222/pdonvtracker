@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -89,7 +89,7 @@ if($action == "edituser"){
 		stderr("Fehler", "Du musst einen Verwarnungsgrund angeben (z.B. \"Zu niedrige Ratio\" oder \"Ich mag Dich einfach nicht!\").");
 
 	if($enabled != $curenabled && $enabled == true && $_POST["disablereason"] == "")
-		stderr("Fehler", "Du musst einen Grund für die Deaktivierung angeben (z.B. \"Verwarnungsbedingungen nicht erfüllt\" oder \"Cheating\"). Der Benutzer erhält den Grund als E-Mail zugesandt.");
+		stderr("Fehler", "Du musst einen Grund fÃ¼r die Deaktivierung angeben (z.B. \"Verwarnungsbedingungen nicht erfÃ¼llt\" oder \"Cheating\"). Der Benutzer erhÃ¤lt den Grund als E-Mail zugesandt.");
 
 	switch($_POST["limitmode"]){
 		case "auto":
@@ -116,7 +116,7 @@ if($action == "edituser"){
 				$maxleeches = $maxtotal; 
 			// Allow leeches to be set to 0, but not total and seeds.
 			if($maxtotal <= 0 || $maxleeches < 0 || $maxseeds <= 0)
-				stderr("Fehler", "Die Torrentbegrenzung muss bei Seeds und Gesamt min. 1 sein, bei Leeches 0 oder höher.");
+				stderr("Fehler", "Die Torrentbegrenzung muss bei Seeds und Gesamt min. 1 sein, bei Leeches 0 oder hÃ¶her.");
 		break;
 	} 
 
@@ -128,24 +128,24 @@ if($action == "edituser"){
 		$updateset[] = "tlimitall = " . $maxtotal;
 		$updateset[] = "tlimitseeds = " . $maxseeds;
 		$updateset[] = "tlimitleeches = " . $maxleeches;
-		write_modcomment($userid, $CURUSER["id"], "Torrentbegrenzung geändert: " . $maxleeches . " Leeches, " . $maxseeds . " Seeds, " . $maxtotal . " Gesamt");
+		write_modcomment($userid, $CURUSER["id"], "Torrentbegrenzung geÃ¤ndert: " . $maxleeches . " Leeches, " . $maxseeds . " Seeds, " . $maxtotal . " Gesamt");
 	} 
 
 	if($curtitle != $title){
-		write_modcomment($userid, $CURUSER["id"], "Titel geändert auf '" . $title . "'.");
+		write_modcomment($userid, $CURUSER["id"], "Titel geÃ¤ndert auf '" . $title . "'.");
 	} 
 
 	if($curclass != $class){
 		// Notify user
-		$what = (($class > $curclass) ? "befördert" : "degradiert");
+		$what = (($class > $curclass) ? "befÃ¶rdert" : "degradiert");
 		$type = (($class > $curclass) ? "promotion" : "demotion");
-		//$msg = sqlesc(($class > $curclass?"[b]Herzlichen Glückwunsch![/b]\n\n":"") . "Du wurdest soeben von [b]" . $CURUSER["username"] . "[/b] zum  '" . get_user_class_name($class) . "' $what.\n\nWenn etwas an dieser Aktion nicht in Ordnung sein sollte, melde Dich bitte bei dem angegebenen Teammitglied!");
-		$msg = (($class > $curclass) ? "[b]Herzlichen Glückwunsch![/b]\n\n" : "") . "Du wurdest soeben von [b]" . $CURUSER["username"] . "[/b] zum  '" . get_user_class_name($class) . "' " . $what . ".\n\nWenn etwas an dieser Aktion nicht in Ordnung sein sollte, melde Dich bitte bei dem angegebenen Teammitglied!";
+		//$msg = sqlesc(($class > $curclass?"[b]Herzlichen GlÃ¼ckwunsch![/b]\n\n":"") . "Du wurdest soeben von [b]" . $CURUSER["username"] . "[/b] zum  '" . get_user_class_name($class) . "' $what.\n\nWenn etwas an dieser Aktion nicht in Ordnung sein sollte, melde Dich bitte bei dem angegebenen Teammitglied!");
+		$msg = (($class > $curclass) ? "[b]Herzlichen GlÃ¼ckwunsch![/b]\n\n" : "") . "Du wurdest soeben von [b]" . $CURUSER["username"] . "[/b] zum  '" . get_user_class_name($class) . "' " . $what . ".\n\nWenn etwas an dieser Aktion nicht in Ordnung sein sollte, melde Dich bitte bei dem angegebenen Teammitglied!";
 		//$added = sqlesc(get_date_time());
 		sendPersonalMessage(0, $userid, "Du wurdest zum '" . get_user_class_name($class) . "' " . $what . "", $msg, PM_FOLDERID_SYSTEM, 0);
 		write_log($type, "Der Benutzer '<a href=\"userdetails.php?id=" . $userid . "\">" . $username . "</a>' wurde von " . $CURUSER["username"] . " zum " . get_user_class_name($class) . " " . $what . ".");
 		$updateset[] = "class = " . $class;
-		$what = ($class > $curclass ? "Beförderung" : "Degradierung");
+		$what = ($class > $curclass ? "BefÃ¶rderung" : "Degradierung");
 		write_modcomment($userid, $CURUSER["id"], "" . $what . " zum '" . get_user_class_name($class) . "'."); 
 		// User has to re-accept rules if promoted to anything higher than UC_VIP
 		if($class > UC_VIP && $curclass < $class)
@@ -156,10 +156,10 @@ if($action == "edituser"){
 		$updateset[] = "warned = '" . $warned . "'";
 		$updateset[] = "warneduntil = '0000-00-00 00:00:00'";
 		if($warned == 'no'){
-			$msg = "Deine Verwarnung wurde von " . $CURUSER["username"] . " zurückgenommen.\n\nFalls die Verwarnung nicht wegen Unrechtmäßigkeit zurückgenommen wurde, achte bitte in Zukunft darauf, die Tracker-Regeln ernstzunehmen.";
-			write_log("remwarn", "Die Verwarnung für Benutzer '<a href=\"userdetails.php?id=" . $userid . "\">" . $username . "</a>' wurde von " . $CURUSER["username"] . " zurückgenommen.");
-			write_modcomment($userid, $CURUSER["id"], "Die Verwarnung wurde zurückgenommen.");
-			sendPersonalMessage(0, $userid, "Deine Verwarnung wurde zurückgenommen", $msg, PM_FOLDERID_SYSTEM, 0);
+			$msg = "Deine Verwarnung wurde von " . $CURUSER["username"] . " zurÃ¼ckgenommen.\n\nFalls die Verwarnung nicht wegen UnrechtmÃ¤ÃŸigkeit zurÃ¼ckgenommen wurde, achte bitte in Zukunft darauf, die Tracker-Regeln ernstzunehmen.";
+			write_log("remwarn", "Die Verwarnung fÃ¼r Benutzer '<a href=\"userdetails.php?id=" . $userid . "\">" . $username . "</a>' wurde von " . $CURUSER["username"] . " zurÃ¼ckgenommen.");
+			write_modcomment($userid, $CURUSER["id"], "Die Verwarnung wurde zurÃ¼ckgenommen.");
+			sendPersonalMessage(0, $userid, "Deine Verwarnung wurde zurÃ¼ckgenommen", $msg, PM_FOLDERID_SYSTEM, 0);
 		} 
 	}elseif($warnlength){
 		if($_POST["addwarnratio"] == "yes"){
@@ -174,8 +174,8 @@ if($action == "edituser"){
 		}else{
 			$warneduntil = get_date_time(time() + $warnlength * 604800);
 			$dur = $warnlength . " Woche" . ($warnlength > 1 ? "n" : "");
-			$msg = "Du wurdest für " . $dur . " von " . $CURUSER['username'] . " [url=rules.php#warning]verwarnt[/url]." . (($warnpm) ? "\n\nGrund: " . $warnpm : "");
-			write_modcomment($userid, $CURUSER["id"], "Verwarnt für " . $dur . ".\nGrund: " . $warnpm . $warnratio);
+			$msg = "Du wurdest fÃ¼r " . $dur . " von " . $CURUSER['username'] . " [url=rules.php#warning]verwarnt[/url]." . (($warnpm) ? "\n\nGrund: " . $warnpm : "");
+			write_modcomment($userid, $CURUSER["id"], "Verwarnt fÃ¼r " . $dur . ".\nGrund: " . $warnpm . $warnratio);
 			$updateset[] = "warneduntil = '" . $warneduntil . "'";
 		} 
 		//$added = sqlesc(get_date_time());
@@ -198,12 +198,12 @@ if($action == "edituser"){
 				$torrent_name = $arr["name"];
 				$new_status = "";
 				if($ack == "yes"){
-					$msg = "Dein Antrag auf Aufhebung der Wartezeit für den Torrent '" . $torrent_name . "' wurde von " . $CURUSER['username'] . " angenommen. Du kannst nun beginnen, diesen Torrent zu nutzen.";
+					$msg = "Dein Antrag auf Aufhebung der Wartezeit fÃ¼r den Torrent '" . $torrent_name . "' wurde von " . $CURUSER['username'] . " angenommen. Du kannst nun beginnen, diesen Torrent zu nutzen.";
 					$new_status = "granted";
 					$log_type = "waitgrant";
 					$log_msg = "akzeptiert";
 				}elseif($ack == "no"){
-					$msg = "Dein Antrag auf Aufhebung der Wartezeit für den Torrent '" . $torrent_name . "' wurde von " . $CURUSER['username'] . " abgelehnt. Bitte beachte, dass eine erneute Antragstellung für diesen Torrent nicht möglich ist!\n\nEbenso solltest Du Dir noch einmal die Regeln bzw. das FAQ zum Thema Wartezeitaufhebung durchlesen, bevor Du eine weitere Aufhebung beantragst. Beachte, dass häufige, nicht regelkonforme Anträge zu Verwarnungen führen können!";
+					$msg = "Dein Antrag auf Aufhebung der Wartezeit fÃ¼r den Torrent '" . $torrent_name . "' wurde von " . $CURUSER['username'] . " abgelehnt. Bitte beachte, dass eine erneute Antragstellung fÃ¼r diesen Torrent nicht mÃ¶glich ist!\n\nEbenso solltest Du Dir noch einmal die Regeln bzw. das FAQ zum Thema Wartezeitaufhebung durchlesen, bevor Du eine weitere Aufhebung beantragst. Beachte, dass hÃ¤ufige, nicht regelkonforme AntrÃ¤ge zu Verwarnungen fÃ¼hren kÃ¶nnen!";
 					$new_status = "rejected";
 					$log_type = "waitreject";
 					$log_msg = "abgelehnt";
@@ -218,9 +218,9 @@ if($action == "edituser"){
 					if($qry->rowCount() > 0){
 					//mysql_query("UPDATE nowait SET `status`='$new_status',grantor=$CURUSER[id] WHERE user_id=$userid AND torrent_id=$torrent AND `status`='pending'");
 					//if(mysql_affected_rows()){
-						write_log($log_type, "Antrag auf Wartezeitaufhebung von '<a href=\"userdetails.php?id=" . $userid . "\">" . $username . "</a>' für Torrent '<a href=\"details.php?id=" . $torrent . "\">" . $torrent_name . "</a>' wurde von " . $CURUSER["username"] . " " . $log_msg . ".");
+						write_log($log_type, "Antrag auf Wartezeitaufhebung von '<a href=\"userdetails.php?id=" . $userid . "\">" . $username . "</a>' fÃ¼r Torrent '<a href=\"details.php?id=" . $torrent . "\">" . $torrent_name . "</a>' wurde von " . $CURUSER["username"] . " " . $log_msg . ".");
 						sendPersonalMessage(0, $userid, "Dein Antrag auf Wartezeitaufhebung wurde " . $log_msg, $msg, PM_FOLDERID_SYSTEM, 0);
-						write_modcomment($userid, $CURUSER["id"], "Wartezeitaufhebung für Torrent '" . $torrent_name . " '" . $log_msg . ".");
+						write_modcomment($userid, $CURUSER["id"], "Wartezeitaufhebung fÃ¼r Torrent '" . $torrent_name . " '" . $log_msg . ".");
 					}
 				}
 			}
@@ -239,7 +239,7 @@ if($action == "edituser"){
 		}else{
 			write_modcomment($userid, $CURUSER["id"], "Account deaktiviert. Grund:\n" . $_POST["disablereason"]);
 			write_log("accdisabled", "Benutzeraccount '<a href=\"userdetails.php?id=" . $userid . "\">" . $username . "</a>' wurde von " . $CURUSER["username"] . " deaktiviert (Grund: " . $_POST["disablereason"] . ").");
-			$mailbody = "Dein Account auf " . $GLOBALS["SITENAME"] . " wurde von einem Moderator deaktiviert.\n\n Du kannst dich ab sofort nicht mehr einloggen.\n Grund für diesen Schritt:\n\n " . $_POST["disablereason"] . " \n\nBitte sehe in Zukunft davon ab, Dir einen neuen Account zu erstellen. Dieser wird umgehend und ohne weitere Warnung deaktiviert werden.\n\n Bei Fragen besuche uns im IRC.";
+			$mailbody = "Dein Account auf " . $GLOBALS["SITENAME"] . " wurde von einem Moderator deaktiviert.\n\n Du kannst dich ab sofort nicht mehr einloggen.\n Grund fÃ¼r diesen Schritt:\n\n " . $_POST["disablereason"] . " \n\nBitte sehe in Zukunft davon ab, Dir einen neuen Account zu erstellen. Dieser wird umgehend und ohne weitere Warnung deaktiviert werden.\n\n Bei Fragen besuche uns im IRC.";
 			mail($email, "Account " . $username . " auf " . $GLOBALS["SITENAME"] . " wurde deaktiviert", $mailbody);
 		}
 	}

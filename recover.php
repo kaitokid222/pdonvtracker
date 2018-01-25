@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen d¸rfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen d√ºrfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -42,33 +42,33 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
   mysql_query("UPDATE users SET editsecret=" . sqlesc($sec) . " WHERE id=" . $arr["id"]) or sqlerr();
   if (!mysql_affected_rows())
-	  stderr("Fehler", "Datenbankfehler. Bitte informiere den Administrator dar¸ber.");
+	  stderr("Fehler", "Datenbankfehler. Bitte informiere den Administrator dar√ºber.");
 
   $hash = md5($sec . $email . $arr["passhash"] . $sec);
 
   $body = <<<EOD
-Jemand, hoffentlich Du, hat ein neues Passwort f¸r den Account
-beantragt, mit dem diese E-Mail Adresse ($email) verkn¸pft ist.
+Jemand, hoffentlich Du, hat ein neues Passwort f√ºr den Account
+beantragt, mit dem diese E-Mail Adresse ($email) verkn√ºpft ist.
 Die Anfrage wurde von der IP {$_SERVER["REMOTE_ADDR"]} gestellt.
 
 Wenn Du dies nicht getan hast, ignoriere diese Mail einfach, und
 antwtorte nicht darauf.
 
 
-Wenn Du die Anfrage best‰tigen mˆchtest, klicke auf folgenden Link:
+Wenn Du die Anfrage best√§tigen m√∂chtest, klicke auf folgenden Link:
 
 $DEFAULTBASEURL/recover.php?id={$arr["id"]}&secret=$hash
 
 
-Nachdem Du dies getan hast, wird Dein Passwort zur¸ckgesetzt und Dir
+Nachdem Du dies getan hast, wird Dein Passwort zur√ºckgesetzt und Dir
 per Mail zugestellt.
 --
 {$GLOBALS["SITENAME"]}
 EOD;
 
-  @mail($arr["email"], $GLOBALS["SITENAME"]." Passwort zur¸cksetzen", $body, "From: ".$GLOBALS["SITEEMAIL"])
-    or stderr("Fehler", "Die E-Mail konnte nicht gesendet werden. Bitte informiere den Administrator dar¸ber.");
-  stderr("Erfolg", "Eine Best‰tigungsmail wurde an <b>$email</b> versandt.\n" .
+  @mail($arr["email"], $GLOBALS["SITENAME"]." Passwort zur√ºcksetzen", $body, "From: ".$GLOBALS["SITEEMAIL"])
+    or stderr("Fehler", "Die E-Mail konnte nicht gesendet werden. Bitte informiere den Administrator dar√ºber.");
+  stderr("Erfolg", "Eine Best√§tigungsmail wurde an <b>$email</b> versandt.\n" .
     "Bitte habe einen Moment Geduld, bis die Mail angekommen ist.");
 }
 elseif($_GET)
@@ -115,7 +115,7 @@ elseif($_GET)
   $body = <<<EOD
 Auf Deine Anforderung hin haben wir Dir ein neues Passwort erstellt.
 
-Dies sind die Informationen, unter denen wir Deinen Account f¸hren:
+Dies sind die Informationen, unter denen wir Deinen Account f√ºhren:
 
     Benutezrname: {$arr["username"]}
     Passwort:  $newpassword
@@ -126,8 +126,8 @@ Du kannst Dich nun unter $DEFAULTBASEURL/login.php einloggen.
 {$GLOBALS["SITENAME"]}
 EOD;
   @mail($email, $GLOBALS["SITENAME"]." Account-Details", $body, "From: ".$GLOBALS["SITEEMAIL"])
-    or stderr("Fehler", "Die E-Mail konnte nicht gesendet werden. Bitte informiere den Administrator dar¸ber.");
-  stderr("Erfolg", "Eine Best‰tigungsmail wurde an <b>$email</b> versandt.\n" .
+    or stderr("Fehler", "Die E-Mail konnte nicht gesendet werden. Bitte informiere den Administrator dar√ºber.");
+  stderr("Erfolg", "Eine Best√§tigungsmail wurde an <b>$email</b> versandt.\n" .
     "Bitte habe einen Moment Geduld, bis die Mail angekommen ist.");
 }
 else

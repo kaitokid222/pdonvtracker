@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -30,7 +30,7 @@ require "include/bittorrent.php";
 userlogin();
 if ($_SERVER["REQUEST_METHOD"] == "POST"){
 	if (!isset($_POST["username"]) OR !isset($_POST["password"]))
-		stderr("Fehler", "Bitte fülle das Formular vollständig aus.");
+		stderr("Fehler", "Bitte fÃ¼lle das Formular vollstÃ¤ndig aus.");
 	else{
 		$username = $_POST["username"];
 		$password = $_POST["password"];
@@ -41,22 +41,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
 	$qry->bindParam(':password', $password, PDO::PARAM_STR);
 	$qry->execute();
 	if(!$qry->rowCount())
-		stderr("Fehler", "Ungültiger Benutzername oder Passwort, oder der Account ist bereits bestätigt. Bitte stelle sicher, dass die eingegebenen Informationen korrekt sind!");
+		stderr("Fehler", "UngÃ¼ltiger Benutzername oder Passwort, oder der Account ist bereits bestÃ¤tigt. Bitte stelle sicher, dass die eingegebenen Informationen korrekt sind!");
 	else
 		$arr = $qry->FetchAll();
 
 	$del = delete_acct($arr['id']);
 
 	if ($del !== TRUE)
-		stderr("Fehler", "Der Account konnte nicht gelöscht werden.");
-	stderr("ERfolg", "Der Account <b>" . $username . "</b> wurde erfolgreich gelöscht.");
+		stderr("Fehler", "Der Account konnte nicht gelÃ¶scht werden.");
+	stderr("ERfolg", "Der Account <b>" . $username . "</b> wurde erfolgreich gelÃ¶scht.");
 }
-stdhead("Account löschen");
-begin_frame("Account löschen", FALSE, "500px");
+stdhead("Account lÃ¶schen");
+begin_frame("Account lÃ¶schen", FALSE, "500px");
 ?>
 <p>Bitte gebe Deinen Benutzernamen und Dein Passwort zur Best&auml;tigung an, um Deinen
-noch nicht bestätigten Account zu entfernen.</p>
-<p>Wenn Dein Account bereits bestätigt wurde, kannst du diesen nicht löschen. Sende
+noch nicht bestÃ¤tigten Account zu entfernen.</p>
+<p>Wenn Dein Account bereits bestÃ¤tigt wurde, kannst du diesen nicht lÃ¶schen. Sende
 in diesem Fall eine PN an ein Teammitglied. Dieses wird Deinen Account dann
 deaktivieren.</p>
 <form method="post" action=<?=$_SERVER['PHP_SELF'] ?>>

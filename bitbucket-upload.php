@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -85,7 +85,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 		$img = resize_image($file["name"], $file["tmp_name"], $tgtfile);
 
 		if(!$img)
-			stderr("Fehler", "Das hochgeladene Bild konnte nicht verarbeitet werden. Bitte ändere die Größe selbständig auf Avatargröße, und versuche den Upload ohne die Option \"automatisch anpassen\". Die Automatik akzeptiert nur die Formate JPEG und PNG. Animierte GIFs werden nicht unterstützt (ergeben ein statisches Bild).");
+			stderr("Fehler", "Das hochgeladene Bild konnte nicht verarbeitet werden. Bitte Ã¤ndere die GrÃ¶ÃŸe selbstÃ¤ndig auf AvatargrÃ¶ÃŸe, und versuche den Upload ohne die Option \"automatisch anpassen\". Die Automatik akzeptiert nur die Formate JPEG und PNG. Animierte GIFs werden nicht unterstÃ¼tzt (ergeben ein statisches Bild).");
 
 		imagedestroy($img);
 		$file["size"] = filesize($tgtfile);

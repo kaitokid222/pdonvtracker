@@ -150,7 +150,8 @@ if(count($wherecatina) > 1){
 }elseif(count($wherecatina) == 1){
     $wherea[] = "category = " . $wherecatina[0];
 	$wherecatin = "";
-}
+}else
+	$wherecatin = "";
 if($CURUSER["hideuseruploads"]=="yes")
     $wherea[] = "users.class >= ".UC_UPLOADER;
 $wherebase = $wherea;
@@ -162,7 +163,7 @@ $where = implode(" AND ", $wherea);
 if($wherecatin != "")
 	$where .= ($where ? " AND " : "") . "category IN(" . $wherecatin . ")";
 if($where != "")
-    $where = "WHERE $where";
+    $where = "WHERE " . $where;
 
 $sql = "SELECT COUNT(*) FROM torrents LEFT JOIN users ON torrents.owner=users.id " . $where;
 $qry = $GLOBALS["DB"]->prepare($sql);

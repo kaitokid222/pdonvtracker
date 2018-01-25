@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -40,9 +40,9 @@ loggedinorreturn();
 $tupload = new tupload($GLOBALS["DB"]);
 $tupload->setUser($CURUSER);
 if($tupload->canUpload() == false)
-	stderr("Keine Uploadrechte!", "Du hast kein Recht, auf diesem Tracker Torrents hochzuladen, da diese Funktion für Deinen Account von einem Moderator deaktiviert wurde.");
+	stderr("Keine Uploadrechte!", "Du hast kein Recht, auf diesem Tracker Torrents hochzuladen, da diese Funktion fÃ¼r Deinen Account von einem Moderator deaktiviert wurde.");
 if($tupload->checkForm() == false)
-	stderr("Fehlende Formulardaten", "Die übergebenen Daten sind unvollständig. Bitte benutze das Upload-Formular, und fülle alle nötigen Felder aus!");
+	stderr("Fehlende Formulardaten", "Die Ã¼bergebenen Daten sind unvollstÃ¤ndig. Bitte benutze das Upload-Formular, und fÃ¼lle alle nÃ¶tigen Felder aus!");
 $activated = ($tupload->isUploader() == false) ? "no" : "yes";
 
 
@@ -58,7 +58,7 @@ function abort($msg){
 }
 
 stdhead();
-begin_frame("Überprüfe Upload...", FALSE, "650px");
+begin_frame("ÃœberprÃ¼fe Upload...", FALSE, "650px");
 begin_table(TRUE);
 
 tr_msg("Dateiname der Torrent-Metadatei");
@@ -72,7 +72,7 @@ if(!preg_match('/^(.+)\.torrent$/si', $_FILES["file"]["name"], $matches)) {
 }
 tr_status("ok");
 
-tr_msg("Max. Größe der Torrent-Metadatei");
+tr_msg("Max. GrÃ¶ÃŸe der Torrent-Metadatei");
 if($tupload->checkMetafileSize($_FILES["file"]["size"]) === false){
     tr_status("err");
     abort("Die Pr&uuml;fung der Torrentdatei ist gescheitert!");
@@ -87,7 +87,7 @@ if($nfofile['name'] == ''){
 }
 tr_status("ok");
 
-tr_msg("Größe der NFO-Datei");
+tr_msg("GrÃ¶ÃŸe der NFO-Datei");
 if($tupload->checknfofileSize($nfofile['size']) === false){
     tr_status("err");
     abort("Die Gr&ouml;ssenpr&uuml;fung der NFO-datei ist gescheitert!");
@@ -128,18 +128,18 @@ if (!empty($_POST["name"]))
     $torrent = unesc($_POST["name"]);
 
 	
-tr_msg("Torrent-Metadatei dekodieren und prüfen");
+tr_msg("Torrent-Metadatei dekodieren und prÃ¼fen");
 $dict = bdec_file($_FILES["file"]["tmp_name"]);
 if(!isset($dict)){
     tr_status("err");
-    abort("Was zum Teufel hast du da hochgeladen? Das ist jedenfalls keine gültige Torrent-Datei!");
+    abort("Was zum Teufel hast du da hochgeladen? Das ist jedenfalls keine gÃ¼ltige Torrent-Datei!");
 }
 tr_status("ok");
 $dname = $dict['info']['name'];
 tr_msg("Announce-URL");
 if(!in_array($dict['announce'], $GLOBALS["ANNOUNCE_URLS"], 1)){
     tr_status("err");
-    $errstr = "Ungültige Announce-URL! Muss eine der Folgenden sein:</p><ul>";
+    $errstr = "UngÃ¼ltige Announce-URL! Muss eine der Folgenden sein:</p><ul>";
     sort($GLOBALS["ANNOUNCE_URLS"]);
     foreach ($GLOBALS["ANNOUNCE_URLS"] as $aurl)
         $errstr .= "<li>".htmlspecialchars($aurl)."</li>";
@@ -147,7 +147,7 @@ if(!in_array($dict['announce'], $GLOBALS["ANNOUNCE_URLS"], 1)){
 }
 tr_status("ok");
 
-tr_msg("Plausibilitätsprüfung und Einlesen der Dateiliste");
+tr_msg("PlausibilitÃ¤tsprÃ¼fung und Einlesen der Dateiliste");
 if(isset($dict['info']['length']))
 	$totallen = $dict['info']['length'];
 else
@@ -161,11 +161,11 @@ if($totallen > 0){
 	$flist = $dict['info']['files'];
 	if(!isset($flist)){
 		tr_status("err");
-		abort("Es fehlen sowohl der \"length\"- als auch der \"files\"-Schlüssel im Info-Dictionary!");
+		abort("Es fehlen sowohl der \"length\"- als auch der \"files\"-SchlÃ¼ssel im Info-Dictionary!");
 	}
 	if(!count($flist)){
 		tr_status("err");
-		abort("Der Torrent enthält keine Dateien");
+		abort("Der Torrent enthÃ¤lt keine Dateien");
 	}
 	$totallen = 0;
 	foreach($flist as $fn){
@@ -179,15 +179,15 @@ if($totallen > 0){
 }
 tr_status("ok");
 
-tr_msg("Plausibilitätsprüfung der Piece-Hashes");
+tr_msg("PlausibilitÃ¤tsprÃ¼fung der Piece-Hashes");
 if(strlen($dict['info']['pieces']) % 20 != 0){
 	tr_status("err");
-	abort("Die Länge der Piece-Hashes ist kein Vielfaches von 20!");
+	abort("Die LÃ¤nge der Piece-Hashes ist kein Vielfaches von 20!");
 }
 $numpieces = strlen($dict['info']['pieces'])/20;
 if($numpieces != ceil($totallen/$dict['info']['piece length'])){
 	tr_status("err");
-	abort("Die Anzahl Piecehashes stimmt nicht mit der Torrentlänge überein (".$numpieces." ungleich ".ceil($totallen/$dict['info']['piece length']).")!");
+	abort("Die Anzahl Piecehashes stimmt nicht mit der TorrentlÃ¤nge Ã¼berein (".$numpieces." ungleich ".ceil($totallen/$dict['info']['piece length']).")!");
 }
 tr_status("ok");
 
@@ -253,7 +253,7 @@ if ($fhandle) {
     fclose($fhandle);
 } else {
     tr_status("err");
-    abort("Fehler beim Öffnen der Torrent-Datei auf dem Server (Schreibzugriff verweigert) - bitte SysOp benachrichtigen!");
+    abort("Fehler beim Ã–ffnen der Torrent-Datei auf dem Server (Schreibzugriff verweigert) - bitte SysOp benachrichtigen!");
 } 
 tr_status("ok");
 
@@ -298,7 +298,7 @@ else
 
 if ($activated == "no") {
     tr_msg("Gastuploader-Team und Moderatoren benachrichtigen");
-    $mod_msg = "[b]Der Benutzer [url=".$DEFAULTBASEURL."/userdetails.php?id=".$CURUSER["id"]."]".$CURUSER["username"]."[/url] hat einen Torrent hochgeladen:[/b]\n\n[url=".$DEFAULTBASEURL."/details.php?id=".$id."]".$torrent."[/url] (".$id.")\n\nBitte überprüfen und freischalten/löschen.";
+    $mod_msg = "[b]Der Benutzer [url=".$DEFAULTBASEURL."/userdetails.php?id=".$CURUSER["id"]."]".$CURUSER["username"]."[/url] hat einen Torrent hochgeladen:[/b]\n\n[url=".$DEFAULTBASEURL."/details.php?id=".$id."]".$torrent."[/url] (".$id.")\n\nBitte Ã¼berprÃ¼fen und freischalten/lÃ¶schen.";
 	$qry = $GLOBALS["DB"]->prepare("SELECT `id` FROM `users` WHERE `class` = :class");
 	$qry->bindParam(':class', UC_GUTEAM, PDO::PARAM_INT);
 	$qry->execute();
@@ -316,7 +316,7 @@ end_table();
 end_frame();
 begin_frame("Torrent-Upload war erfolgreich!", FALSE, "650px");
 echo "<p>Dein Torrent wurde erfolgreich hochgeladen. <b>Beachte</b> dass Dein Torrent erst".
-	"sichtbar wird, wenn der erste Seeder verfügbar ist!</p>\n";
+	"sichtbar wird, wenn der erste Seeder verfÃ¼gbar ist!</p>\n";
 
 if($tupload->get_uploaderrors_pic() !== false){
 	echo "<p>Beim Upload des Torrents ist mindestens ein unkritischer Fehler aufgetreten:</p>\n".
@@ -335,9 +335,9 @@ if ($activated == "no") {
 		"Deinen Upload benachrichtigt, und wird sich baldm&ouml;glichst darum k&uuml;mmern.</p>\n";
 }
 echo "<p><b>Wichtiger Hinweis:</b><br>Bevor Du den Torrent seeden kannst, musst Du den Torrent ".
-	"erneut vom Tracker herunterladen, da beim Upload einige Änderungen an der Torrent-Datei ".
+	"erneut vom Tracker herunterladen, da beim Upload einige Ã„nderungen an der Torrent-Datei ".
 	"vorgenommen wurden. Dadurch hat der Torrent einen neuen Info-Hash erhalten, und beim ".
-	"Download wird ebenfalls Dein PassKey in die Announce-URL eingefügt. <b>Das ".
+	"Download wird ebenfalls Dein PassKey in die Announce-URL eingefÃ¼gt. <b>Das ".
 	"&Auml;ndern der Announce-URL in Deiner soeben hochgeladenen Torrent-Metadatei gen&uuml;gt ".
 	"nicht!</b></p>\n".
 	"<p style=\"text-align:center\"><a href=\"details.php?id=" . $id . "\">Weiter zu den Details Deines Torrents</a></p>\n";

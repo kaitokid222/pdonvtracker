@@ -1,7 +1,7 @@
 <?php
 
 if (isset($_SERVER["HTTP_HOST"]))
-    die ("Dieses Script kann nicht aus dem Browser aufgerufen werden, sondern ist für die Ausführung via Cronjob bestimmt!");
+    die ("Dieses Script kann nicht aus dem Browser aufgerufen werden, sondern ist fÃ¼r die AusfÃ¼hrung via Cronjob bestimmt!");
 
 chdir(dirname($_SERVER["SCRIPT_FILENAME"]));
 
@@ -16,13 +16,13 @@ function paint_stats_histogram($uid)
     $arr = mysql_fetch_assoc($res);
     $uname = $arr["username"];
 
-    // Min / Max Ratio für Skala
+    // Min / Max Ratio fÃ¼r Skala
     $res = mysql_query("SELECT MIN(ROUND(`uploaded`/`downloaded`,8)) AS `min`, MAX(ROUND(`uploaded`/`downloaded`,8)) AS `max` FROM `ratiostats` WHERE `userid`=$uid");
     $minmax = mysql_fetch_Assoc($res);
     $minratio = doubleval($minmax["min"]);
     $maxratio = doubleval($minmax["max"]);
     
-    // Datensätze
+    // DatensÃ¤tze
     $hourlyres = mysql_query("SELECT `uploaded`,`downloaded` FROM `ratiostats` WHERE `type`='hourly' AND `userid`=$uid ORDER BY `timecode` DESC LIMIT 240");
     $dailyres = mysql_query("SELECT `uploaded`,`downloaded` FROM `ratiostats` WHERE `type`='daily' AND `userid`=$uid ORDER BY `timecode` DESC LIMIT 240");
     
@@ -85,7 +85,7 @@ function paint_stats_histogram($uid)
     imagestring($img, 2, 181, 130, "Tageslinie", $silver);
     imagestring($img, 2, 180, 129, "Tageslinie", $blue);
 
-    $title = "Ratio-History für $uname";
+    $title = "Ratio-History fÃ¼r $uname";
     imagestring($img, 3, (320-$fw3*strlen($title))/2+1, 3, $title, $silver);
     imagestring($img, 3, (320-$fw3*strlen($title))/2, 2, $title, $black);
 
@@ -126,16 +126,16 @@ function paint_stats_histogram($uid)
     echo "Wrote image $filename.\n";
 }
 
-// Alle Diagramme löschen
+// Alle Diagramme lÃ¶schen
 shell_exec("find ./".$GLOBALS["BITBUCKET_DIR"]."/ -name 'rstat-*.png' | xargs rm");
 
-// Alle User aus DB holen, die Stats wünschen
+// Alle User aus DB holen, die Stats wÃ¼nschen
 $res = mysql_query("SELECT `id`,`uploaded`,`downloaded` FROM `users` WHERE `log_ratio`='yes' AND `enabled`='yes'");
 
 $timestamp = date("Y-m-d H:00:00");
 $usermask = "";
 while ($userstats = mysql_fetch_assoc($res)) {
-    // Aktuellen Eintrag hinzufügen
+    // Aktuellen Eintrag hinzufÃ¼gen
     mysql_query("INSERT INTO `ratiostats` (`userid`,`timecode`,`downloaded`,`uploaded`) VALUES(".$userstats["id"].",'$timestamp',".$userstats["downloaded"].",".$userstats["uploaded"].")");    
     echo "Inserted UID ".$userstats["id"]." into database.\n";
 
@@ -159,10 +159,10 @@ while ($userstats = mysql_fetch_assoc($res)) {
     paint_stats_histogram($userstats["id"]);
 }
 
-// Alle Einträge von Benutzern löschen, die kein Diagramm wünschen
+// Alle EintrÃ¤ge von Benutzern lÃ¶schen, die kein Diagramm wÃ¼nschen
 mysql_query("DELETE FROM `ratiostats` WHERE `userid` NOT IN ($usermask)");
 
-// Ältere Einträge löschen (Stunden/Tage)
+// Ã„ltere EintrÃ¤ge lÃ¶schen (Stunden/Tage)
 mysql_query("DELETE FROM `ratiostats` WHERE `type`='hourly' AND `timecode`<'".date("Y-m-d H:00:00", time()-264*3600)."'");
 mysql_query("DELETE FROM `ratiostats` WHERE `type`='daily' AND `timecode`<'".date("Y-m-d H:00:00", time()-264*86400)."'");
 

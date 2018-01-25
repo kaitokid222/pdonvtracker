@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -78,7 +78,7 @@ function openApplet()
 beachtet die <a href="rules.php">Regeln in unserem IRC-Channel</a>!</p>
 <p>Alternativ zu Deinem eigenen Client kannst Du einfach unseren Java-Client benutzen.
 Der Chat startet in einem eigenen Fenster, so dass Du hier in Ruhe weitersurfen kannst.</p>
-<p align="center">Größe: <select id="resolution" size="1">
+<p align="center">GrÃ¶ÃŸe: <select id="resolution" size="1">
         <option value="1">640 x 480</option>
         <option value="2" selected="selected">800 x 600</option>
         <option value="3">1024 x 768</option>

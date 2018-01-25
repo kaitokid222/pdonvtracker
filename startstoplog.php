@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dï¿½rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -30,26 +30,34 @@ require "include/bittorrent.php";
 dbconn();
 loggedinorreturn();
 
-if (get_user_class() < UC_MODERATOR)
-        stderr("Error", "Permission denied.");
+if(get_user_class() < UC_MODERATOR)
+	stderr("Error", "Permission denied.");
 
-function startStopTable($result)
-{
-    if (mysql_num_rows($result)>0) {
+function startStopTable($result){
+	if (mysql_num_rows($result) > 0) {
 	begin_table();
-	echo "<tr><td class=tablecat>User</td><td class=tablecat>IP</td><td class=tablecat>Torrent</td><td class=tablecat>Start</td><td class=tablecat>Stop</td><td class=tablecat>Dauer</td><td class=tablecat>Peer-ID</td><td class=tablecat>User-Agent</td></tr>\n";
+	echo "    <tr>\n".
+		"        <td class=\"tablecat\">User</td>\n".
+		"        <td class=\"tablecat\">IP</td>\n".
+		"        <td class=\"tablecat\">Torrent</td>\n".
+		"        <td class=\"tablecat\">Start</td>\n".
+		"        <td class=\"tablecat\">Stop</td>\n".
+		"        <td class=\"tablecat\">Dauer</td>\n".
+		"        <td class=\"tablecat\">Peer-ID</td>\n".
+		"        <td class=\"tablecat\">User-Agent</td>\n".
+		"    </tr>\n";
 	$lastevent = "stop";
 	$lasttorrent = 0;
 	$starttime = 0;
 	
 	while ($arr = mysql_fetch_assoc($result)) {
 	    if ($arr["username"] == "")
-		$arr["username"] = "<i>Gelöscht</i>";
+		$arr["username"] = "<i>Gelï¿½scht</i>";
 	    else
 		$arr["username"] = htmlspecialchars($arr["username"]);
 	    
 	    if ($arr["torrentname"] == "")
-	        $arr["torrentname"] = "<i>Gelöscht</i>";
+	        $arr["torrentname"] = "<i>Gelï¿½scht</i>";
 	    else
 	        if (strlen($arr["torrentname"])>40)
 		    $arr["torrentname"] = htmlspecialchars(substr($arr["torrentname"], 0, 40)."...");
@@ -124,7 +132,7 @@ function startStopTable($result)
 stdhead("Start/Stop Log (Auswertung)");
 begin_frame("Start/Stop Log (Auswertung)");
 ?>
-<p>Bitte eine Aktion wählen:</p>
+<p>Bitte eine Aktion wï¿½hlen:</p>
 <ul>
 <li><a href="startstoplog.php?op=acchistory">Benutzer mit mehr als einem angemeldeten Account (History)</a></li>
 <li><a href="startstoplog.php?op=dblacc">Doppelaccount-Suche</a></li>
@@ -141,7 +149,7 @@ if ($_GET["op"]) {
             begin_frame("Ehemalige Accounts", FALSE, "650px;");
 
             if (!is_array($udata)) {
-                echo "<p>Dieser Benutzer hat noch keine Einträge!</p>";
+                echo "<p>Dieser Benutzer hat noch keine Eintrï¿½ge!</p>";
                 break;
             } else {
 		echo "<p>Ehemalige Accounts von Benutzer \"".htmlspecialchars($udata["username"])."\":</p>\n";
@@ -180,7 +188,7 @@ if ($_GET["op"]) {
             break;
             
         case "acchistory":
-            // Aufräumen (6 Wochen alte Einträge löschen)
+            // Aufrï¿½umen (6 Wochen alte Eintrï¿½ge lï¿½schen)
             mysql_query("DELETE FROM `accounts` WHERE UNIX_TIMESTAMP(`lastaccess`) < (UNIX_TIMESTAMP()-3628800)");
 
             begin_frame("Benutzer mit mehr als einem angemeldeten Account", FALSE, "650px;");
@@ -215,7 +223,7 @@ if ($_GET["op"]) {
             break;
             
         case "dblacc":
-            // Aufräumen
+            // Aufrï¿½umen
             mysql_query("DELETE FROM startstoplog WHERE UNIX_TIMESTAMP(`datetime`) < (UNIX_TIMESTAMP()-864000)");
             
             $query = "SELECT DISTINCT(ip), COUNT(DISTINCT(userid)) as cnt FROM startstoplog GROUP BY ip ORDER BY cnt DESC,userid,`datetime` DESC";
@@ -225,7 +233,7 @@ if ($_GET["op"]) {
             begin_table();
             echo "<tr><td class=tablecat>IP</td><td class=tablecat>Users</td><td class=tablecat>Torrents</td><td class=tablecat>Zugriff</td></tr>\n";
 	    while ($ipaddr = mysql_fetch_assoc($result)) {
-                // Abbrechen bei nur einem Zugriff für diese IP!
+                // Abbrechen bei nur einem Zugriff fï¿½r diese IP!
                 if ($ipaddr["cnt"] == 1) break;
             
                 echo "<tr><td class=tablea align=center valign=middle rowspan=".$ipaddr["cnt"].">".$ipaddr["ip"]."</td>\n";
@@ -239,10 +247,10 @@ if ($_GET["op"]) {
 	        	$newrow = 0;
     	    	    else
     	    		echo "<tr>";
-    	    	    echo "<td class=tableb align=left><a href=\"userdetails.php?id=".$userdata["userid"]."\">".($userdata["username"]!=""?htmlspecialchars($userdata["username"]):"<i>Gelöscht</i>")."</a>";
+    	    	    echo "<td class=tableb align=left><a href=\"userdetails.php?id=".$userdata["userid"]."\">".($userdata["username"]!=""?htmlspecialchars($userdata["username"]):"<i>Gelï¿½scht</i>")."</a>";
 		    echo get_user_icons($userdata);
 		    echo "</td>\n";
-    	    	    echo "<td class=tablea align=left><a href=\"details.php?id=".$userdata["torrent"]."\">".($userdata["name"]!=""?htmlspecialchars($userdata["name"]):"<i>Gelöscht</i>")."</a></td>\n";
+    	    	    echo "<td class=tablea align=left><a href=\"details.php?id=".$userdata["torrent"]."\">".($userdata["name"]!=""?htmlspecialchars($userdata["name"]):"<i>Gelï¿½scht</i>")."</a></td>\n";
             	    echo "<td class=tableb align=center>";
 		    if ($lasttime>0) {
 			echo "<div style=\"width:100%;height:2px;background-color:";
@@ -278,7 +286,7 @@ if ($_GET["op"]) {
 		break;
 	    }
 	    $userinfo = mysql_fetch_assoc($result);
-	    begin_frame("Start-/Stop-Log für Benutzer \"".htmlspecialchars($userinfo["username"])."\"", FALSE, "650px");
+	    begin_frame("Start-/Stop-Log fï¿½r Benutzer \"".htmlspecialchars($userinfo["username"])."\"", FALSE, "650px");
 	    
 	    $query = "SELECT startstoplog.*,users.username,torrents.name AS torrentname FROM startstoplog,users,torrents WHERE startstoplog.userid=".sqlesc($_GET["uid"])." AND users.id=startstoplog.userid AND torrents.id=startstoplog.torrent ORDER BY torrent DESC,peerid ASC,`datetime` ASC";
 	    $result = mysql_query($query);
@@ -314,7 +322,7 @@ if ($_GET["op"]) {
 	    break;
         default:
             begin_frame("Fehler");
-            echo "<p>Keine gültige Aktion!</p>";
+            echo "<p>Keine gï¿½ltige Aktion!</p>";
     }
     end_frame();
 }

@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen d¸rfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen d√ºrfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -235,7 +235,7 @@ ob_start("ob_gzhandler");
 <?php
     print(($type == 1 && !$limit ? "<b>Benutzer</b>" : "<a href=topten.php?type=1>Benutzer</a>") .    " | " .
           ($type == 2 && !$limit ? "<b>Torrents</b>" : "<a href=topten.php?type=2>Torrents</a>") . " | " .
-          ($type == 3 && !$limit ? "<b>L‰nder</b>" : "<a href=topten.php?type=3>L‰nder</a>") . " | " .
+          ($type == 3 && !$limit ? "<b>L√§nder</b>" : "<a href=topten.php?type=3>L√§nder</a>") . " | " .
           ($type == 4 && !$limit ? "<b>Peers</b>" : "<a href=topten.php?type=4>Peers</a>"));
 ?>
  </center></span></td></tr></table><br>
@@ -270,14 +270,14 @@ ob_start("ob_gzhandler");
   	{
 			$order = "upspeed DESC";
 			$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
-	  	usertable($r, "Top $limit schnellste Uploader <font class=small>(Durchschnitt, inklusive Inaktivit‰t)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=uls>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=uls>Top 250</a>]</font>" : ""));
+	  	usertable($r, "Top $limit schnellste Uploader <font class=small>(Durchschnitt, inklusive Inaktivit√§t)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=uls>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=uls>Top 250</a>]</font>" : ""));
 	  }
 
     if ($limit == 10 || $subtype == "dls")
   	{
 			$order = "downspeed DESC";
 			$r = mysql_query($mainquery . $extrawhere . " ORDER BY $order " . " LIMIT $limit") or sqlerr();
-	  	usertable($r, "Top $limit schnellste Downloader <font class=small>(Durchschnitt, inklusive Inaktivit‰t)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=dls>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=dls>Top 250</a>]</font>" : ""));
+	  	usertable($r, "Top $limit schnellste Downloader <font class=small>(Durchschnitt, inklusive Inaktivit√§t)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=1&amp;lim=100&amp;subtype=dls>Top 100</a>] - [<a href=topten.php?type=1&amp;lim=250&amp;subtype=dls>Top 250</a>]</font>" : ""));
 	  }
 
     if ($limit == 10 || $subtype == "bsh")
@@ -311,13 +311,13 @@ ob_start("ob_gzhandler");
    	if ($limit == 10 || $subtype == "sna")
    	{
 	  	$r = mysql_query("SELECT t.*, (t.size * t.times_completed + SUM(p.downloaded)) AS data FROM torrents AS t LEFT JOIN peers AS p ON t.id = p.torrent WHERE p.seeder = 'no' GROUP BY t.id ORDER BY times_completed DESC LIMIT $limit") or sqlerr();
-		  _torrenttable($r, "Top $limit am h‰ufigsten runtergeladene Torrents" . ($limit == 10 && $pu ? " <font class=smallfont> - [<a href=topten.php?type=2&amp;lim=25&amp;subtype=sna>Top 25</a>] - [<a href=topten.php?type=2&amp;lim=50&amp;subtype=sna>Top 50</a>]</font>" : ""));
+		  _torrenttable($r, "Top $limit am h√§ufigsten runtergeladene Torrents" . ($limit == 10 && $pu ? " <font class=smallfont> - [<a href=topten.php?type=2&amp;lim=25&amp;subtype=sna>Top 25</a>] - [<a href=topten.php?type=2&amp;lim=50&amp;subtype=sna>Top 50</a>]</font>" : ""));
 	  }
 
    	if ($limit == 10 || $subtype == "mdt")
    	{
 		  $r = mysql_query("SELECT t.*, (t.size * t.times_completed + SUM(p.downloaded)) AS data FROM torrents AS t LEFT JOIN peers AS p ON t.id = p.torrent WHERE p.seeder = 'no' AND leechers >= 5 AND times_completed > 0 GROUP BY t.id ORDER BY data DESC, added ASC LIMIT $limit") or sqlerr();
-		  _torrenttable($r, "Top $limit Torrents mit grˆﬂten Datentransfer" . ($limit == 10 && $pu ? " <font class=smallfont> - [<a href=topten.php?type=2&amp;lim=25&amp;subtype=mdt>Top 25</a>] - [<a href=topten.php?type=2&amp;lim=50&amp;subtype=mdt>Top 50</a>]</font>" : ""));
+		  _torrenttable($r, "Top $limit Torrents mit gr√∂√üten Datentransfer" . ($limit == 10 && $pu ? " <font class=smallfont> - [<a href=topten.php?type=2&amp;lim=25&amp;subtype=mdt>Top 25</a>] - [<a href=topten.php?type=2&amp;lim=50&amp;subtype=mdt>Top 50</a>]</font>" : ""));
 		}
 
    	if ($limit == 10 || $subtype == "bse")
@@ -340,25 +340,25 @@ ob_start("ob_gzhandler");
    	if ($limit == 10 || $subtype == "us")
    	{
 		  $r = mysql_query("SELECT name, flagpic, COUNT(users.country) as num FROM countries JOIN users ON users.country = countries.id GROUP BY name ORDER BY num DESC LIMIT $limit") or sqlerr();
-		  countriestable($r, "Top $limit L‰nder<font class=small> (Anzahl Benutzer)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=3&amp;lim=25&amp;subtype=us>Top 25</a>]</font>" : ""),"Benutzer");
+		  countriestable($r, "Top $limit L√§nder<font class=small> (Anzahl Benutzer)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=3&amp;lim=25&amp;subtype=us>Top 25</a>]</font>" : ""),"Benutzer");
     }
 
    	if ($limit == 10 || $subtype == "ul")
    	{
 	  	$r = mysql_query("SELECT c.name, c.flagpic, sum(u.uploaded) AS ul FROM users AS u JOIN countries AS c ON u.country = c.id WHERE u.enabled = 'yes' GROUP BY c.name ORDER BY ul DESC LIMIT $limit") or sqlerr();
-		  countriestable($r, "Top $limit L‰nder<font class=small> (Gesamt hochgeladen)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=3&amp;lim=25&amp;subtype=ul>Top 25</a>]</font>" : ""),"Hochgeladen");
+		  countriestable($r, "Top $limit L√§nder<font class=small> (Gesamt hochgeladen)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=3&amp;lim=25&amp;subtype=ul>Top 25</a>]</font>" : ""),"Hochgeladen");
     }
 
 		if ($limit == 10 || $subtype == "avg")
 		{
 		  $r = mysql_query("SELECT c.name, c.flagpic, sum(u.uploaded)/count(u.id) AS ul_avg FROM users AS u JOIN countries AS c ON u.country = c.id WHERE u.enabled = 'yes' GROUP BY c.name HAVING sum(u.uploaded) > 107374182400 AND count(u.id) >= 10 ORDER BY ul_avg DESC LIMIT $limit") or sqlerr();
-		  countriestable($r, "Top $limit L‰nder<font class=small> (Durchschn. Upload pro User, min. 100GB uploaded und 10 Benutzern)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=3&amp;lim=25&amp;subtype=avg>Top 25</a>]</font>" : ""),"Durchschnitt");
+		  countriestable($r, "Top $limit L√§nder<font class=small> (Durchschn. Upload pro User, min. 100GB uploaded und 10 Benutzern)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=3&amp;lim=25&amp;subtype=avg>Top 25</a>]</font>" : ""),"Durchschnitt");
     }
 
 		if ($limit == 10 || $subtype == "r")
 		{
 		  $r = mysql_query("SELECT c.name, c.flagpic, sum(u.uploaded)/sum(u.downloaded) AS r FROM users AS u JOIN countries AS c ON u.country = c.id WHERE u.enabled = 'yes' GROUP BY c.name HAVING sum(u.uploaded) > 107374182400 AND sum(u.downloaded) > 107374182400 AND count(u.id) >= 10 ORDER BY r DESC LIMIT $limit") or sqlerr();
-		  countriestable($r, "Top $limit L‰nder<font class=small> (Ratio, mit min. 100GB Upload, 100GB Download und 10 Benutzern)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=3&amp;lim=25&amp;subtype=r>Top 25</a>]</font>" : ""),"Ratio");
+		  countriestable($r, "Top $limit L√§nder<font class=small> (Ratio, mit min. 100GB Upload, 100GB Download und 10 Benutzern)</font>" . ($limit == 10 && $pu ? " <font class=small> - [<a href=topten.php?type=3&amp;lim=25&amp;subtype=r>Top 25</a>]</font>" : ""),"Ratio");
 	  }
   }
 	elseif ($type == 4)

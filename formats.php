@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -89,18 +89,18 @@ you out with your file and what exact codecs it needs try using <a href="http://
 gspot/download.html">GSpot</a>. It tells you what codecs you need. Then just look on the net to find
 them, below are some common codecs and their download links for quick reference:<br>
 <br>
-• <a href="http://sourceforge.net/project/showfiles.php?group_id=53761&release_id=95213">ffdshow</a> (Recommended! (plays many formats: XviD, DivX, 3ivX, mpeg-4))<br>
-• <a href="http://nic.dnsalias.com/xvid.html">XviD codec</a><br>
-• <a href="http://www.divx.com/divx/">DivX codec</a><br>
-• <a href="http://sourceforge.net/project/showfiles.php?group_id=66022&release_id=178906">ac3filter</a> (for AC3 soundtracks, aka "5.1")<br>
-• <a href="http://tobias.everwicked.com/oggds.htm">Ogg media codec</a> (for .OGM files)<br>
+â€¢ <a href="http://sourceforge.net/project/showfiles.php?group_id=53761&release_id=95213">ffdshow</a> (Recommended! (plays many formats: XviD, DivX, 3ivX, mpeg-4))<br>
+â€¢ <a href="http://nic.dnsalias.com/xvid.html">XviD codec</a><br>
+â€¢ <a href="http://www.divx.com/divx/">DivX codec</a><br>
+â€¢ <a href="http://sourceforge.net/project/showfiles.php?group_id=66022&release_id=178906">ac3filter</a> (for AC3 soundtracks, aka "5.1")<br>
+â€¢ <a href="http://tobias.everwicked.com/oggds.htm">Ogg media codec</a> (for .OGM files)<br>
 <br>
 Can't find what you're looking for? Check out these sites...<br>
 <br>
-• <a href="http://www.divx-digest.com/">DivX-Digest</a><br>
-• <a href="http://www.digital-digest.com/">Digital-Digest</a><br>
-• <a href="http://www.doom9.org/">Doom9</a><br>
-• <a href="http://www.dvdrhelp.com/">DVD-R Help</a><br>
+â€¢ <a href="http://www.divx-digest.com/">DivX-Digest</a><br>
+â€¢ <a href="http://www.digital-digest.com/">Digital-Digest</a><br>
+â€¢ <a href="http://www.doom9.org/">Doom9</a><br>
+â€¢ <a href="http://www.dvdrhelp.com/">DVD-R Help</a><br>
 <br>
 <br>
 <b>.mov</b><br>

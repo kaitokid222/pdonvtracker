@@ -8,7 +8,7 @@
 // | originally by RedBeard of TorrentBits, extensively modified by           |
 // | Gartenzwerg.                                                             |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -17,7 +17,7 @@ require_once "include/bittorrent.php";
 if(isset($_GET['ip'])){
 	$ip = $_GET['ip'];
 	if(!is_valid_ip($ip))
-		die("Keine gültige IP!");
+		die("Keine gÃ¼ltige IP!");
 }else
 	die("Kein Parameter \"IP\"");
 

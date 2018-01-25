@@ -155,8 +155,8 @@ if($database->row_count('bitbucket','`user`='.$userid) == 0){
 			$descline = "    <tr>\n";	    
 		}
 
-		$imgline .= "        <td class=\"tablea\" align=\"center\" valign=\"middle\"><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" data-lightbox=\"preview\"><img src=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" width=\"100\" alt=\"".htmlspecialchars($fileinfo["originalname"])."\" title=\"".htmlspecialchars($fileinfo["originalname"])."\"></a></td>\n";
-		$descline .= "        <td class=\"tableb\" align=\"center\" valign=\"top\"><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" data-lightbox=\"preview\">".htmlspecialchars($fileinfo["originalname"])."</a><br>(". mksize($fileinfo["size"]).") <a href=\"bitbucket.php?" . (isset($_GET["id"]) ? "id=" . $userid . "&amp;" : "") . "delete=" . $fileinfo["id"] . "\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."/editdelete.png\" width=\"16\" height=\"16\" alt=\"L&ouml;schen\" style=\"border:none;vertical-align:middle;\"></a></td>\n";
+		$imgline .= "        <td class=\"tablea\" align=\"center\" valign=\"middle\"><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" data-lightbox=\"".$fileinfo["filename"]."\"><img src=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\" width=\"100\" alt=\"".htmlspecialchars($fileinfo["originalname"])."\" title=\"".htmlspecialchars($fileinfo["originalname"])."\"></a></td>\n";
+		$descline .= "        <td class=\"tableb\" align=\"center\" valign=\"top\"><a href=\"".$GLOBALS["BITBUCKET_DIR"]."/".$fileinfo["filename"]."\">".htmlspecialchars($fileinfo["originalname"])."</a><br>(". mksize($fileinfo["size"]).") <a href=\"bitbucket.php?" . (isset($_GET["id"]) ? "id=" . $userid . "&amp;" : "") . "delete=" . $fileinfo["id"] . "\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."/editdelete.png\" width=\"16\" height=\"16\" alt=\"L&ouml;schen\" style=\"border:none;vertical-align:middle;\"></a></td>\n";
 		$cnt++;
 	}
 

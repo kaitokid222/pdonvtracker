@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -34,7 +34,7 @@ if(isset($_GET['id'])){
 	if(is_valid_id($_GET['id']))
 		$id = $_GET["id"];
 	else
-		die("Ungültige NFO-ID!");
+		die("UngÃ¼ltige NFO-ID!");
 }else
 	die("ID nicht lesbar!");
 

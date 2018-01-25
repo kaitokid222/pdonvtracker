@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -31,9 +31,9 @@ dbconn();
 
 function noFeed()
 {
-    echo "<item>\n<title>Nicht eingeloggt oder kein RSS-Feed verfügbar!</title>\n";
+    echo "<item>\n<title>Nicht eingeloggt oder kein RSS-Feed verfÃ¼gbar!</title>\n";
     echo "<category domain=\"$DEFAULTBASEURL\">(Keine Kategorie)</category>\n";
-    echo "<description>Der RSS-Feed ist nur verfügbar, wenn Du eingeloggt bist, Cookies aktiviert hast, und der Administrator diese Funktion aktiviert hat.</description>\n";
+    echo "<description>Der RSS-Feed ist nur verfÃ¼gbar, wenn Du eingeloggt bist, Cookies aktiviert hast, und der Administrator diese Funktion aktiviert hat.</description>\n";
     echo "<link>".$DEFAULTBASEURL."/login.php</link>";
     echo "</item></channel>\n</rss>\n";
     die();

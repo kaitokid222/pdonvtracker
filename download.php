@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -57,11 +57,11 @@ if (!$row || !is_file($fn) || !is_readable($fn) || $row["activated"] != "yes")
 if ($GLOBALS["MEMBERSONLY"]) {
     loggedinorreturn();
 
-    // Wartezeit prüfen
+    // Wartezeit prÃ¼fen
     $wait = get_wait_time($CURUSER["id"], $id);
     if ($wait > 0) {
 		header("Content-Type: text/plain");
-		die("Du hast für diesen Torrent noch Wartezeit abzuwarten.\nDu kannst erst Torrent-Dateien herunterladen, wenn die\nWartezeit abgelaufen ist!");
+		die("Du hast fÃ¼r diesen Torrent noch Wartezeit abzuwarten.\nDu kannst erst Torrent-Dateien herunterladen, wenn die\nWartezeit abgelaufen ist!");
     }
 }
 

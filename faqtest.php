@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -34,22 +34,22 @@ session_start();
 stdhead("Anmeldung");
 begin_frame("Fragebogen zu FAQ und Regeln", FALSE, "650px");
 
-// Sieben Fragen per Zufall auswählen
+// Sieben Fragen per Zufall auswÃ¤hlen
 $questions = mysql_query("SELECT * FROM `test` ORDER BY RAND() LIMIT 7");
 
 ?>
-<p>Um die Registrierung abschließen zu können, musst Du noch einige Fragen zu
+<p>Um die Registrierung abschlieÃŸen zu kÃ¶nnen, musst Du noch einige Fragen zu
 den <a href="rules.php">Regeln</a> und dem <a href="faq.php">FAQ</a> beantworten.
 Da Du auf diesem Tracker wegen Missachtung der Regeln gebannt werden kannst,
-solltest Du Dir die Regeln in eigenem Interesse durchlesen. Das FAQ enthält auch
-nützliche Informationen zu den meistgestellten Fragen.</p>
+solltest Du Dir die Regeln in eigenem Interesse durchlesen. Das FAQ enthÃ¤lt auch
+nÃ¼tzliche Informationen zu den meistgestellten Fragen.</p>
 <form action="faqtest.php" method="post">
 <?php
 
 while ($qdata = mysql_fetch_assoc($questions)) {
     begin_table(true);
     $antworten = unserialize($qdata["answers"]);
-    // Auch Antworten in zufälliger Reihenfolge zeigen
+    // Auch Antworten in zufÃ¤lliger Reihenfolge zeigen
     shuffle($antworten);
     echo "<tr><td class=\"tablecat\"><b>" . htmlspecialchars($qdata["question"]) . "</b></td></tr>\n";
     echo "<tr><td class=\"tablea\">\n<table cellspacing=\"2\" cellpadding=\"0\" border=\"0\">\n";

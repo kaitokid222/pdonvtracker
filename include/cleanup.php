@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -200,13 +200,13 @@ function docleanup()
     $res = mysql_query("SELECT id,username FROM users WHERE warned='yes' AND warneduntil < NOW() AND warneduntil <> '0000-00-00 00:00:00'") or sqlerr(__FILE__, __LINE__);
     if (mysql_num_rows($res) > 0) {
         $dt = sqlesc(get_date_time());
-        $msg = "Deine Verwarnung wurde automatisch entfernt, und die Moderatoren darüber informiert, um evtl. gestellte Bedingungen erneut zu prüfen.\n";
+        $msg = "Deine Verwarnung wurde automatisch entfernt, und die Moderatoren darÃ¼ber informiert, um evtl. gestellte Bedingungen erneut zu prÃ¼fen.\n";
         while ($arr = mysql_fetch_assoc($res)) {
-            $mod_msg = "[b]Eine Verwarnung ist abgelaufen![/b]\n\nBenutzer [url=userdetails.php?id=$arr[id]]" . $arr["username"] . "[/url] (".$GLOBALS["DEFAULTBASEURL"]."/userdetails.php?id=$arr[id])\n\nBitte die Verwarnungsbedingungen erneut prüfen und entsprechend reagieren.";
+            $mod_msg = "[b]Eine Verwarnung ist abgelaufen![/b]\n\nBenutzer [url=userdetails.php?id=$arr[id]]" . $arr["username"] . "[/url] (".$GLOBALS["DEFAULTBASEURL"]."/userdetails.php?id=$arr[id])\n\nBitte die Verwarnungsbedingungen erneut prÃ¼fen und entsprechend reagieren.";
             mysql_query("UPDATE users SET warned = 'no', warneduntil = '0000-00-00 00:00:00' WHERE id = $arr[id]") or sqlerr(__FILE__, __LINE__);
             sendPersonalMessage(0, $arr["id"], "Deine Verwarnung ist abgelaufen", $msg, PM_FOLDERID_SYSTEM, 0);
-            sendPersonalMessage(0, 0, "Die Verwarnung für '$arr[username]' ist abgelaufen", $mod_msg, PM_FOLDERID_MOD, 0, "open");
-            write_log("remwarn", "Die Verwarnung für Benutzer '<a href=\"userdetails.php?id=$arr[id]\">$arr[username]</a>' ist abgelaufen und wurde vom System zurückgenommen.");
+            sendPersonalMessage(0, 0, "Die Verwarnung fÃ¼r '$arr[username]' ist abgelaufen", $mod_msg, PM_FOLDERID_MOD, 0, "open");
+            write_log("remwarn", "Die Verwarnung fÃ¼r Benutzer '<a href=\"userdetails.php?id=$arr[id]\">$arr[username]</a>' ist abgelaufen und wurde vom System zurÃ¼ckgenommen.");
             write_modcomment($arr["id"], 0, "Verwarnung abgelaufen.");
         } 
     } 
@@ -218,12 +218,12 @@ function docleanup()
     $res = mysql_query("SELECT id,username FROM users WHERE class = 0 AND uploaded >= $limit AND uploaded / downloaded >= $minratio AND added < $maxdt") or sqlerr(__FILE__, __LINE__);
     if (mysql_num_rows($res) > 0) {
         $dt = sqlesc(get_date_time());
-        $msg = sqlesc("Glückwunsch, Du wurdest automatisch zum [b]Power User[/b] befördert. :)\nDu kannst Dir nun NFOs ansehen.\n");
+        $msg = sqlesc("GlÃ¼ckwunsch, Du wurdest automatisch zum [b]Power User[/b] befÃ¶rdert. :)\nDu kannst Dir nun NFOs ansehen.\n");
         while ($arr = mysql_fetch_assoc($res)) {
             mysql_query("UPDATE users SET class = 1 WHERE id = $arr[id]") or sqlerr(__FILE__, __LINE__);
-            sendPersonalMessage(0, $arr["id"], "Du wurdest zum 'Power User' befördert", $msg, PM_FOLDERID_SYSTEM, 0);
-            write_log("promotion", "Der Benutzer '<a href=\"userdetails.php?id=$arr[id]\">$arr[username]</a>' wurde automatisch zum Power User befördert.");
-            write_modcomment($arr["id"], 0, "Automatische Beförderung zum Power User.");
+            sendPersonalMessage(0, $arr["id"], "Du wurdest zum 'Power User' befÃ¶rdert", $msg, PM_FOLDERID_SYSTEM, 0);
+            write_log("promotion", "Der Benutzer '<a href=\"userdetails.php?id=$arr[id]\">$arr[username]</a>' wurde automatisch zum Power User befÃ¶rdert.");
+            write_modcomment($arr["id"], 0, "Automatische BefÃ¶rderung zum Power User.");
         } 
     } 
     
@@ -268,9 +268,9 @@ function docleanup()
         $res = mysql_query("SELECT id, name, owner FROM torrents WHERE (added < $dt OR `activated`='no') AND `last_action` < FROM_UNIXTIME($deadtime)");
         while ($arr = mysql_fetch_assoc($res)) {
             deletetorrent($arr["id"]);
-            $msg = sqlesc("Dein Torrent '$arr[name]' wurde automatisch vom System gelöscht. (Inaktiv und älter als $days Tage).\n");
-            sendPersonalMessage(0, $arr["owner"], "Einer Deiner Torrents wurde gelöscht", $msg, PM_FOLDERID_SYSTEM, 0);
-            write_log("torrentdelete", "Torrent $arr[id] ($arr[name]) wurde vom System gelöscht (Inaktiv und älter als $days Tage)");
+            $msg = sqlesc("Dein Torrent '$arr[name]' wurde automatisch vom System gelÃ¶scht. (Inaktiv und Ã¤lter als $days Tage).\n");
+            sendPersonalMessage(0, $arr["owner"], "Einer Deiner Torrents wurde gelÃ¶scht", $msg, PM_FOLDERID_SYSTEM, 0);
+            write_log("torrentdelete", "Torrent $arr[id] ($arr[name]) wurde vom System gelÃ¶scht (Inaktiv und Ã¤lter als $days Tage)");
         } 
     } 
     

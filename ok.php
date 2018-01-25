@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -40,7 +40,7 @@ if (!mkglobal("type"))
 if ($type == "signup" && mkglobal("email")) {
 	stdhead("Benutzeranmeldung");
         stdmsg("Anmeldung erfolgreich!",
-	    "Du bekommst in Kürze eine Bestätigungsmail mit dem Aktivierungslink. Folge bitte den Anweisungen in der Mail!");
+	    "Du bekommst in KÃ¼rze eine BestÃ¤tigungsmail mit dem Aktivierungslink. Folge bitte den Anweisungen in der Mail!");
 	stdfoot();
 }
 elseif ($type == "confirmed") {
@@ -60,7 +60,7 @@ elseif ($type == "confirm") {
 	else {
 		stdhead("Account aktivieren");
 		print("<h1>Account erfolgreich aktiviert!</h1>\n");
-		print("<p>Dein Account wurde aktiviert! Jedoch sieht es so aus, dass Du nicht automatisch eingeloggt werden konntest. Ein möglicher Grund dafür ist, dass Du Deinem Browser das Annehmen von Cookies verboten hast. Du musst Deinen Browser zu konfigurieren, dass er Cookies von dieser Seite akzeptiert. Bitte prüfe dies nach, <a href=\"login.php\">logge Dich ein</a> und versuche es erneut.</p><p>Bitte denke auch daran, Dich immer an die Regeln zu halten!</p>\n");
+		print("<p>Dein Account wurde aktiviert! Jedoch sieht es so aus, dass Du nicht automatisch eingeloggt werden konntest. Ein mÃ¶glicher Grund dafÃ¼r ist, dass Du Deinem Browser das Annehmen von Cookies verboten hast. Du musst Deinen Browser zu konfigurieren, dass er Cookies von dieser Seite akzeptiert. Bitte prÃ¼fe dies nach, <a href=\"login.php\">logge Dich ein</a> und versuche es erneut.</p><p>Bitte denke auch daran, Dich immer an die Regeln zu halten!</p>\n");
 		stdfoot();
 	}
 }

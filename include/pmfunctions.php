@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -43,7 +43,7 @@ function messageDate($date)
 }
 
 /***************************************************
- * Nachricht(en) löschen
+ * Nachricht(en) lÃ¶schen
  ***************************************************/
 function deletePersonalMessages($delids, $userid = 0)
 {
@@ -65,18 +65,18 @@ function deletePersonalMessages($delids, $userid = 0)
 }
 
 /***************************************************
- * Ordner rekursiv löschen
+ * Ordner rekursiv lÃ¶schen
  ***************************************************/
 function deletePMFolder($folder, $msgaction, $msgtarget)
 {
     global $CURUSER;
     
-    // Unterordner löschen
+    // Unterordner lÃ¶schen
     $res = mysql_query("SELECT `id` FROM `pmfolders` WHERE `parent`=".$folder);
     while ($subfolder = mysql_fetch_assoc($res))
         deletePMFolder($subfolder["id"], $msgaction, $msgtarget);
     
-    // Nachrichten verschieben oder löschen
+    // Nachrichten verschieben oder lÃ¶schen
     $res = mysql_query("SELECT `id` FROM `messages` WHERE (`folder_in`=".$folder." AND `receiver`=".$CURUSER["id"].") OR (`folder_out`=".$folder." AND `sender`=".$CURUSER["id"].")");
     $msgids = array();
     while ($msg = mysql_fetch_assoc($res))
@@ -90,12 +90,12 @@ function deletePMFolder($folder, $msgaction, $msgtarget)
         mysql_query("UPDATE `messages` SET `folder_out`=$msgtarget WHERE `id` IN ($msgids) AND `folder_out`=$folder AND `sender`=".$CURUSER["id"]);
     }
     
-    // Ordner löschen
+    // Ordner lÃ¶schen
     mysql_query("DELETE FROM `pmfolders` WHERE `id`=$folder");
 }
 
 /***************************************************
- * Ordner für Benutzer initialisieren, falls nötig
+ * Ordner fÃ¼r Benutzer initialisieren, falls nÃ¶tig
  ***************************************************/
 function initFolder()
 {
@@ -230,9 +230,9 @@ function messageLine($arr, $msgnr)
   <td class="tableb" nowrap="nowrap"><?=$arr["added"]?></td>
   <td class="tablea" nowrap="nowrap">
     <?php if ($arr["receiver"] > 0) { ?>
-    <a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=delete&amp;id=<?=$arr["id"]?>"><img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/mail_delete.png" alt="Nachricht löschen" title="Nachricht löschen" style="border:none;"></a>
+    <a href="messages.php?folder=<?=$GLOBALS["FOLDER"]?>&amp;action=delete&amp;id=<?=$arr["id"]?>"><img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/mail_delete.png" alt="Nachricht lÃ¶schen" title="Nachricht lÃ¶schen" style="border:none;"></a>
     <?php } else { ?>
-    <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/mail_delete_disabled.png" alt="Nachricht löschen" title="Nachricht löschen" style="border:none;">
+    <img src="<?=$GLOBALS["PIC_BASE_URL"]?>pm/mail_delete_disabled.png" alt="Nachricht lÃ¶schen" title="Nachricht lÃ¶schen" style="border:none;">
     <?php } ?>
     
     <?php if ($arr["receiver"] == $CURUSER["id"] && $arr["sender"] > 0 && $senderlink != "---") { ?>
@@ -252,19 +252,19 @@ function messageLine($arr, $msgnr)
 }
 
 /***************************************************
- * Besitzerrechte der gewählten Nachricht(en) prüfen
+ * Besitzerrechte der gewÃ¤hlten Nachricht(en) prÃ¼fen
  ***************************************************/
 function checkMessageOwner($owner = "")
 {
     global $CURUSER;
 
     if ($owner == "") {
-        // Anhängig von action entscheiden, ob Sender oder Receiver stimmen muss
+        // AnhÃ¤ngig von action entscheiden, ob Sender oder Receiver stimmen muss
         switch ($_REQUEST["action"]) {
             case "markopen":
             case "markclosed":
                 if ($CURUSER["class"] < UC_MODERATOR)
-                    stderr("Fehler", "Du hast für diese Aktion keine ausreichende Berechtigung!");
+                    stderr("Fehler", "Du hast fÃ¼r diese Aktion keine ausreichende Berechtigung!");
                 $owner = "team";
                 break;
                 
@@ -287,7 +287,7 @@ function checkMessageOwner($owner = "")
                 break;
     
             default:
-                stderr("Fehler", "Diese Aktion ist ungültig!");
+                stderr("Fehler", "Diese Aktion ist ungÃ¼ltig!");
         }
     }
     
@@ -316,27 +316,27 @@ function checkMessageOwner($owner = "")
     $arr = mysql_fetch_assoc(mysql_query($query));
 
     if ($arr["cnt"] <> $tgtcount)
-        stderr("Fehler", "<p>Du hast für mindestens eine der ausgewählten Nachrichten keine ausreichende Berechtigung für die gewünschte Aktion.</p><p>Beachte, dass Du nur Nachrichten als gelesen bzw. ungelesen markieren kannst, die Du empfangen hast!</p>");
+        stderr("Fehler", "<p>Du hast fÃ¼r mindestens eine der ausgewÃ¤hlten Nachrichten keine ausreichende Berechtigung fÃ¼r die gewÃ¼nschte Aktion.</p><p>Beachte, dass Du nur Nachrichten als gelesen bzw. ungelesen markieren kannst, die Du empfangen hast!</p>");
 }
 
 /***************************************************
- * Besitzerrechte des Ordners prüfen
+ * Besitzerrechte des Ordners prÃ¼fen
  ***************************************************/
 function checkFolderOwner($folder)
 {
     global $CURUSER;
 
     if ($folder <= 0)
-        stderr("Fehler", "Du hast keinen bzw. einen ungültigen Zielordner ausgewählt.");
+        stderr("Fehler", "Du hast keinen bzw. einen ungÃ¼ltigen Zielordner ausgewÃ¤hlt.");
     
     $arr = mysql_fetch_assoc(mysql_query("SELECT COUNT(*) AS `cnt` FROM `pmfolders` WHERE `id`=".intval($folder)." AND `owner`=".$CURUSER["id"]));
 
     if ($arr["cnt"] == 0)
-        stderr("Fehler", "Du hast nicht die erforderlichen Zugriffsrechte für den angegebenen Ordner, oder der Ordner existiert nicht.");
+        stderr("Fehler", "Du hast nicht die erforderlichen Zugriffsrechte fÃ¼r den angegebenen Ordner, oder der Ordner existiert nicht.");
 }
 
 /***************************************************
- * Persönliche Nachricht erstellen
+ * PersÃ¶nliche Nachricht erstellen
  ***************************************************/
 function sendPersonalMessage($sender, 
                               $receiver, 
@@ -355,7 +355,7 @@ function sendPersonalMessage($sender,
 		if($qry->rowCount() > 0)
 			$user = $qry->fetchAll();
         if (!is_array($user))
-            stderr("Fehler", "Der Empfänger konnte nicht ermittelt werden.");
+            stderr("Fehler", "Der EmpfÃ¤nger konnte nicht ermittelt werden.");
     }
     
     $queryset = array();
@@ -385,7 +385,7 @@ function sendPersonalMessage($sender,
     if ($sender == $CURUSER["id"] && $receiver > 0 && strpos($user["notifs"], "[pm]") !== FALSE) {
         if (time() - $user["la"] >= 300) {
             $body = <<<EOD
-Du hast eine neue persönliche Nachricht von {$CURUSER["username"]} erhalten!
+Du hast eine neue persÃ¶nliche Nachricht von {$CURUSER["username"]} erhalten!
 
 Du kannst die untenstehende URL benutzen, um die Nachricht anzusehen.
 Du musst Dich eventuell einloggen, um die Nachricht zu sehen.
@@ -418,7 +418,7 @@ function createFolderDialog()
         if ($parent > 0)
             checkFolderOwner($parent);
         elseif ($parent < 0)
-            stderr("Fehler", "Du hast keinen gültigen Ordner ausgewählt, unter dem der neue Ordner erstellt werden soll.");
+            stderr("Fehler", "Du hast keinen gÃ¼ltigen Ordner ausgewÃ¤hlt, unter dem der neue Ordner erstellt werden soll.");
             
         if ($_POST["foldername"] == "")
             stderr("Fehler", "Du musst einen Ordnernamen angeben!");
@@ -430,13 +430,13 @@ function createFolderDialog()
             stderr("Fehler", "Der angegebene Ordnername ist zu lang. Es sind maximal 120 Zeichen erlaubt.");
             
         if ($GLOBALS["PM_PRUNE_DAYS"] > 0 && $prunedays > $GLOBALS["PM_PRUNE_DAYS"])
-            stderr("Fehler", "Die maximale Vorhaltezeit beträgt ".$GLOBALS["PM_PRUNE_DAYS"]." Tage.");
+            stderr("Fehler", "Die maximale Vorhaltezeit betrÃ¤gt ".$GLOBALS["PM_PRUNE_DAYS"]." Tage.");
             
         if (!in_array($_POST["sortfield"], array('added','subject','sendername','receivername')))
-            stderr("Fehler", "Das angegebene Sortierfeld ist ungültig.");
+            stderr("Fehler", "Das angegebene Sortierfeld ist ungÃ¼ltig.");
             
         if ($_REQUEST["sortorder"] != "ASC" && $_POST["sortorder"] != "DESC")
-            stderr("Fehler", "Die angegebene Sortierreihenfolge ist ungültig.");
+            stderr("Fehler", "Die angegebene Sortierreihenfolge ist ungÃ¼ltig.");
             
         // Alles OK, Ordner erstellen
         $queryset = array();
@@ -451,7 +451,7 @@ function createFolderDialog()
 
         mysql_query($query);
         
-        stderr("Ordner erfolgreich erstellt", "<p>Der Ordner '".htmlspecialchars($_POST["foldername"])."' wurde erfolgreich erstellt.</p><p><a href=\"messages.php?folder=".mysql_insert_id()."\">Weiter zum neuen Ordner</a><br><a href=\"messages.php?folder=".$GLOBALS["FOLDER"]."\">Zurück zum zuletzt aufgerufenen Ordner</a></p>");
+        stderr("Ordner erfolgreich erstellt", "<p>Der Ordner '".htmlspecialchars($_POST["foldername"])."' wurde erfolgreich erstellt.</p><p><a href=\"messages.php?folder=".mysql_insert_id()."\">Weiter zum neuen Ordner</a><br><a href=\"messages.php?folder=".$GLOBALS["FOLDER"]."\">ZurÃ¼ck zum zuletzt aufgerufenen Ordner</a></p>");
     }
     
     stdhead("Neuen PM-Ordner erstellen");
@@ -482,7 +482,7 @@ function createFolderDialog()
       <select name="sortfield" size="1">
         <option value="subject">Betreff</option>
         <option value="sendername">Absender</option>
-        <option value="receivername">Empfänger</option>
+        <option value="receivername">EmpfÃ¤nger</option>
         <option value="added" selected="selected">Datum</option>
       </select>
       <select name="sortorder" size="1">
@@ -493,7 +493,7 @@ function createFolderDialog()
   </tr>
   <tr>
     <td class="tableb">Vorhaltezeit (Tage):</td>
-    <td class="tablea"><input type="text" name="prunedays" size="10" maxlength="5"> (<?=($GLOBALS["PM_PRUNE_DAYS"]?"Maximal ".$GLOBALS["PM_PRUNE_DAYS"]." Tage, 0 oder leer für Maximum":"0 oder leer für unbegrenzte Vorhaltezeit")?>)</td>
+    <td class="tablea"><input type="text" name="prunedays" size="10" maxlength="5"> (<?=($GLOBALS["PM_PRUNE_DAYS"]?"Maximal ".$GLOBALS["PM_PRUNE_DAYS"]." Tage, 0 oder leer fÃ¼r Maximum":"0 oder leer fÃ¼r unbegrenzte Vorhaltezeit")?>)</td>
   </tr>
   <tr>
     <td class="tablea" colspan="2" style="text-align:center"><input type="submit" name="docreate" value="Ordner erstellen"></td>
@@ -531,7 +531,7 @@ function folderConfigDialog()
             break;
             
         case "__mod":
-            stderr("Fehler", "An diesem Ordner können keine Einstellungen vorgenommen werden.");
+            stderr("Fehler", "An diesem Ordner kÃ¶nnen keine Einstellungen vorgenommen werden.");
             break;
             
         default:
@@ -554,13 +554,13 @@ function folderConfigDialog()
             stderr("Fehler", "Der angegebene Ordnername ist zu lang. Es sind maximal 120 Zeichen erlaubt.");
             
         if ($GLOBALS["PM_PRUNE_DAYS"] > 0 && $prunedays > $GLOBALS["PM_PRUNE_DAYS"])
-            stderr("Fehler", "Die maximale Vorhaltezeit beträgt ".$GLOBALS["PM_PRUNE_DAYS"]." Tage.");
+            stderr("Fehler", "Die maximale Vorhaltezeit betrÃ¤gt ".$GLOBALS["PM_PRUNE_DAYS"]." Tage.");
             
         if (!in_array($_POST["sortfield"], array('added','subject','sendername','receivername')))
-            stderr("Fehler", "Das angegebene Sortierfeld ist ungültig.");
+            stderr("Fehler", "Das angegebene Sortierfeld ist ungÃ¼ltig.");
             
         if ($_REQUEST["sortorder"] != "ASC" && $_POST["sortorder"] != "DESC")
-            stderr("Fehler", "Die angegebene Sortierreihenfolge ist ungültig.");
+            stderr("Fehler", "Die angegebene Sortierreihenfolge ist ungÃ¼ltig.");
             
         // Alles OK, Ordner erstellen
         $queryset = array();
@@ -573,7 +573,7 @@ function folderConfigDialog()
         
         mysql_query($query);
         
-        stderr("Ordner erfolgreich geändert", "<p>Der Ordner '".htmlspecialchars($_POST["foldername"])."' wurde erfolgreich geändert.</p><p><a href=\"messages.php?folder=".$GLOBALS["FOLDER"]."\">Zurück zum zuletzt aufgerufenen Ordner</a></p>");
+        stderr("Ordner erfolgreich geÃ¤ndert", "<p>Der Ordner '".htmlspecialchars($_POST["foldername"])."' wurde erfolgreich geÃ¤ndert.</p><p><a href=\"messages.php?folder=".$GLOBALS["FOLDER"]."\">ZurÃ¼ck zum zuletzt aufgerufenen Ordner</a></p>");
     }
     
     stdhead("Ordner '".$finfo["name"]."' konfigurieren");
@@ -596,7 +596,7 @@ function folderConfigDialog()
         <option value="added"<?=($finfo["sortfield"]=="added"?' selected=\"selected\"':'')?>>Datum</option>
         <option value="subject"<?=($finfo["sortfield"]=="subject"?' selected="selected"':'')?>>Betreff</option>
         <option value="sendername"<?=($finfo["sortfield"]=="sendername"?' selected="selected"':'')?>>Absender</option>
-        <option value="receivername"<?=($finfo["sortfield"]=="receivername"?' selected="selected"':'')?>>Empfänger</option>
+        <option value="receivername"<?=($finfo["sortfield"]=="receivername"?' selected="selected"':'')?>>EmpfÃ¤nger</option>
       </select>
       <select name="sortorder" size="1">
         <option value="ASC"<?=($finfo["sortorder"]=="ASC"?' selected="selected"':'')?>>Aufsteigend</option>
@@ -606,10 +606,10 @@ function folderConfigDialog()
   </tr>
   <tr>
     <td class="tableb">Vorhaltezeit (Tage):</td>
-    <td class="tablea"><input type="text" name="prunedays" size="10" maxlength="5" value="<?=$finfo["prunedays"]?>"> (<?=($GLOBALS["PM_PRUNE_DAYS"]?"Maximal ".$GLOBALS["PM_PRUNE_DAYS"]." Tage, 0 oder leer für Maximum":"0 oder leer für unbegrenzte Vorhaltezeit")?>)</td>
+    <td class="tablea"><input type="text" name="prunedays" size="10" maxlength="5" value="<?=$finfo["prunedays"]?>"> (<?=($GLOBALS["PM_PRUNE_DAYS"]?"Maximal ".$GLOBALS["PM_PRUNE_DAYS"]." Tage, 0 oder leer fÃ¼r Maximum":"0 oder leer fÃ¼r unbegrenzte Vorhaltezeit")?>)</td>
   </tr>
   <tr>
-    <td class="tablea" colspan="2" style="text-align:center"><input type="submit" name="dosave" value="Einstellungen übernehmen"></td>
+    <td class="tablea" colspan="2" style="text-align:center"><input type="submit" name="dosave" value="Einstellungen Ã¼bernehmen"></td>
   </tr>
     <?php
     end_table();
@@ -621,27 +621,27 @@ function folderConfigDialog()
 }
 
 /***************************************************
- * Ordner löschen
+ * Ordner lÃ¶schen
  ***************************************************/
 function deleteFolderDialog()
 {
     global $CURUSER, $finfo;
 
     if ($GLOBALS["FOLDER"] < 0)
-        stderr("Fehler", "Die Standardordner können nicht gelöscht werden!");
+        stderr("Fehler", "Die Standardordner kÃ¶nnen nicht gelÃ¶scht werden!");
 
     if (isset($_POST["dodelete"])) {
         if ($_POST["msgaction"] != "delete" && $_POST["msgaction"] != "move")
-            stderr("Fehler", "Falsche Operation für Nachrichten!");
+            stderr("Fehler", "Falsche Operation fÃ¼r Nachrichten!");
             
         if ($_POST["msgaction"] == "move") {
             if (!isset($_POST["to_folder"]) || intval($_POST["to_folder"]) == 0)
-                stderr("Fehler", "Du musst einen Zielordner für die Nachrichten auswählen!");
+                stderr("Fehler", "Du musst einen Zielordner fÃ¼r die Nachrichten auswÃ¤hlen!");
         
             $target_folder = intval($_POST["to_folder"]);
             
             if ($target_folder == PM_FOLDERID_SYSTEM || $target_folder == PM_FOLDERID_MOD)
-                stderr("Fehler", "In diesen Ordner können keine Nachrichten verschoben werden!");
+                stderr("Fehler", "In diesen Ordner kÃ¶nnen keine Nachrichten verschoben werden!");
                 
             if ($target_folder != PM_FOLDERID_INBOX && $target_folder != PM_FOLDERID_OUTBOX)
                 checkFolderOwner($target_folder);
@@ -651,14 +651,14 @@ function deleteFolderDialog()
         
         deletePMFolder($GLOBALS["FOLDER"], $_POST["msgaction"], $target_folder);
         
-        stderr("Ordner erfolgreich gelöscht", "<p>Der Ordner '".htmlspecialchars($finfo["name"])."' wurde erfolgreich gelöscht.</p><p><a href=\"messages.php?folder=".PM_FOLDERID_INBOX."\">Zurück zum Posteingang</a></p>");
+        stderr("Ordner erfolgreich gelÃ¶scht", "<p>Der Ordner '".htmlspecialchars($finfo["name"])."' wurde erfolgreich gelÃ¶scht.</p><p><a href=\"messages.php?folder=".PM_FOLDERID_INBOX."\">ZurÃ¼ck zum Posteingang</a></p>");
     }
 
-    stdhead("Ordner '".$finfo["name"]."' löschen");
-    begin_frame('<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/editdelete22.png" width="22" height="22" alt="" style="vertical-align: middle;"> '."Ordner '".htmlspecialchars($finfo["name"])."' löschen", FALSE, "600px;");
+    stdhead("Ordner '".$finfo["name"]."' lÃ¶schen");
+    begin_frame('<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/editdelete22.png" width="22" height="22" alt="" style="vertical-align: middle;"> '."Ordner '".htmlspecialchars($finfo["name"])."' lÃ¶schen", FALSE, "600px;");
     ?>
-<p>Du bist im Begriff, den Ordner '<?=htmlspecialchars($finfo["name"])?>' und alle enthaltenen Unterordner zu löschen.
-Bitte gib an, was mit den enthaltenen Nachrichten geschehen soll, und klicke zur Bestätigung auf 'Löschen'.</p>
+<p>Du bist im Begriff, den Ordner '<?=htmlspecialchars($finfo["name"])?>' und alle enthaltenen Unterordner zu lÃ¶schen.
+Bitte gib an, was mit den enthaltenen Nachrichten geschehen soll, und klicke zur BestÃ¤tigung auf 'LÃ¶schen'.</p>
 <form action="messages.php" method="post">
 <input type="hidden" name="folder" value="<?=$GLOBALS["FOLDER"]?>">
 <input type="hidden" name="action" value="deletefolder">
@@ -666,13 +666,13 @@ Bitte gib an, was mit den enthaltenen Nachrichten geschehen soll, und klicke zur
     begin_table(TRUE);
     ?>
   <tr>
-    <td class="tablea"><input type="radio" name="msgaction" value="delete" checked="checked"> Nachrichten löschen</td>
+    <td class="tablea"><input type="radio" name="msgaction" value="delete" checked="checked"> Nachrichten lÃ¶schen</td>
   </tr>
   <tr>
     <td class="tablea">
       <input type="radio" name="msgaction" value="move"> Nachrichten verschieben nach: 
         <select name="to_folder" size="1">
-        <option>** Bitte Ordner auswählen **</option>
+        <option>** Bitte Ordner auswÃ¤hlen **</option>
         <option value="<?=PM_FOLDERID_INBOX?>">Posteingang</option>
         <option value="<?=PM_FOLDERID_OUTBOX?>">Postausgang</option>
         <?php
@@ -683,7 +683,7 @@ Bitte gib an, was mit den enthaltenen Nachrichten geschehen soll, und klicke zur
   </tr>
   <tr>
     <td class="tablea" style="text-align:center;">
-      <input type="submit" name="dodelete" value="Löschen">
+      <input type="submit" name="dodelete" value="LÃ¶schen">
     </td>
   </tr>
     <?php
@@ -697,7 +697,7 @@ Bitte gib an, was mit den enthaltenen Nachrichten geschehen soll, und klicke zur
 }
 
 /***************************************************
- * Zielordner für Verschieben auswählen
+ * Zielordner fÃ¼r Verschieben auswÃ¤hlen
  ***************************************************/
 function selectTargetFolderDialog($selids)
 {
@@ -705,7 +705,7 @@ function selectTargetFolderDialog($selids)
     begin_frame('<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/2rightarrow22.png" width="22" height="22" alt="" style="vertical-align: middle;"> Nachricht(en) verschieben', FALSE, "600px;");
     ?>
 <center>
-<p>Bitte wähle einen Zielordner aus, in den Du die Nachricht(en) verschieben willst:</p>
+<p>Bitte wÃ¤hle einen Zielordner aus, in den Du die Nachricht(en) verschieben willst:</p>
 <form action="messages.php" method="post">
 <input type="hidden" name="folder" value="<?=$GLOBALS["FOLDER"]?>">
 <?php if (strpos($selids, ",") === FALSE) { ?>
@@ -718,7 +718,7 @@ function selectTargetFolderDialog($selids)
 ?>
 <p>
 <select name="to_folder" size="1">
-<option>** Bitte Ordner auswählen **</option>
+<option>** Bitte Ordner auswÃ¤hlen **</option>
 <option value="<?=PM_FOLDERID_INBOX?>">Posteingang</option>
 <option value="<?=PM_FOLDERID_OUTBOX?>">Postausgang</option>
 <?php
@@ -743,7 +743,7 @@ function displayMessage()
     global $CURUSER;
     
     if ((!isset($_REQUEST["id"]) || intval($_REQUEST["id"]) == 0))
-        stderr("Fehler", "Die Nachrichten-ID kann nur über den Parameter 'id' übergeben werden - was probierst Du da?!?");
+        stderr("Fehler", "Die Nachrichten-ID kann nur Ã¼ber den Parameter 'id' Ã¼bergeben werden - was probierst Du da?!?");
 
     $msg = mysql_fetch_assoc(mysql_query("SELECT `messages`.*,`sender`.`username` AS `sendername`,`receiver`.`username` AS `receivername`  FROM `messages` LEFT JOIN `users` AS `sender` ON `sender`.`id`=`messages`.`sender` LEFT JOIN `users` AS `receiver` ON `receiver`.`id`=`messages`.`receiver` WHERE `messages`.`id`=".intval($_REQUEST["id"])));
 
@@ -756,7 +756,7 @@ function displayMessage()
         if ($msg["sender"] == 0)
             $msg["sendername"] = "System";
         else
-            $msg["sendername"] = "Gelöscht";
+            $msg["sendername"] = "GelÃ¶scht";
         $sender_valid = FALSE;
     } else {
         $sender_valid = TRUE;
@@ -766,14 +766,14 @@ function displayMessage()
         if ($msg["receiver"] == 0)
             $msg["receivername"] = "Team";
         else
-            $msg["receivername"] = "Gelöscht";
+            $msg["receivername"] = "GelÃ¶scht";
         $receiver_valid = FALSE;
     } else {
         $receiver_valid = TRUE;
     }
     
-    stdhead("Persönliche Nachricht lesen");
-    begin_frame('<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/mail_generic22.png" width="22" height="22" alt="" style="vertical-align: middle;"> Persönliche Nachricht lesen', FALSE, "600px;");
+    stdhead("PersÃ¶nliche Nachricht lesen");
+    begin_frame('<img src="'.$GLOBALS["PIC_BASE_URL"].'pm/mail_generic22.png" width="22" height="22" alt="" style="vertical-align: middle;"> PersÃ¶nliche Nachricht lesen', FALSE, "600px;");
     ?>
 <form action="messages.php" method="post">
 <input type="hidden" name="folder" value="<?=$GLOBALS["FOLDER"]?>">
@@ -797,7 +797,7 @@ function displayMessage()
     <td class="tablea"><?=($sender_valid?'<a href="userdetails.php?id='.$msg["sender"].'">'.htmlspecialchars($msg["sendername"]).'</a>':htmlspecialchars($msg["sendername"]))?></td>
   </tr>
   <tr>
-    <td class="tableb"><b>Empfänger:</b></td>
+    <td class="tableb"><b>EmpfÃ¤nger:</b></td>
     <td class="tablea"><?=($receiver_valid?'<a href="userdetails.php?id='.$msg["receiver"].'">'.htmlspecialchars($msg["receivername"]).'</a>':htmlspecialchars($msg["receivername"]))?></a></td>
   </tr>
   <tr>
@@ -811,12 +811,12 @@ function displayMessage()
   <tr>
     <td class="tablea" style="text-align:center;" colspan="2">
       <?php if ($msg["folder_in"] != PM_FOLDERID_MOD) { ?>
-      <input type="submit" name="delete" value="Nachricht löschen">
-      <?php if ($msg["receiver"] == $CURUSER["id"] && $msg["sender"] > 0 && $msg["sendername"] != "Gelöscht") { ?>
+      <input type="submit" name="delete" value="Nachricht lÃ¶schen">
+      <?php if ($msg["receiver"] == $CURUSER["id"] && $msg["sender"] > 0 && $msg["sendername"] != "GelÃ¶scht") { ?>
       <input type="submit" name="reply" value="Antworten">
       <?php } ?>
         <select name="to_folder" size="1">
-            <option>** Bitte Ordner auswählen **</option>
+            <option>** Bitte Ordner auswÃ¤hlen **</option>
             <option value="<?=PM_FOLDERID_INBOX?>">Posteingang</option>
             <option value="<?=PM_FOLDERID_OUTBOX?>">Postausgang</option>
 <?php
@@ -850,7 +850,7 @@ function sendMessageDialog($replymsg = 0)
             $msg = mysql_fetch_assoc($res);
             
             if ($msg["sendername"] == "")
-                stderr("Fehler", "Der gewünschte Empfänger existiert nicht!");
+                stderr("Fehler", "Der gewÃ¼nschte EmpfÃ¤nger existiert nicht!");
             
             $action = "beantworten";
             $image = "mail_reply22.png";
@@ -865,7 +865,7 @@ function sendMessageDialog($replymsg = 0)
         if (@mysql_num_rows($res) == 1) {
             $msg = mysql_fetch_assoc($res);
         } else
-            stderr("Fehler", "Der gewünschte Empfänger existiert nicht!");
+            stderr("Fehler", "Der gewÃ¼nschte EmpfÃ¤nger existiert nicht!");
             
         $is_reply = FALSE;
         $action = "versenden";
@@ -876,7 +876,7 @@ function sendMessageDialog($replymsg = 0)
     if ($receiver == $CURUSER["id"])
         stderr("Fehler", "Du kannst keine Nachricht an Dich selbst versenden!");
     
-    // Prüfen, ob Empfänger die Nachricht erhalten möchte
+    // PrÃ¼fen, ob EmpfÃ¤nger die Nachricht erhalten mÃ¶chte
 	$qry = $GLOBALS['DB']->prepare('SELECT `acceptpms`, `notifs`, UNIX_TIMESTAMP(`last_access`) as `la` FROM `users` WHERE `id`= :id');
 	$qry->bindParam(':id', $receiver, PDO::PARAM_INT);
 	$qry->execute();
@@ -914,7 +914,7 @@ function sendMessageDialog($replymsg = 0)
             stderr("Fehler", "Du musst einen Nachrichtentext angeben!");
             
         if (strlen($_POST["body"]) > 5000)
-            stderr("Fehler", "Der Nachrichtentext ist zu lang. Bitte kürze den Text auf unter 5.000 Zeichen!");
+            stderr("Fehler", "Der Nachrichtentext ist zu lang. Bitte kÃ¼rze den Text auf unter 5.000 Zeichen!");
             
         if ($_POST["save"] == "yes")
             $folder_out = PM_FOLDERID_OUTBOX;
@@ -924,11 +924,11 @@ function sendMessageDialog($replymsg = 0)
         sendPersonalMessage($CURUSER["id"], $receiver, stripslashes($_POST["subject"]), stripslashes($_POST["body"]), PM_FOLDERID_INBOX, $folder_out);
         
         if ($is_reply && $_POST["delorig"] == "yes") {
-            // Keine weitere Prüfung nötig, da wir sonst nicht bis hierher kämen!
+            // Keine weitere PrÃ¼fung nÃ¶tig, da wir sonst nicht bis hierher kÃ¤men!
             deletePersonalMessages($replymsg);
         }
         
-        stderr("Nachricht erfolgreich versendet!", 'Die Nachricht wurde erfolgreich versendet.<p><a href="messages.php?folder='.$GLOBALS["FOLDER"].'">Zurück zum zuletzt angezeigten Ordner</a></p>');
+        stderr("Nachricht erfolgreich versendet!", 'Die Nachricht wurde erfolgreich versendet.<p><a href="messages.php?folder='.$GLOBALS["FOLDER"].'">ZurÃ¼ck zum zuletzt angezeigten Ordner</a></p>');
     }
     
     
@@ -948,7 +948,7 @@ function sendMessageDialog($replymsg = 0)
     <col>
   </colgroup>
   <tr>
-    <td class="tableb"><b>Empfänger:</b></td>
+    <td class="tableb"><b>EmpfÃ¤nger:</b></td>
     <td class="tablea"><a href="userdetails.php?id=<?=$msg["sender"]?>"><?=htmlspecialchars($msg["sendername"])?></a></td>
   </tr>
   <tr>

@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -30,12 +30,12 @@ function putChar($char, $index)
 {
     global $codeimage;
     
-    /* Verfügbare Schriften */
+    /* VerfÃ¼gbare Schriften */
     $fonts = Array("Hang_the_DJ.ttf", "comic.ttf", /*"dc_s.ttf",*/ "dauphinn.ttf");
     
     /* Schriftart festlegen */
     $usedfont = "proof/fonts/" . $fonts[rand(0, count($fonts)-1)];
-    /* Schriftgröße festlegen */
+    /* SchriftgrÃ¶ÃŸe festlegen */
     $size = rand(18, 36);
     /* Schrift-Winkel festlegen */
     $angle = rand(-45, 45);
@@ -49,7 +49,7 @@ function putChar($char, $index)
     $maxx = max($sizeinfo[0], $sizeinfo[2], $sizeinfo[4], $sizeinfo[6]);
     $maxy = max($sizeinfo[1], $sizeinfo[3], $sizeinfo[5], $sizeinfo[7]);
     
-    /* Ausmaße des Rechtecks berechnen */
+    /* AusmaÃŸe des Rechtecks berechnen */
     $textwidth = $maxx - $minx;
     $textheight = $maxy - $miny;
     
@@ -78,7 +78,7 @@ $bkg = imagecreatefrompng("proof/bkg/" . rand(1, 14) . ".png");
 imagecopy($codeimage, $bkg, 0, 0, 0, 0, 300, 80);
 imagedestroy($bkg);
 
-/* 0-3 Artefakte (Störungen) */
+/* 0-3 Artefakte (StÃ¶rungen) */
 $artifactcnt = rand(0,3);
 /* Artefakte laden und einkopieren */
 for($I=0; $I<$artifactcnt; $I++) {
@@ -89,7 +89,7 @@ for($I=0; $I<$artifactcnt; $I++) {
 
 /* 6-20 Linien */
 $linecnt = rand(6, 20);
-/* Linien zufällig zeichnen */
+/* Linien zufÃ¤llig zeichnen */
 for($I=0; $I<$linecnt; $I++) {
 	$linecolor = imagecolorallocate($codeimage, rand(0, 128), rand(0, 128), rand(0, 128));
 	imageline($codeimage, rand(0, 300), rand(0, 80), rand(0, 300), rand(0, 80), $linecolor);
@@ -103,7 +103,7 @@ for ($I=0;$I<6;$I++) {
 header("Content-Type: image/jpeg");
 imagejpeg($codeimage, "",50);
 
-/* Bild zerstören */
+/* Bild zerstÃ¶ren */
 imagedestroy($codeimage);
 
 ?>

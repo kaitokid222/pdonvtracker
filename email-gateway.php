@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -32,7 +32,7 @@ loggedinorreturn();
 
 $id = intval($_GET["id"]);
 if (!$id)
-    stderr("Fehler", "Ungültige oder Fehlende ID.");
+    stderr("Fehler", "UngÃ¼ltige oder Fehlende ID.");
 
 $res = mysql_query("SELECT `username`, `class`, `email`, `accept_email` FROM `users` WHERE `id`=$id");
 $arr = mysql_fetch_assoc($res) or stderr("Fehler", "Der Benutzer existiert nicht.");
@@ -40,7 +40,7 @@ $arr = mysql_fetch_assoc($res) or stderr("Fehler", "Der Benutzer existiert nicht
 if ($id == $CURUSER["id"])
     stderr("Fehler", "Du kannst Dir nicht selber eine E-Mail senden.");
 
-// Moderatoren und höhere User können immer Mails senden und empfangen!
+// Moderatoren und hÃ¶here User kÃ¶nnen immer Mails senden und empfangen!
 if ($arr["class"] < UC_MODERATOR && $CURUSER["class"] < UC_MODERATOR) {
     if ($arr["accept_email"] ==  "no")
         stderr("Fehler", "Dieser Benutzer ist kein Team-Mitglied, und akzeptiert keine E-Mails.");
@@ -67,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 
 	$from_email = substr(trim($_POST["from_email"]), 0, 80);
 	if ($from_email == "") $from_email = "noreply@example.com";
-	if (!strpos($from_email, "@")) stderr("Fehler", "Die angegebene E-Mail-Adresse scheint ungültig zu sein.");
+	if (!strpos($from_email, "@")) stderr("Fehler", "Die angegebene E-Mail-Adresse scheint ungÃ¼ltig zu sein.");
 
 	$from = "$from <$from_email>";
 
@@ -89,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST")
 	if ($success)
 		stderr("Erfolg", "Die E-Mail wurde erfolgreich gesendet.");
 	else
-		stderr("Fehler", "Die Mail konnte nicht versendet werden. Entweder ist das Mail-System des Servers nicht verfügbar oder nicht korrekt konfiguriert.");
+		stderr("Fehler", "Die Mail konnte nicht versendet werden. Entweder ist das Mail-System des Servers nicht verfÃ¼gbar oder nicht korrekt konfiguriert.");
 }
 
 stdhead("E-Mail Gateway");
@@ -111,8 +111,8 @@ begin_table(TRUE);
 end_table();
 ?>
 </form>
-<p><b>Hinweis:</b> Deine IP-Adresse wird gespeichert, und ist für den Empfänger sichtbar, um Mißbrauch zu vermeiden.<br>
-Stelle sicher, dass Du eine gültige E-Mail-Adresse angibst, falls Du eine Antwort erwartest.</p>
+<p><b>Hinweis:</b> Deine IP-Adresse wird gespeichert, und ist fÃ¼r den EmpfÃ¤nger sichtbar, um MiÃŸbrauch zu vermeiden.<br>
+Stelle sicher, dass Du eine gÃ¼ltige E-Mail-Adresse angibst, falls Du eine Antwort erwartest.</p>
 <?php
 
 end_frame();

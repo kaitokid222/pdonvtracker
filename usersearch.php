@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -45,29 +45,29 @@ if (isset($_GET['h'])) {
 
     echo "<tr><td class=tablea><div align=left>\n
     Frei gelassene Felder werden ignoriert;\n
-        Die Platzhalter * and ? können in den Feldern Name, Email and Mod-Kommentar benutzt werden,\n
+        Die Platzhalter * and ? kÃ¶nnen in den Feldern Name, Email and Mod-Kommentar benutzt werden,\n
         ebenso mehrere Werte, die mit Leerzeichen getrennt wurden (z.B. \"wyz Max*\"\n
-        wird sowohl Benutzer anzeigen, die \"wyz\" heißen, als auch diejenigen, die mit \"Max\"\n
-        beginnen). Ebenso kann \"~\" benutzt werden, um einen Begriff auszuschließen.\n
+        wird sowohl Benutzer anzeigen, die \"wyz\" heiÃŸen, als auch diejenigen, die mit \"Max\"\n
+        beginnen). Ebenso kann \"~\" benutzt werden, um einen Begriff auszuschlieÃŸen.\n
         \"~alfiest\" wird also alle Benutzer finden, die den Begriff \"alfiest\" nicht in ihrem\n
         Mod-Kommentar haben.<br><br>\n
-    Das Ratio-Feld akzeptiert \"Inf\" und \"---\" neben den üblichen numerischen Werten.<br><br>\n
+    Das Ratio-Feld akzeptiert \"Inf\" und \"---\" neben den Ã¼blichen numerischen Werten.<br><br>\n
         Die Subnet-Mask kann entweder in der Punkt- oer CIDR-Notation eingegeben werden\n
         (z.B. ist 255.255.255.0 das selbe wie /24).<br><br>\n
     Upload und Download sollten in GB eingegeben werden.<br><br>\n
-        Falls es für einen Suchparameter mehrere Eingabefelder gibt, wird das\n
-        zweite Textfeld ignoriert, außer es ist ein entsprechender Operator ausgewählt.<br><br>\n
-    \"Nur Aktive\" schränkt die Suche auf Benutzer ein, die aktuell Seeden oder Leechen,\n
+        Falls es fÃ¼r einen Suchparameter mehrere Eingabefelder gibt, wird das\n
+        zweite Textfeld ignoriert, auÃŸer es ist ein entsprechender Operator ausgewÃ¤hlt.<br><br>\n
+    \"Nur Aktive\" schrÃ¤nkt die Suche auf Benutzer ein, die aktuell Seeden oder Leechen,\n
         \"Deaktivierte IPs\" auf diejenigen, deren IPs auch in deaktivierten Accounts auftauchen.<br><br>\n
     Die \"p\"-Spalten in den Suchergebnissen zeigen partielle Statistiken an, sprich\n
         Stats der gerade aktiven Torrents.<br><br>\n
-    Die \"Verlauf\"-Spalte zeigt die Anzahl der Forum-Beiträge und Torrent-Kommentare an,\n
+    Die \"Verlauf\"-Spalte zeigt die Anzahl der Forum-BeitrÃ¤ge und Torrent-Kommentare an,\n
         und verlinkt auf die Verlauf-Seite.\n
         </div></td></tr>\n";
     end_table();
 } else {
     echo "<p align=center><a href='" . $_SERVER["PHP_SELF"] . "?h=1'>Anleitung</a>";
-    echo "&nbsp;-&nbsp;<a href='" . $_SERVER["PHP_SELF"] . "'>Zurücksetzen</a></p>\n";
+    echo "&nbsp;-&nbsp;<a href='" . $_SERVER["PHP_SELF"] . "'>ZurÃ¼cksetzen</a></p>\n";
 } 
 
 $highlight = " class=tablecat";
@@ -139,7 +139,7 @@ if(isset($_GET['st'])){
 	<td<?=$userstatefield_h?>>
 		<select name="st">
 <?php
-$options = array("Beliebig", "Bestätigt", "Unbestätigt");
+$options = array("Beliebig", "BestÃ¤tigt", "UnbestÃ¤tigt");
 for ($i = 0; $i < count($options); $i++){
 	echo "<option value=" . $i . " " . (($userstatefield_v == "$i")?"selected":"") . ">" . $options[$i] . "</option>\n";
 } 
@@ -205,7 +205,7 @@ for ($i = 0; $i < count($options); $i++) {
 
   <td<?=$_GET['ul']?$highlight:$nohighlight?>><select name="ult" id="ult">
     <?php
-$options = array("Exakt", "Mindestens", "Höchstens", "Zwischen");
+$options = array("Exakt", "Mindestens", "HÃ¶chstens", "Zwischen");
 for ($i = 0; $i < count($options); $i++) {
     echo "<option value=$i " . (($_GET['ult'] == "$i")?"selected":"") . ">" . $options[$i] . "</option>\n";
 } 
@@ -248,7 +248,7 @@ for ($i = 0; $i < count($options); $i++) {
 
   <td<?=$_GET['dl']?$highlight:$nohighlight?>><select name="dlt" id="dlt">
   <?php
-$options = array("Exakt", "Mindestens", "Höchstens", "Zwischen");
+$options = array("Exakt", "Mindestens", "HÃ¶chstens", "Zwischen");
 for ($i = 0; $i < count($options); $i++) {
     echo "<option value=$i " . (($_GET['dlt'] == "$i")?"selected":"") . ">" . $options[$i] . "</option>\n";
 } 
@@ -394,7 +394,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
         foreach($emaila as $email) {
             if (strpos($email, '*') === false && strpos($email, '?') === false && strpos($email, '%') === false) {
                 if (validemail($email) !== 1) {
-                    stdmsg("Fehler", "Ungültige E-Mail-Adresse.");
+                    stdmsg("Fehler", "UngÃ¼ltige E-Mail-Adresse.");
                     stdfoot();
                     die();
                 } 
@@ -419,7 +419,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
     if ($ip) {
         $regex = "/^(((1?\d{1,2})|(2[0-4]\d)|(25[0-5]))(\.\b|$)){4}$/";
         if (!preg_match($regex, $ip)) {
-            stdmsg("Fehler", "Ungültige IP.");
+            stdmsg("Fehler", "UngÃ¼ltige IP.");
             stdfoot();
             die();
         } 
@@ -431,13 +431,13 @@ if (count($_GET) > 0 && !$_GET['h']) {
             if (substr($mask, 0, 1) == "/") {
                 $n = substr($mask, 1, strlen($mask) - 1);
                 if (!is_numeric($n) or $n < 0 or $n > 32) {
-                    stdmsg("Fehler", "Ungültige Subnetz-Maske.");
+                    stdmsg("Fehler", "UngÃ¼ltige Subnetz-Maske.");
                     stdfoot();
                     die();
                 } else
                     $mask = long2ip(pow(2, 32) - pow(2, 32 - $n));
             } elseif (!preg_match($regex, $mask)) {
-                stdmsg("Fehler", "Ungültige Subnetz-Maske.");
+                stdmsg("Fehler", "UngÃ¼ltige Subnetz-Maske.");
                 stdfoot();
                 die();
             } 
@@ -459,7 +459,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
             $where_is .= " u.uploaded > 0 and u.downloaded = 0";
         } else {
             if (!is_numeric($ratio) || $ratio < 0) {
-                stdmsg("Fehler", "Ungültige Ratio.");
+                stdmsg("Fehler", "UngÃ¼ltige Ratio.");
                 stdfoot();
                 die();
             } 
@@ -470,12 +470,12 @@ if (count($_GET) > 0 && !$_GET['h']) {
             if ($ratiotype == "3") {
                 $ratio2 = trim($_GET['r2']);
                 if (!$ratio2) {
-                    stdmsg("Fehler", "Für diesen Operator müssen zwei Ratios angegeben werden.");
+                    stdmsg("Fehler", "FÃ¼r diesen Operator mÃ¼ssen zwei Ratios angegeben werden.");
                     stdfoot();
                     die();
                 } 
                 if (!is_numeric($ratio2) or $ratio2 < $ratio) {
-                    stdmsg("Fehler", "Ungültige zweite Ratio.");
+                    stdmsg("Fehler", "UngÃ¼ltige zweite Ratio.");
                     stdfoot();
                     die();
                 } 
@@ -538,7 +538,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
     $ul = trim($_GET['ul']);
     if ($ul) {
         if (!is_numeric($ul) || $ul < 0) {
-            stdmsg("Fehler", "Ungültige Upload-Menge. Bitte eine Zahl gleich oder größer Null eingeben, Wert in GB.");
+            stdmsg("Fehler", "UngÃ¼ltige Upload-Menge. Bitte eine Zahl gleich oder grÃ¶ÃŸer Null eingeben, Wert in GB.");
             stdfoot();
             die();
         } 
@@ -549,12 +549,12 @@ if (count($_GET) > 0 && !$_GET['h']) {
         if ($ultype == "3") {
             $ul2 = trim($_GET['ul2']);
             if (!$ul2) {
-                stdmsg("Fehler", "Für diesen Operator werden zwei Upload-Mengen benötigt.");
+                stdmsg("Fehler", "FÃ¼r diesen Operator werden zwei Upload-Mengen benÃ¶tigt.");
                 stdfoot();
                 die();
             } 
             if (!is_numeric($ul2) or $ul2 < $ul) {
-                stdmsg("Fehler", "Ungültige zweite Upload-Menge. Bitte eine Zahl gleich oder größer Null eingeben, Wert in GB.");
+                stdmsg("Fehler", "UngÃ¼ltige zweite Upload-Menge. Bitte eine Zahl gleich oder grÃ¶ÃŸer Null eingeben, Wert in GB.");
                 stdfoot();
                 die();
             } 
@@ -572,7 +572,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
     $dl = trim($_GET['dl']);
     if ($dl) {
         if (!is_numeric($dl) || $dl < 0) {
-            stdmsg("Fehler", "Ungültige Download-Menge. Bitte eine Zahl gleich oder größer Null eingeben, Wert in GB.");
+            stdmsg("Fehler", "UngÃ¼ltige Download-Menge. Bitte eine Zahl gleich oder grÃ¶ÃŸer Null eingeben, Wert in GB.");
             stdfoot();
             die();
         } 
@@ -583,12 +583,12 @@ if (count($_GET) > 0 && !$_GET['h']) {
         if ($dltype == "3") {
             $dl2 = trim($_GET['dl2']);
             if (!$dl2) {
-                stdmsg("Fehler", "Für diesen Operator werden zwei Download-Mengen benötigt.");
+                stdmsg("Fehler", "FÃ¼r diesen Operator werden zwei Download-Mengen benÃ¶tigt.");
                 stdfoot();
                 die();
             } 
             if (!is_numeric($dl2) or $dl2 < $dl) {
-                stdmsg("Fehler", "Ungültige zweite Download-Menge. Bitte eine Zahl gleich oder größer Null eingeben, Wert in GB.");
+                stdmsg("Fehler", "UngÃ¼ltige zweite Download-Menge. Bitte eine Zahl gleich oder grÃ¶ÃŸer Null eingeben, Wert in GB.");
                 stdfoot();
                 die();
             } 
@@ -606,7 +606,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
     $date = trim($_GET['d']);
     if ($date) {
         if (!$date = mkdate($date)) {
-            stdmsg("Fehler", "Ungültiges Datum.");
+            stdmsg("Fehler", "UngÃ¼ltiges Datum.");
             stdfoot();
             die();
         } 
@@ -623,14 +623,14 @@ if (count($_GET) > 0 && !$_GET['h']) {
                 $date2 = mkdate(trim($_GET['d2']));
                 if ($date2) {
                     if (!$date = mkdate($date)) {
-                        stdmsg("Fehler", "Ungültiges Datum.");
+                        stdmsg("Fehler", "UngÃ¼ltiges Datum.");
                         stdfoot();
                         die();
                     } 
                     $q .= ($q ? "&amp;" : "") . "d2=$date2";
                     $where_is .= " BETWEEN '$date' and '$date2'";
                 } else {
-                    stdmsg("Fehler", "Für diesen Operator werden zwei Daten benötigt.");
+                    stdmsg("Fehler", "FÃ¼r diesen Operator werden zwei Daten benÃ¶tigt.");
                     stdfoot();
                     die();
                 } 
@@ -644,7 +644,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
     $last = trim($_GET['ls']);
     if ($last) {
         if (!$last = mkdate($last)) {
-            stdmsg("Fehler", "Ungültiges Datum.");
+            stdmsg("Fehler", "UngÃ¼ltiges Datum.");
             stdfoot();
             die();
         } 
@@ -663,7 +663,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
                     $where_is .= " BETWEEN '$last' and '$last2'";
                     $q .= ($q ? "&amp;" : "") . "ls2=$last2";
                 } else {
-                    stdmsg("Fehler", "Das zweite Datum ist ungültig.");
+                    stdmsg("Fehler", "Das zweite Datum ist ungÃ¼ltig.");
                     stdfoot();
                     die();
                 } 
@@ -794,7 +794,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
     $res = mysql_query($query) or sqlerr();
 
     if (mysql_num_rows($res) == 0)
-        stdmsg("Hinweis", "Es wurden keine übereinstimmenden Benutzer gefunden.");
+        stdmsg("Hinweis", "Es wurden keine Ã¼bereinstimmenden Benutzer gefunden.");
     else {
         if ($count > $perpage)
             echo $pagertop;
@@ -851,7 +851,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
            <td class=\"tablea\">" . $ipstr . "</td> <td class=\"tableb\">" . $user['email'] . "</td>
            <td class=\"tablea\"><div align=center>" . $user['added'] . "</div></td>
            <td class=\"tableb\"><div align=center>" . $user['last_access'] . "</div></td>
-           <td class=\"tablea\"><div align=center>" . ($user['status'] == "confirmed"?"Bestätigt":"Unbestätigt") . "</div></td>
+           <td class=\"tablea\"><div align=center>" . ($user['status'] == "confirmed"?"BestÃ¤tigt":"UnbestÃ¤tigt") . "</div></td>
            <td class=\"tableb\"><div align=center>" . ($user['enabled'] == "no"?"Nein":"Ja") . "</div></td>
            <td class=\"tablea\"><div align=center>" . ratios($pul, $pdl) . "</div></td>" . " <td class=\"tableb\"><div align=right>" . mksize($pul) . "</div></td>
            <td class=\"tablea\"><div align=right>" . mksize($pdl) . "</div></td>
@@ -862,7 +862,7 @@ if (count($_GET) > 0 && !$_GET['h']) {
             echo "$pagerbottom";
     } 
 } else {
-    stdmsg("Suche starten", "Bitte gib die gewünschten Suchparameter an, und klicke auf 'Daten abschicken'.");
+    stdmsg("Suche starten", "Bitte gib die gewÃ¼nschten Suchparameter an, und klicke auf 'Daten abschicken'.");
 } 
 
 print("<p>$pagemenu<br>$browsemenu</p>");

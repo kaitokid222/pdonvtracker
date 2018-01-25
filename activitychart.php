@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen d¸rfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen d√ºrfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -45,8 +45,8 @@ function stat_row($time, $count)
     echo (int)((float)$count/(float)$usercount*600), '"> ', $count, '</td></tr>', "\n";
 }
 
-stdhead("Benutzeraktivit‰ts-Chart");
-begin_frame("Benutzeraktivit‰ts-Chart", FALSE, "650px");
+stdhead("Benutzeraktivit√§ts-Chart");
+begin_frame("Benutzeraktivit√§ts-Chart", FALSE, "650px");
 begin_table(TRUE);
 echo '<tr><td class="tablecat">Inakt. seit</td><td class="tablecat">Anzahl (prozentual von Gesamtbenutzern)</td></tr>', "\n";
 

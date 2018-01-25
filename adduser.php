@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -35,9 +35,9 @@ if (get_user_class() < UC_ADMINISTRATOR)
 
 if ($_SERVER["REQUEST_METHOD"] == "POST"){
     if($_POST["username"] == "" || $_POST["password"] == "" || $_POST["email"] == "")
-        stderr("Fehler", "Formulardaten unvollständig.");
+        stderr("Fehler", "Formulardaten unvollstÃ¤ndig.");
     if($_POST["password"] != $_POST["password2"])
-        stderr("Fehler", "Passwörter sind nicht identisch.");
+        stderr("Fehler", "PasswÃ¶rter sind nicht identisch.");
     $username = $_POST["username"];
     $password = $_POST["password"];
     $email = $_POST["email"];
@@ -49,11 +49,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
 	$state = 'confirmed';
 	$res = user::addUser($username,$passhash,$passkey,$secret,$editsecret,$email,$state);
 	if($res === false)
-        stderr("Fehler", "Der Account konnte nicht erstellt werden. Möglicherweise ist der Benuzername bereits vergeben.");
+        stderr("Fehler", "Der Account konnte nicht erstellt werden. MÃ¶glicherweise ist der Benuzername bereits vergeben.");
     header("Location: " . $BASEURL . "/userdetails.php?id=" . $res);
 }
 
-stdhead("Benutzer hinzufügen");
+stdhead("Benutzer hinzufÃ¼gen");
 begin_frame("Benutzeraccount anlegen", FALSE, "400px");
 begin_table(TRUE);
 echo "    <form method=\"post\" action=\"" . $_SERVER['PHP_SELF'] . "\">\n".

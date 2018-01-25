@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -84,7 +84,7 @@ if ($action == 'delete') {
         $readtype = "Freund";
     
     if (!$sure)
-        stderr("L&ouml;sche $readtype", "Möchtest Du wirklich einen $readtype aus der Liste entfernen? Klicke\n" . "<a href=?id=$userid&action=delete&type=$type&targetid=$targetid&sure=1>hier</a> wenn du Dir sicher bist.");
+        stderr("L&ouml;sche $readtype", "MÃ¶chtest Du wirklich einen $readtype aus der Liste entfernen? Klicke\n" . "<a href=?id=$userid&action=delete&type=$type&targetid=$targetid&sure=1>hier</a> wenn du Dir sicher bist.");
 
     if ($type == 'friend') {
         mysql_query("DELETE FROM friends WHERE userid=$userid AND friendid=$targetid") or sqlerr(__FILE__, __LINE__);

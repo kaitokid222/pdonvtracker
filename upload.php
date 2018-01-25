@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -59,8 +59,8 @@ echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:680p
 					tr(".torrent", "<input type=\"file\" name=\"file\" size=\"90\">\n", 1);
 					tr("Name", "<input type=\"text\" name=\"name\" size=\"90\" /><br />(Wird keine Name angegeben, wird der Dateiname benutzt. <b>Halte Dich bitte an die Richtlinien.</b>)\n", 1);
 					tr("NFO", "<input type=\"file\" name=\"nfo\" size=\"90\"><br>(<b>Wird ben&ouml;tigt.</b> Nur Power User k&ouml;nnen NFO's lesen.)\n", 1);
-					tr("Bild 1", "<input type=\"file\" name=\"pic1\" size=\"90\"><br>(Optional. Wird oberhalb der Torrentbeschreibung angezeigt. Max. Größe: ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")\n", 1);
-					tr("Bild 2", "<input type=\"file\" name=\"pic2\" size=\"90\"><br>(Optional. Wird oberhalb der Torrentbeschreibung angezeigt. Max. Größe: ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")\n", 1);
+					tr("Bild 1", "<input type=\"file\" name=\"pic1\" size=\"90\"><br>(Optional. Wird oberhalb der Torrentbeschreibung angezeigt. Max. GrÃ¶ÃŸe: ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")\n", 1);
+					tr("Bild 2", "<input type=\"file\" name=\"pic2\" size=\"90\"><br>(Optional. Wird oberhalb der Torrentbeschreibung angezeigt. Max. GrÃ¶ÃŸe: ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")\n", 1);
 					tr("Beschreibung", "<textarea name=\"descr\" rows=\"10\" cols=\"90\"></textarea><br><input type=\"checkbox\" name=\"stripasciiart\" value=\"1\" checked=\"checked\"> ASCII-Art automatisch entfernen<br><br>(HTML ist <b>nicht</b> erlaubt, benutze den <a href=tags.php>BBCode</a> zum Formatieren der Beschreibung)", 1);
 					tr("Typ", $s, 1);
 					tr("Absenden", "<input type=\"submit\" class=\"btn\" value=\"Upload!\" />\n", 1);

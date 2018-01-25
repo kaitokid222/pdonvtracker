@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
  */
 
@@ -90,7 +90,7 @@ class xml2Array {
 // Funktioniert auch mit aktivem safe_mode
 function get_http_data($URL, $referrer = "")
 { 
-    // Gibt die Daten der HTTP-Antwort zurück
+    // Gibt die Daten der HTTP-Antwort zurÃ¼ck
     // URL zerlegen
     if (!preg_match("/http\:\/\/(([\w\.\-]+)(\:(.+?))?@)?([\w\.\-]+)\:?(\d*)(\/?\S*)/i", $URL, $match)) return false; 
     // Verbinden
@@ -122,12 +122,12 @@ function get_http_data($URL, $referrer = "")
         $pos = strpos($retr, "\r\n\r\n");
         $header = substr($retr, 0, $pos - 1);
         $data = substr($retr, $pos + 4); 
-        // Daten und Header zurückgeben
+        // Daten und Header zurÃ¼ckgeben
         return array("header" => $header, "data" => $data);
     } 
 }
 
-// Tag suchen und inkl. Kinder zurückgeben
+// Tag suchen und inkl. Kinder zurÃ¼ckgeben
 function xmlarr_find_tag(&$array, $tagname)
 {
     foreach ($array as $search) {
@@ -138,7 +138,7 @@ function xmlarr_find_tag(&$array, $tagname)
     return false;
 } 
 
-// Daten des aktuellen Tags zurückgeben
+// Daten des aktuellen Tags zurÃ¼ckgeben
 function xmlarr_get_tagdata(&$array, $tagname)
 {
     foreach ($array as $search) {
@@ -248,7 +248,7 @@ function get_sc_stats()
 } 
 
 
-// Radio-Infobox für den Tracker
+// Radio-Infobox fÃ¼r den Tracker
 function sc_infobox()
 {
     $stats = get_sc_stats();
@@ -279,7 +279,7 @@ function sc_infobox()
 
         echo "<br><table><tr><td valign=\"top\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "viewmag16.png\" width=\"16\" height=\"16\" alt=\"\" style=\"vertical-align: middle;\"></td>";
         echo "<td valign=\"top\"><b>" . htmlspecialchars($stats["servertitle"]) . "</b><br><br>";
-        printf("Aktuell <b>%d</b> Zuhörer von maximal <b>%d</b> möglichen, der Rekord liegt bei <b>%d</b>", $stats["currentlisteners"], $stats["maxlisteners"], $stats["peaklisteners"]);
+        printf("Aktuell <b>%d</b> ZuhÃ¶rer von maximal <b>%d</b> mÃ¶glichen, der Rekord liegt bei <b>%d</b>", $stats["currentlisteners"], $stats["maxlisteners"], $stats["peaklisteners"]);
 
         ?>
                 <br><br><b>Momentan l&auml;uft:</b><br>
@@ -292,7 +292,7 @@ function sc_infobox()
                 
                 <br><b>Unsere Zuh&ouml;rer vom Tracker:</b><br>
                 <?php
-        // Zuhörer
+        // ZuhÃ¶rer
         $ipaddrs = array();
         for ($I=0; $I < count($stats["listeners"]); $I++) {
             $ip = gethostbyname($stats["listeners"][$I]["hostname"]);
@@ -311,7 +311,7 @@ function sc_infobox()
         if ($activeusers != "") {
             echo $activeusers;
         } else {
-            echo "Aktuell sind keine Tracker-Mitglieder unter den Zuhörern.";
+            echo "Aktuell sind keine Tracker-Mitglieder unter den ZuhÃ¶rern.";
         }
         ?>
         </td></tr></table> 

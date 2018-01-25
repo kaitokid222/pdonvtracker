@@ -8,7 +8,7 @@
 // | originally by RedBeard of TorrentBits, extensively modified by           |
 // | Gartenzwerg.                                                             |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -111,7 +111,7 @@ if ($result){
 					"','" . $row["userid"] .    // UserID des Schreibers
 					"','" . $hid .               // kann Post ausblenden
 					"','" . $row["visible"] .    // Post versteckt oder sichtbar
-					"','" . $del .               // kann Post löschen
+					"','" . $del .               // kann Post lÃ¶schen
 					"','" . $history .           // Ansicht History oder Normal
 					"','" . $pm .                // Kann PM in SB schreiben
 					"','" . $usr .               // Link zum User-Profil

@@ -8,7 +8,7 @@
 // | originally by RedBeard of TorrentBits, extensively modified by           |
 // | Gartenzwerg.                                                             |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 require "include/bittorrent.php";
@@ -48,7 +48,7 @@ if(isset($_GET["action"]) && $_GET["action"] == "kill"){
 		stderr("Socketserver stoppen?", "Willst Du den Socket-Announce-Server wirklich stoppen? Klicke\n" . "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=kill&sure=1\">hier</a>, wenn Du Dir sicher bist.");
 }
 
-/* tötet apache.. aber der socket startet :D
+/* tÃ¶tet apache.. aber der socket startet :D
 if(isset($_GET["action"]) && $_GET["action"] == "start"){
 	$path = "c:\\xampp\\htdocs\\announce\\";
 	chdir($path);

@@ -22,7 +22,7 @@
 // | along with NVTracker; if not, write to the Free Software Foundation,     |
 // | Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA            |
 // +--------------------------------------------------------------------------+
-// | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
+// | Obige Zeilen dÃ¼rfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
 
@@ -135,7 +135,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 					foreach($tupload->get_uploaderrors_pic() as $pic)
 						foreach($pic as $error)
 							$o .= "<li>" . $error . "</li>";
-					$o .= "<p>Alle anderen Änderungen wurden jedoch übernommen. Bitte bearbeite den Torrent erneut, um neue Vorschaubilder hochzuladen.</p>";
+					$o .= "<p>Alle anderen Ã„nderungen wurden jedoch Ã¼bernommen. Bitte bearbeite den Torrent erneut, um neue Vorschaubilder hochzuladen.</p>";
 					$o .= "<p><a href=\"details.php?id=" . $id . "&edited=1\">Weiter zur Detailansicht des Torrents</p>";
 					$o .= "</ul>\n";
 					stderr("Fehler beim Bilderupload", $o);
@@ -152,12 +152,12 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 			$qry->bindParam(':id', $id, PDO::PARAM_INT);
 			$qry->execute();
 			if(!$qry->rowCount())
-				stderr("Fehler","Ungültiger Query oder es gibt keinen Torrent mit der angegebenen Id");
+				stderr("Fehler","UngÃ¼ltiger Query oder es gibt keinen Torrent mit der angegebenen Id");
 			else
 				$row = $qry->FetchAll()[0];
 
 			if($CURUSER["id"] != $row["owner"] && !(get_user_class() >= UC_MODERATOR || ($row["activated"] == "no" && get_user_class() == UC_GUTEAM && $row["class"] < UC_UPLOADER)))
-				stderr("Fehler","Dir gehört der Torrent nicht! Wie konnte das passieren?\n");
+				stderr("Fehler","Dir gehÃ¶rt der Torrent nicht! Wie konnte das passieren?\n");
 
 			if(isset($_POST["reasontype"]))
 				$rt = 0 + $_POST["reasontype"];
@@ -165,7 +165,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 				$rt = false;
 
 			if(!is_int($rt) || $rt < 1 || $rt > 5)
-				stderr("Fehler","Ungültiger Grund (" . $rt . ").");
+				stderr("Fehler","UngÃ¼ltiger Grund (" . $rt . ").");
 
 			if(!isset($_POST["reason"]) && $rt > 1)
 				stderr("Fehler","Es wurde kein Grund angegeben");
@@ -184,16 +184,16 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 				$reasonstr = "NetVision Regeln verletzt: " . trim($reason[2]);
 			}else{
 				if(!$reason[3])
-					stderr("Fehler","Bitte gebe einen Grund an, warum dieser Torrent gelöscht werden soll.");
+					stderr("Fehler","Bitte gebe einen Grund an, warum dieser Torrent gelÃ¶scht werden soll.");
 				$reasonstr = trim($reason[3]);
 			}
 			deletetorrent($id, $row["owner"], $reasonstr);
-			write_log("torrentdelete","Der Torrent " . $id . " (" . $row['name'] . ") wurde von '<a href=\"userdetails.php?id=" . $CURUSER['id'] . "\">" . $CURUSER['username'] . "</a>' gelöscht (" . $reasonstr . ")\n");
-			stdhead("Torrent gelöscht!");
+			write_log("torrentdelete","Der Torrent " . $id . " (" . $row['name'] . ") wurde von '<a href=\"userdetails.php?id=" . $CURUSER['id'] . "\">" . $CURUSER['username'] . "</a>' gelÃ¶scht (" . $reasonstr . ")\n");
+			stdhead("Torrent gelÃ¶scht!");
 			if(isset($_POST["returnto"]))
-				$ret = "<a href=\"" . htmlspecialchars($_POST["returnto"]) . "\">Gehe dorthin zurück, von wo Du kamst</a>";
+				$ret = "<a href=\"" . htmlspecialchars($_POST["returnto"]) . "\">Gehe dorthin zurÃ¼ck, von wo Du kamst</a>";
 			else
-				$ret = "<a href=\"./\">Zurück zum Index</a>";
+				$ret = "<a href=\"./\">ZurÃ¼ck zum Index</a>";
 			echo "<h2>Torrent gel&ouml;scht!</h2>\n".
 				"<p>" . $ret . "</p>\n";
 			stdfoot();
@@ -247,8 +247,8 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 			"        <td colspan=\"2\" width=\"100%\"><span class=\"normalfont\"><center><b>Torrent bearbeiten</b></center></span></td>\n".
 			"    </tr>\n"; 
 		tr("Torrent Name", "<input type=\"text\" name=\"name\" value=\"" . htmlspecialchars($row["name"]) . "\" size=\"80\" />", 1);
-		tr("NFO Datei", "<input type=\"radio\" name=\"nfoaction\" value=\"keep\" checked=\"checked\">Aktuelle beibehalten<br><input type=\"radio\" name=\"nfoaction\" value=\"update\">Ändern:<br><input type=\"file\" name=\"nfo\" size=\"60\">", 1);
-		tr("Bilder", "<input type=\"radio\" name=\"picaction\" value=\"keep\" checked=\"checked\">Aktuelle beibehalten<br><input type=\"radio\" name=\"picaction\" value=\"update\">Ändern (leer lassen, um Bilder zu löschen):<br><input type=\"file\" name=\"pic1\" size=\"80\"><br>(Optional. Wird oberhalb der Torrentbeschreibung angezeigt. Max. Größe: ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")<br><br>\n<input type=\"file\" name=\"pic2\" size=\"80\"><br>(Optional. Wird oberhalb der Torrentbeschreibung angezeigt. Max. Größe: ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")\n", 1);
+		tr("NFO Datei", "<input type=\"radio\" name=\"nfoaction\" value=\"keep\" checked=\"checked\">Aktuelle beibehalten<br><input type=\"radio\" name=\"nfoaction\" value=\"update\">Ã„ndern:<br><input type=\"file\" name=\"nfo\" size=\"60\">", 1);
+		tr("Bilder", "<input type=\"radio\" name=\"picaction\" value=\"keep\" checked=\"checked\">Aktuelle beibehalten<br><input type=\"radio\" name=\"picaction\" value=\"update\">Ã„ndern (leer lassen, um Bilder zu lÃ¶schen):<br><input type=\"file\" name=\"pic1\" size=\"80\"><br>(Optional. Wird oberhalb der Torrentbeschreibung angezeigt. Max. GrÃ¶ÃŸe: ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")<br><br>\n<input type=\"file\" name=\"pic2\" size=\"80\"><br>(Optional. Wird oberhalb der Torrentbeschreibung angezeigt. Max. GrÃ¶ÃŸe: ".mksizeint($GLOBALS["MAX_UPLOAD_FILESIZE"]).")\n", 1);
 		tr("Beschreibung", "<textarea name=\"descr\" rows=\"15\" cols=\"80\">" . htmlspecialchars($row["ori_descr"]) . "</textarea><br><input type=\"checkbox\" name=\"stripasciiart\" value=\"1\"> ASCII-Art automatisch entfernen<br>(HTML ist <b>nicht</b> erlaubt. Klick <a href=\"tags.php\">hier</a>, f&uuml;r die Ansicht des BB-Codes.)", 1);
 		tr("Type", $type, 1);
 		tr("Visible", "<input type=\"checkbox\" name=\"visible\"" . (($row["visible"] == "yes") ? " checked=\"checked\"" : "" ) . " value=\"1\" /> Visible on main page<br /><table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"420\"><tr><td class=\"embedded\">Note that the torrent will automatically become visible when there's a seeder, and will become automatically invisible (dead) when there has been no seeder for a while. Use this switch to speed the process up manually. Also note that invisible (dead) torrents can still be viewed or searched for, it's just not the default.</td></tr></table>", 1);
@@ -267,7 +267,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 			"<input type=\"hidden\" name=\"id\" value=\"" . $id . "\">\n".
 			"<table border=\"0\" cellspacing=\"1\" cellpadding=\"4\" style=\"width:650px;\" class=\"tableinborder\">\n".
 			"    <tr class=\"tabletitle\">\n".
-			"        <td colspan=\"2\"><span class=\"normalfont\"><center><b>Torrent löschen.</b> Grund:</b></center></span></td>\n".
+			"        <td colspan=\"2\"><span class=\"normalfont\"><center><b>Torrent lÃ¶schen.</b> Grund:</b></center></span></td>\n".
 			"    </tr>".
 			"    <tr>".
 			"        <td class=\"tableb\"><input name=\"reasontype\" type=\"radio\" value=\"1\">&nbsp;Tot </td><td class=\"tablea\"> 0 Seeder, 0 Leecher = 0 Peers gesamt</td>\n".
