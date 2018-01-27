@@ -181,15 +181,18 @@ $GLOBALS["PIC_BASE_URL"] = "pic/";
 $GLOBALS["PORTAL_LINK"] = "forums.php";
 
 // Socket-base
-$GLOBALS["SOCKET_URL"] = "http://localhost:81";
+//$GLOBALS["SOCKET_URL"] = "http://localhost:81";
+$GLOBALS["SOCKET_URL"] = "http://192.168.0.238:81";
 
 // Valid tracker announce URLs
 // The first entry will be displayed on the upload page
 $GLOBALS["ANNOUNCE_URLS"] = array();
-$GLOBALS["ANNOUNCE_URLS"][] = "http://localhost:81/announce";
+//$GLOBALS["ANNOUNCE_URLS"][] = "http://localhost:81/announce";
+$GLOBALS["ANNOUNCE_URLS"][] = "http://192.168.0.238:81/announce";
 
 // Announce URL with passkey placeholder
-$GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://localhost:81/announce?passkey={KEY}";
+//$GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://localhost:81/announce?passkey={KEY}";
+$GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://192.168.0.238:81/announce?passkey={KEY}";
 
 if ($_SERVER["HTTP_HOST"] == "")
     $_SERVER["HTTP_HOST"] = $_SERVER["SERVER_NAME"];
@@ -198,7 +201,8 @@ if ($_SERVER["SERVER_PORT"] != 80)
     $GLOBALS["BASEURL"] .= ":".$_SERVER["SERVER_PORT"];
 
 // Set this to your site URL, if automatic detection won't work
-$GLOBALS["DEFAULTBASEURL"] = "http://localhost";
+//$GLOBALS["DEFAULTBASEURL"] = "http://localhost";
+$GLOBALS["DEFAULTBASEURL"] = "http://192.168.0.238";
 
 // Array containing all domains which are used to reach the tracker
 // This array is used in the redirector script to determine the type of redirect
@@ -206,6 +210,7 @@ $GLOBALS["DEFAULTBASEURL"] = "http://localhost";
 $GLOBALS["TRACKERDOMAINS"] = array();
 $GLOBALS["TRACKERDOMAINS"][] = "localhost";
 $GLOBALS["TRACKERDOMAINS"][] = "127.0.0.1";
+$GLOBALS["TRACKERDOMAINS"][] = "192.168.0.238";
 
 // Set this to true to make this a tracker that only registered users may use
 // Setting this to FALSE is currently not supported, sorry!
@@ -333,7 +338,7 @@ $GLOBALS["EMAIL_BADWORDS"] = array(
 // Array of banned peer ids. Match is done only at the beginning of the string.
 $GLOBALS["BAN_PEERIDS"] = array(
     "A\x02\x06\x09-",
-    "-ÄZ{Ü"
+    "-Ã„Z{Ãœ"
 );
 
 // Array of banned user agents, only exact matches
@@ -344,6 +349,57 @@ $GLOBALS["BAN_USERAGENTS"] = array(
     "Azureus 2.2.0.3_B29",
     "BitComet",
     "Python-urllib/2.0a1"
+);
+
+// aus der global.php
+
+// User levels
+define('UC_USER', 0);
+define('UC_POWER_USER', 1);
+define('UC_VIP', 5);
+define('UC_UPLOADER', 10);
+define('UC_GUTEAM', 20);
+define('UC_MODERATOR', 25);
+define('UC_ADMINISTRATOR', 50);
+define('UC_SYSOP', 100);
+
+// PM special folder IDs
+define('PM_FOLDERID_INBOX', -1);
+define('PM_FOLDERID_OUTBOX', -2);
+define('PM_FOLDERID_SYSTEM', -3);
+define('PM_FOLDERID_MOD', -4);
+
+
+$client_uas = array("/^Azureus ([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)(;.+?)?$/i",
+	"/^Azureus ([0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+)_B([0-9]+)(;.+?)?$/i",
+	"/^BitTorrent\\/S-([0-9]+\\.[0-9]+(\\.[0-9]+)*)(.*)$/i",
+	"/^BitTorrent\\/U-([0-9]+\\.[0-9]+\\.[0-9]+)$/i",
+	"/^BitTor(rent|nado)\\/T-(.+)$/i",
+	"/^BitTorrent\\/([0-9]+\\.[0-9]+(\\.[0-9]+)*)$/i",
+	"/^Python-urllib\\/[0-9]+\\.[a-z0-9]+$/i",
+	"/^Python-urllib\\/.+?, BitTorrent\\/([0-9]+\\.[0-9]+(\\.[0-9]+)*)$/i",
+	"/^Python-urllib\\/.+?, BitTorrent\\/TurboBT ([0-9]+\\.[0-9]+(\\.[0-9]+)*)$/i",
+	"/^BitTorrent\\/BitSpirit$/i",
+	"/^BitTorrent\\/brst(.+)$/i",
+	"/^RAZA (.+)$/i",
+	"/^BitTorrent\\/ABC-([0-9]+\\.[0-9]+\\.[0-9]+)$/i",
+	"/^BitComet\\/([0-9]+\\.[0-9]+)$/i"
+);
+
+$clean_uas = array("Azureus/\\1",
+	"Azureus/\\1 (Beta \\2)",
+	"Shadow's/\\1",
+	"UPnP/\\1",
+	"BitTornado/\\2",
+	"BitTorrent/\\1",
+	"G3 Torrent",
+	"BitTorrent/\\1",
+	"TurboBT/\\1",
+	"BitSpirit",
+	"Burst/\\1",
+	"Shareaza/\\1",
+	"ABC/\\1",
+	"BitComet/\\1"
 );
 
 ?>
