@@ -181,18 +181,15 @@ $GLOBALS["PIC_BASE_URL"] = "pic/";
 $GLOBALS["PORTAL_LINK"] = "forums.php";
 
 // Socket-base
-//$GLOBALS["SOCKET_URL"] = "http://localhost:81";
-$GLOBALS["SOCKET_URL"] = "http://192.168.0.238:81";
+$GLOBALS["SOCKET_URL"] = "http://localhost:81";
 
 // Valid tracker announce URLs
 // The first entry will be displayed on the upload page
 $GLOBALS["ANNOUNCE_URLS"] = array();
-//$GLOBALS["ANNOUNCE_URLS"][] = "http://localhost:81/announce";
-$GLOBALS["ANNOUNCE_URLS"][] = "http://192.168.0.238:81/announce";
+$GLOBALS["ANNOUNCE_URLS"][] = "http://localhost:81/announce";
 
 // Announce URL with passkey placeholder
-//$GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://localhost:81/announce?passkey={KEY}";
-$GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://192.168.0.238:81/announce?passkey={KEY}";
+$GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://localhost:81/announce?passkey={KEY}";
 
 if ($_SERVER["HTTP_HOST"] == "")
     $_SERVER["HTTP_HOST"] = $_SERVER["SERVER_NAME"];
@@ -201,8 +198,7 @@ if ($_SERVER["SERVER_PORT"] != 80)
     $GLOBALS["BASEURL"] .= ":".$_SERVER["SERVER_PORT"];
 
 // Set this to your site URL, if automatic detection won't work
-//$GLOBALS["DEFAULTBASEURL"] = "http://localhost";
-$GLOBALS["DEFAULTBASEURL"] = "http://192.168.0.238";
+$GLOBALS["DEFAULTBASEURL"] = "http://localhost";
 
 // Array containing all domains which are used to reach the tracker
 // This array is used in the redirector script to determine the type of redirect
@@ -210,7 +206,6 @@ $GLOBALS["DEFAULTBASEURL"] = "http://192.168.0.238";
 $GLOBALS["TRACKERDOMAINS"] = array();
 $GLOBALS["TRACKERDOMAINS"][] = "localhost";
 $GLOBALS["TRACKERDOMAINS"][] = "127.0.0.1";
-$GLOBALS["TRACKERDOMAINS"][] = "192.168.0.238";
 
 // Set this to true to make this a tracker that only registered users may use
 // Setting this to FALSE is currently not supported, sorry!
