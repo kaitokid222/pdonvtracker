@@ -745,7 +745,7 @@ function displayMessage()
     if ((!isset($_REQUEST["id"]) || intval($_REQUEST["id"]) == 0))
         stderr("Fehler", "Die Nachrichten-ID kann nur über den Parameter 'id' übergeben werden - was probierst Du da?!?");
 
-    $msg = mysql_fetch_assoc(mysql_query("SELECT `messages`.*,`sender`.`username` AS `sendername`,`receiver`.`username` AS `receivername`  FROM `messages` LEFT JOIN `users` AS `sender` ON `sender`.`id`=`messages`.`sender` LEFT JOIN `users` AS `receiver` ON `receiver`.`id`=`messages`.`receiver` WHERE `messages`.`id`=".intval($_REQUEST["id"])));
+    $msg = mysql_fetch_assoc(mysql_query("SELECT messages.*,sender.username AS sendername,`receiver`.`username` AS `receivername` FROM `messages` LEFT JOIN `users` AS `sender` ON `sender`.`id`=`messages`.`sender` LEFT JOIN `users` AS `receiver` ON `receiver`.`id`=`messages`.`receiver` WHERE `messages`.`id`=".intval($_REQUEST["id"])));
 
     if ($msg["unread"] == 'yes' && $msg["receiver"] == $CURUSER["id"])
         mysql_query("UPDATE `messages` SET `unread`='' WHERE `id`=".$msg["id"]);
@@ -806,7 +806,7 @@ function displayMessage()
   </tr>
   <tr>
     <td class="tableb" valign="top"><b>Nachricht:</b></td>
-    <td class="tablea"><?=format_comment($msg["msg"])?></td>
+    <td class="tablea"><?=format_comment($msg["msg"], false)?></td>
   </tr>
   <tr>
     <td class="tablea" style="text-align:center;" colspan="2">

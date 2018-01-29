@@ -63,6 +63,8 @@ require_once("include/class/shoutbox.php");
 require_once("include/class/tupload.php");
 require_once("include/class/user.php");
 require_once("include/class/rating.php");
+require_once("include/class/holidays.php");
+require_once("include/class/vouchers.php");
 
 function set_last_access($id){
 	$latime = date("Y-m-d H:i:s");

@@ -33,7 +33,38 @@ function docleanup()
     set_time_limit(0);
     ignore_user_abort(1);
 
-    while (1) {
+	$t = date("Y-m-d");
+	$q = $GLOBALS["DB"]->prepare("SELECT value_s as s, value_i as i FROM avps WHERE arg = 'lastholidaycheck'");
+	$q->execute();
+	$d = $q->Fetch(PDO::FETCH_ASSOC);
+	if($d["s"] != $t){
+		$i = 0;
+		$h = new Holidays();
+		if(!$h->isDateIsHoliday($t))
+			$i = 1;
+		else{
+			$v = new voucher();
+			if($v->todaysVoucher() == true){
+				$c = $v->code;
+			}else{
+				$v->create("","",0,true);
+				$c = $v->code;
+			}
+			$q = $GLOBALS["DB"]->prepare("SELECT id FROM users");
+			$q->execute();
+			$d = $q->FetchAll(PDO::FETCH_ASSOC);
+			$txt = "Zur Feier des Tages erhältst Du \n\n " . $c . " \n\n Dieser Gutschein ist nur heute gültig! \n\n [url=vouchers.php]Klicke hier![/url]";
+			foreach($d as $u)
+				sendPersonalMessage(0, $u["id"], "Feiertagsgutschein", $txt, PM_FOLDERID_INBOX, 0);
+			$i = 1;
+		}
+		$q = $GLOBALS["DB"]->prepare("UPDATE avps SET value_s = :s, value_i = :i WHERE arg = 'lastholidaycheck'");
+		$q->bindParam(':s', $t, PDO::PARAM_STR);
+		$q->bindParam(':i', $i, PDO::PARAM_INT);
+		$q->execute();
+	}
+
+    while(1){
         // Collect all torrent ids from database
         $res = mysql_query("SELECT id FROM torrents");
         $all_torrents = array();

@@ -110,12 +110,13 @@ if (isset($_REQUEST["action"])) {
         stderr("Fehler", "Keine Nachricht für diese Aktion ausgewählt!");
     
     // selids numerisch machen!
-    if (is_array($_REQUEST["selids"])) {
-        for ($I=0; $I<count($_REQUEST["selids"]); $I++) {
-            $_REQUEST["selids"][$I] = intval($_REQUEST["selids"][$I]);
-        }
+	if(isset($_REQUEST["selids"])){
+		if (is_array($_REQUEST["selids"])) {
+			for ($I=0; $I<count($_REQUEST["selids"]); $I++) {
+				$_REQUEST["selids"][$I] = intval($_REQUEST["selids"][$I]);
+			}
+		}
     }
-    
     checkMessageOwner();
     
     if (isset($_REQUEST["id"])) {

@@ -765,3 +765,21 @@ ALTER TABLE `categories`
 	CONVERT TO CHARSET utf8;
 
 ALTER DATABASE `nvtracker` COLLATE 'utf8_general_ci';
+
+
+-- Exportiere Struktur von Tabelle nvtracker.vouchers
+CREATE TABLE IF NOT EXISTS `vouchers` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `code` varchar(20) NOT NULL DEFAULT '0',
+  `date` varchar(10) NOT NULL DEFAULT '0',
+  `value` bigint(20) unsigned NOT NULL DEFAULT '0',
+  `users` text NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+INSERT INTO `avps` (`arg`, `value_s`, `value_i`, `value_u`) VALUES ('lastholidaycheck', '2018-01-28', 1, 0);
+
+ALTER TABLE `messages`
+	COLLATE='utf8_general_ci',
+	CONVERT TO CHARSET utf8;

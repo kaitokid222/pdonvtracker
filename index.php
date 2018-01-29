@@ -31,17 +31,30 @@ require "include/bittorrent.php";
 userlogin();
 
 stdhead();
+
 echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
-	"        <td width=\"100%\">\n".
-	"            <span class=\"normalfont\"><center>\n".
-	"            <b><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"> <a href=\"donate.php\">Spende, um den Tracker zu erhalten!</a> <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"></b>\n".
-	"            </center></span>\n".
-	"        </td>\n". 
+	"        <td width=\"100%\"><span class=\"normalfont\"><center><b><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"> <a href=\"donate.php\">Spende, um den Tracker zu erhalten!</a> <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"></b></center></span></td>\n". 
 	"    </tr>\n".
 	"</table>\n".
-	"<br>\n". // Start Newsmodul
-	"<script language='JavaScript' src='js/expandCollapse.js' type='text/javascript'></script>".
+	"<br>\n"; // ende donate
+	// start feiertagsmod
+$heute = new DateTime();
+$feiertage = new Holidays();
+if($feiertage->isDateIsHoliday($heute)){
+	echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+		"    <tr class=\"tabletitle\" width=\"100%\">\n".
+		"        <td width=\"100%\"><span class=\"normalfont\"><center><b>Heute ist " . $feiertage->getNameFromHoliday($heute) . "</b></center></span></td>\n". 
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td class=\"tableb\"><span class=\"normalfont\"><center>Zur Feier des Tages kannst Du den Gutscheincode aus deinem Postfach einlösen.<br><br>Folge <a href=\"vouchers.php\">diesem Link!</a></center></span></td>\n". 
+		"    </tr>\n".
+		"</table>\n".
+		"<br>\n";
+}
+	// eof feiertagsmod
+	// Start Newsmodul
+echo "<script language='JavaScript' src='js/expandCollapse.js' type='text/javascript'></script>".
 	"<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
 	"        <td width=\"100%\"><span class=\"normalfont\">\n".
