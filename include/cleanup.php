@@ -38,30 +38,30 @@ function docleanup()
 	$q->execute();
 	$d = $q->Fetch(PDO::FETCH_ASSOC);
 	if($d["s"] != $t){
-		$i = 0;
-		$h = new Holidays();
-		if(!$h->isDateIsHoliday($t))
-			$i = 1;
-		else{
-			$v = new voucher();
-			if($v->todaysVoucher() == true){
+		if($d["i"] === 0){
+			$i = 0;
+			$h = new Holidays();
+			if(!$h->isDateIsHoliday($t))
+				$i = 1;
+			else{
+				$v = new voucher();
+				if($v->todaysVoucher() === false)
+					if($v->create("","",0,true) === false)
+						break;
 				$c = $v->code;
-			}else{
-				$v->create("","",0,true);
-				$c = $v->code;
+				$q = $GLOBALS["DB"]->prepare("SELECT id FROM users");
+				$q->execute();
+				$d = $q->FetchAll(PDO::FETCH_ASSOC);
+				$txt = "Zur Feier des Tages erhältst Du \n\n " . $c . " \n\n Dieser Gutschein ist nur heute gültig! \n\n [url=vouchers.php]Klicke hier![/url]";
+				foreach($d as $u)
+					sendPersonalMessage(0, $u["id"], "Feiertagsgutschein", $txt, PM_FOLDERID_INBOX, 0);
+				$i = 1;
 			}
-			$q = $GLOBALS["DB"]->prepare("SELECT id FROM users");
+			$q = $GLOBALS["DB"]->prepare("UPDATE avps SET value_s = :s, value_i = :i WHERE arg = 'lastholidaycheck'");
+			$q->bindParam(':s', $t, PDO::PARAM_STR);
+			$q->bindParam(':i', $i, PDO::PARAM_INT);
 			$q->execute();
-			$d = $q->FetchAll(PDO::FETCH_ASSOC);
-			$txt = "Zur Feier des Tages erhältst Du \n\n " . $c . " \n\n Dieser Gutschein ist nur heute gültig! \n\n [url=vouchers.php]Klicke hier![/url]";
-			foreach($d as $u)
-				sendPersonalMessage(0, $u["id"], "Feiertagsgutschein", $txt, PM_FOLDERID_INBOX, 0);
-			$i = 1;
 		}
-		$q = $GLOBALS["DB"]->prepare("UPDATE avps SET value_s = :s, value_i = :i WHERE arg = 'lastholidaycheck'");
-		$q->bindParam(':s', $t, PDO::PARAM_STR);
-		$q->bindParam(':i', $i, PDO::PARAM_INT);
-		$q->execute();
 	}
 
     while(1){

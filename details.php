@@ -74,7 +74,6 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 	}
 }
 
-
 if(isset($_GET["hit"])){
 	$sql = "UPDATE torrents SET views = views + 1 WHERE id = :id";
 	$qry = $GLOBALS['DB']->prepare($sql);

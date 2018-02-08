@@ -51,34 +51,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST"){
 		stderr("Fehler", "Der Account konnte nicht gelöscht werden.");
 	stderr("ERfolg", "Der Account <b>" . $username . "</b> wurde erfolgreich gelöscht.");
 }
+$un = "";
+if($CURUSER)
+	$un .= " value=\"".$CURUSER["username"]."\"";
+
 stdhead("Account löschen");
 begin_frame("Account löschen", FALSE, "500px");
-?>
-<p>Bitte gebe Deinen Benutzernamen und Dein Passwort zur Best&auml;tigung an, um Deinen
-noch nicht bestätigten Account zu entfernen.</p>
-<p>Wenn Dein Account bereits bestätigt wurde, kannst du diesen nicht löschen. Sende
-in diesem Fall eine PN an ein Teammitglied. Dieses wird Deinen Account dann
-deaktivieren.</p>
-<form method="post" action=<?=$_SERVER['PHP_SELF'] ?>>
-<?php
+
+echo "<p>Bitte gebe Deinen Benutzernamen und Dein Passwort zur Best&auml;tigung an, um Deinen noch nicht bestätigten Account zu entfernen.</p>\n".
+	"<p>Wenn Dein Account bereits bestätigt wurde, kannst du diesen nicht löschen. Sende in diesem Fall eine PN an ein Teammitglied. Dieses wird Deinen Account dann deaktivieren.</p>\n";
 begin_table(TRUE);
-?>
-<tr>
-	<td class="tableb">Benutzername</td>
-	<td class="tablea"><input size="40" name="username"<?php if ($CURUSER) echo " value=\"".$CURUSER["username"]."\""; ?>></td>
-</tr>
-<tr>
-	<td class="tableb">Passwort</td>
-	<td class="tablea"><input type="password" size="40" name="password"></td>
-</tr>
-<tr>
-	<td class="tablea" colspan="2" align="center"><input type="submit" class="btn" value="L&ouml;schen"></td>
-</tr>
-<?php
+echo "<form method=\"post\" action=\"" . $_SERVER["PHP_SELF"] . "\">\n".
+	"    <tr>\n".
+	"        <td class=\"tableb\">Benutzername</td>\n".
+	"        <td class=\"tablea\"><input size=\"40\" name=\"username\"" . $un . "></td>\n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td class=\"tableb\">Passwort</td>\n".
+	"        <td class=\"tablea\"><input type=\"password\" size=\"40\" name=\"password\"></td>\n".
+	"    </tr>\n".
+	"    <tr>\n".
+	"        <td class=\"tablea\" colspan=\"2\" align=\"center\"><input type=\"submit\" class=\"btn\" value=\"L&ouml;schen\"></td>\n".
+	"    </tr>\n".
+	"</form>\n";
 end_table();
-?>
-</form>
-<?php
 end_frame();
 stdfoot();
 ?>

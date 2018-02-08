@@ -27,18 +27,13 @@
  */
 
 require_once("include/bittorrent.php");
-
 dbconn();
 
-if ($_SERVER["HTTP_HOST"] != "") {
-    loggedinorreturn();
-    
-    if (get_user_class() < UC_MODERATOR)
-            stderr("Fehler", "Zugriff verweigert.");
+if($_SERVER["HTTP_HOST"] != ""){
+	loggedinorreturn();
+	if(get_user_class() < UC_MODERATOR)
+		stderr("Fehler", "Zugriff verweigert.");
 }
-
 docleanup();
-
 print("Done");
-
 ?>

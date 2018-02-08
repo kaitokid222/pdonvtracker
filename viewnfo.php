@@ -63,7 +63,7 @@ $a = $qry->fetchAll()[0];
 stdhead();
 begin_frame("NFO zu <a href=details.php?id=" . $id . ">" . $a['name'] . "</a>", FALSE, "500px");
 begin_table(TRUE);
-print("<tr>\n".
+echo "<tr>\n".
 	"    <td class=tableb style=\"text-align: center\">\n".
 	"        <a href=\"viewnfo.php?id=" . $id . "&amp;dl=1\">Download NFO</a>\n".
 	"    </td>\n".
@@ -74,7 +74,7 @@ print("<tr>\n".
 	"            <img src=\"".$GLOBALS["BITBUCKET_DIR"]."/nfo-" . $id . ".png\" alt=\"NFO zu " . $a['name'] . "\">\n".
 	"        </div>\n".
 	"    </td>\n".
-	"</tr>\n");
+	"</tr>\n";
 end_table();
 end_frame();
 stdfoot();

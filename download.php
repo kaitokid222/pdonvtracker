@@ -35,7 +35,6 @@ if ($GLOBALS["DOWNLOAD_METHOD"] == DOWNLOAD_REWRITE) {
     if (!preg_match('/\\/download\\/(\d{1,10})\\/(.+)\.torrent$/', $_SERVER["REQUEST_URI"], $matches)) {
             httperr();
     }
-    
     $id = 0 + $matches[1];
 } else {
     $id = intval($_GET["torrent"]);
@@ -56,8 +55,6 @@ if (!$row || !is_file($fn) || !is_readable($fn) || $row["activated"] != "yes")
     
 if ($GLOBALS["MEMBERSONLY"]) {
     loggedinorreturn();
-
-    // Wartezeit prüfen
     $wait = get_wait_time($CURUSER["id"], $id);
     if ($wait > 0) {
 		header("Content-Type: text/plain");
@@ -86,21 +83,15 @@ if($GLOBALS["CLIENT_AUTH"] == CLIENT_AUTH_PASSKEY && $GLOBALS["MEMBERSONLY"]){
 	if($qry->rowCount())
 		$row = $qry->Fetch(PDO::FETCH_ASSOC);
     $passkey = preg_replace_callback('/./s', "hex_esc", str_pad($row["passkey"], 8));
-    // Insert passkey
     $announce_url = preg_replace("/\\{KEY\\}/", $passkey, $GLOBALS["PASSKEY_ANNOUNCE_URL"]);
-    // Load torrent
 	$torrent = bdec_file($fn);
-    // Replace announce URL with pk-url
 	$torrent["announce"] = $announce_url;
-    // Save user id
-    //$torrent['nvuserid'] = $CURUSER["id"];
     $torrentdata = benc($torrent);
     header("Content-Length: " . mb_strlen($torrentdata, "ASCII"));
-    //header("Content-Length: " . strlen($torrentdata));
-    // Write out re-encoded torrent
     echo trim($torrentdata);
 } else {
     // Just write out torrent
     header("Content-Length: ".filesize($fn));
     readfile($fn);
 }
+?>

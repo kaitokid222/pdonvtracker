@@ -48,43 +48,38 @@ if(isset($_GET["action"]) && $_GET["action"] == "kill"){
 		stderr("Socketserver stoppen?", "Willst Du den Socket-Announce-Server wirklich stoppen? Klicke\n" . "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=kill&sure=1\">hier</a>, wenn Du Dir sicher bist.");
 }
 
-/* tötet apache.. aber der socket startet :D
 if(isset($_GET["action"]) && $_GET["action"] == "start"){
-	$path = "c:\\xampp\\htdocs\\announce\\";
-	chdir($path);
-	exec("start start.bat");
-	$path = "c:\\xampp\\htdocs\\";
-	chdir($path);
-	die();
-}*/
+	$WshShell = new COM("WScript.Shell");
+	$WshShell->Run("C:\\xampp\\php\\php.exe -f C:/xampp/htdocs/announce/server.php", 3, false);
+	stderr("Erfolg!", "Der Socketserver wurde gestartet!<br>Klicke <a href=\"" . $_SERVER['PHP_SELF'] . "\">hier!</a>");
+}
 
 $status = (@file_get_contents($GLOBALS["ANNOUNCE_URLS"][0]) !== false) ? true : false;
 $avgping_str = @file_get_contents($GLOBALS["SOCKET_URL"] . "/control?action=avgping&operator=admin");
 $avgping_str = ($avgping_str !== false) ? $avgping_str : "Socketserver offline! - 0/0/0";
 $avgping_arr = explode("/", $avgping_str);
 
-$kill_link = ($status !== false) ? "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=kill\">Klicke hier!</a>" : "Socketserver offline!";
+$toggle_link = ($status !== false) ? "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=kill\">Klicke hier!</a>" : "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=start\">Klicke hier!</a>";
 $flush_link = ($status !== false) ? "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=flush\">Klicke hier!</a>" : "Socketserver offline!";
-
 $status_img = ($status !== false) ? "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "button_online2.gif\" border=\"0\" alt=\"online\">" : "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "button_offline2.gif\" border=\"0\" alt=\"offline\">";
 stdhead("Socketkontrollcenter");
 begin_frame("Socketkontrollcenter", true, "800px");
 begin_table(true);
 echo "    <tr>\n".
-	"        <td class=\"tablea\" style=\"width:100px\">Socket</td>\n".
+	"        <td class=\"tablea\" style=\"width:150px\">Socket</td>\n".
 	"        <td class=\"tableb\">" . $GLOBALS["SOCKET_URL"] . "/, " . $GLOBALS["ANNOUNCE_URLS"][0] . " " . $status_img . "</td> \n".
 	"    </tr>\n".
 	"    <tr>\n".
-	"        <td class=\"tablea\" style=\"width:100px\">&#216;-Antwortzeit</td>\n".
+	"        <td class=\"tablea\">&#216;-Antwortzeit</td>\n".
 	"        <td class=\"tableb\">" . $avgping_arr[0] . " ms (Pingsumme: " . $avgping_arr[1] . " / Anzahl Requests: " . $avgping_arr[2] . ")</td>\n".
 	"    </tr>\n".
 	"    <tr>\n".
-	"        <td class=\"tablea\" style=\"width:100px\">Flush-Peers</td>\n".
+	"        <td class=\"tablea\">Flush-Peers</td>\n".
 	"        <td class=\"tableb\">" . $flush_link . "</td>\n".
 	"    </tr>\n".
 	"    <tr>\n".
-	"        <td class=\"tablea\" style=\"width:100px\">Stoppe Socketserver</td>\n".
-	"        <td class=\"tableb\">" . $kill_link . "</td>\n".
+	"        <td class=\"tablea\">Start/Stop Socketserver</td>\n".
+	"        <td class=\"tableb\">" . $toggle_link . " Derzeit funktioniert der Start per Webkontrolle nur unter Windows!</td>\n".
 	"    </tr>\n";
 end_table();
 end_frame();

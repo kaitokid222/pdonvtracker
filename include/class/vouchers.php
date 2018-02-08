@@ -37,11 +37,11 @@ class voucher
      * @param str $code  
      * @param str $date  
      * @param int $value  
-     * @param bool $use
+     * @param bool $load
      * 
      * @return bool
      */
-	public function create($code = "", $date = "", $value = 0, $use = false){
+	public function create($code = "", $date = "", $value = 0, $load = false){
 		if($code == "")
 			$code = $this->randomString();
 		else{
@@ -62,9 +62,10 @@ class voucher
 		$qry->bindParam(':users', $str, PDO::PARAM_STR);
 		$qry->execute();
 		if($qry->rowCount()){
-			if($use !== false){
+			if($load !== false){
 				$this->code = $code;
-				$this->loadVoucher($this->code);
+				if($this->loadVoucher($this->code) === false)
+					return false;
 			}
 			return true;
 		}else

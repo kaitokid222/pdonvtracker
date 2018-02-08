@@ -168,9 +168,6 @@ function stdhead($title = "", $msgalert = true){
 			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"users.php\" title=\"Liste aller Mitglieder, inkl. Suchfunktion\">Mitglieder</a></td>\n".
 			"                                </tr>\n".
 			"                                <tr>\n".
-			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"topten.php\" title=\"Diverse Top-Listen\">Top 10</a></td>\n".
-			"                                </tr>\n".
-			"                                <tr>\n".
 			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"staff.php\" title=\"Schnelle &Uuml;bersicht &uuml;ber das  Trackerteam\">Team</a></td>\n".
 			"                                </tr>\n".
 			"                                <tr>\n".
@@ -230,9 +227,6 @@ function stdhead($title = "", $msgalert = true){
 				"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"log.php\" title=\"Tracker-Logbuch anzeigen\">Site Log</a></td>\n".
 				"                                </tr>\n".
 				"                                <tr>\n".
-				"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"usersearch.php\" title=\"Suche nach Benutzern &uuml;ber diverse Angaben\">Benutzersuche</a></td>\n".
-				"                                </tr>\n".
-				"                                <tr>\n".
 				"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"polls.php\" title=\"Umfrageverwaltung\">Umfragen</a></td>\n".
 				"                                </tr>\n".
 				"                                <tr>\n".
@@ -253,6 +247,9 @@ function stdhead($title = "", $msgalert = true){
 			if(get_user_class() >= UC_ADMINISTRATOR){
 				echo "                                <tr>\n".
 					"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"adduser.php\" title=\"Hier kannst Du einen neuen Account anlegen, der sofort aktiv ist\">Account erstellen</a></td>\n".
+					"                                </tr>\n".
+					"                                <tr>\n".
+					"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"saconf.php\" title=\"Hier kannst Du die Announce starten und stoppen\">Socket-Announce</a></td>\n".
 					"                                </tr>\n".
 					"                                <tr>\n".
 					"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"staff.php?act=cleanaccs\" title=\"Benutzer nach Ratio- und Aktivit&auml;tskriterien suchen und deaktivieren\">Accountbereinigung</a></td>\n".
