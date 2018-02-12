@@ -27,7 +27,7 @@
  */
 
 require_once("include/bittorrent.php");
-dbconn();
+userlogin();
 logoutcookie();
 Header("Location: " . $BASEURL . "/");
 ?>

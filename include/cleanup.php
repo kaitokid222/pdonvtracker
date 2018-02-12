@@ -46,8 +46,7 @@ function docleanup()
 			else{
 				$v = new voucher();
 				if($v->todaysVoucher() === false)
-					if($v->create("","",0,true) === false)
-						break;
+					$v->create("","",0,true);
 				$c = $v->code;
 				$q = $GLOBALS["DB"]->prepare("SELECT id FROM users");
 				$q->execute();

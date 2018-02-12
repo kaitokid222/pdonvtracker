@@ -26,32 +26,31 @@
 // +--------------------------------------------------------------------------+
 */
 
-ob_start("ob_gzhandler");
 require "include/bittorrent.php";
 userlogin();
-
 stdhead();
-
-echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+/*echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
 	"        <td width=\"100%\"><span class=\"normalfont\"><center><b><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"> <a href=\"donate.php\">Spende, um den Tracker zu erhalten!</a> <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"></b></center></span></td>\n". 
 	"    </tr>\n".
 	"</table>\n".
-	"<br>\n";
+	"<br>\n";*/
 // ende donate
 // start feiertagsmod
-$heute = new DateTime();
-$feiertage = new Holidays();
-if($feiertage->isDateIsHoliday($heute)){
-	echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
-		"    <tr class=\"tabletitle\" width=\"100%\">\n".
-		"        <td width=\"100%\"><span class=\"normalfont\"><center><b>Heute ist " . $feiertage->getNameFromHoliday($heute) . "</b></center></span></td>\n". 
-		"    </tr>\n".
-		"    <tr>\n".
-		"        <td class=\"tableb\"><span class=\"normalfont\"><center>Zur Feier des Tages kannst Du den Gutscheincode aus deinem Postfach einlösen.<br><br>Folge <a href=\"vouchers.php\">diesem Link!</a></center></span></td>\n". 
-		"    </tr>\n".
-		"</table>\n".
-		"<br>\n";
+if($CURUSER){
+	$heute = new DateTime();
+	$feiertage = new Holidays();
+	if($feiertage->isDateIsHoliday($heute)){
+		echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+			"    <tr class=\"tabletitle\" width=\"100%\">\n".
+			"        <td width=\"100%\"><span class=\"normalfont\"><center><b>Heute ist " . $feiertage->getNameFromHoliday($heute) . "</b></center></span></td>\n". 
+			"    </tr>\n".
+			"    <tr>\n".
+			"        <td class=\"tableb\"><span class=\"normalfont\"><center>Zur Feier des Tages kannst Du den Gutscheincode aus deinem Postfach einlösen.<br><br>Folge <a href=\"vouchers.php\">diesem Link!</a></center></span></td>\n". 
+			"    </tr>\n".
+			"</table>\n".
+			"<br>\n";
+	}
 }
 // eof feiertagsmod
 // Start Newsmodul
@@ -123,53 +122,56 @@ if($qry->rowCount() > 0){
 }
 echo "        </td>\n".
 	"    </tr>\n".
-	"</table>\n";
+	"</table>\n".
+	"<br>\n";
 // eof newsmodul
 
 // start active users
-$dt = time() - 200;
-$dt = get_date_time($dt);
-$qry = $GLOBALS['DB']->prepare('SELECT id, username, class, donor, warned, added, enabled FROM users WHERE last_access >= :dt AND last_access <= NOW() ORDER BY class DESC,username');
-$qry->bindParam(':dt', $dt, PDO::PARAM_INT);
-$qry->execute();
-if(!$qry->rowCount())
-	$activeusers_no = 0;
-else{
-	$activeusers_no = $qry->rowCount();
-	$data = $qry->FetchAll();
-}
-
-$activeusers = "";
-if($activeusers_no > 0){
-	foreach($data as $arr){
-		if ($activeusers)
-			$activeusers .= ",\n";
-		$arr['username'] = "<font class=" . get_class_color($arr['class']) . ">" . $arr['username'] . "</font>";
-		if ($CURUSER)
-			$activeusers .= "<a href=userdetails.php?id=" . $arr['id'] . "><b>" . $arr['username'] . "</b></a>";
-		else
-			$activeusers .= "<b>" . $arr['username'] . "</b>";
-		$activeusers .= "&nbsp;".get_user_icons($arr);
+if($CURUSER){
+	$dt = time() - 200;
+	$dt = get_date_time($dt);
+	$qry = $GLOBALS['DB']->prepare('SELECT id, username, class, donor, warned, added, enabled FROM users WHERE last_access >= :dt AND last_access <= NOW() ORDER BY class DESC,username');
+	$qry->bindParam(':dt', $dt, PDO::PARAM_INT);
+	$qry->execute();
+	if(!$qry->rowCount())
+		$activeusers_no = 0;
+	else{
+		$activeusers_no = $qry->rowCount();
+		$data = $qry->FetchAll();
 	}
-}else
-    $activeusers = "Keine aktiven Mitglieder in den letzten 15 Minuten.";
 
-echo "<br>\n".
-	"<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
-	"    <tr class=\"tabletitle\" width=\"100%\">\n".
-	"        <td width=\"100%\">\n".
-	"            <span class=\"normalfont\">\n".
-	"            <center>\n".
-	"                <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "user.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\"><b>Momentan aktive Mitglieder (" . $activeusers_no . ") </b>\n".
-	"            </center>\n".
-	"            </span>\n".
-	"        </td>\n".
-	"    </tr>\n".
-	"    <tr>\n".
-	"        <td width=\"100%\" class=\"tablea\">" . $activeusers . "</td>\n".
-	"    </tr>\n".
-	"</table>\n".
-	"<br>\n";
+	$activeusers = "";
+	if($activeusers_no > 0){
+		foreach($data as $arr){
+			if ($activeusers)
+				$activeusers .= ",\n";
+			$arr['username'] = "<font class=" . get_class_color($arr['class']) . ">" . $arr['username'] . "</font>";
+			if ($CURUSER)
+				$activeusers .= "<a href=userdetails.php?id=" . $arr['id'] . "><b>" . $arr['username'] . "</b></a>";
+			else
+				$activeusers .= "<b>" . $arr['username'] . "</b>";
+			$activeusers .= "&nbsp;".get_user_icons($arr);
+		}
+	}else
+		$activeusers = "Keine aktiven Mitglieder in den letzten 15 Minuten.";
+
+	echo "<br>\n".
+		"<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+		"    <tr class=\"tabletitle\" width=\"100%\">\n".
+		"        <td width=\"100%\">\n".
+		"            <span class=\"normalfont\">\n".
+		"            <center>\n".
+		"                <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "user.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\"><b>Momentan aktive Mitglieder (" . $activeusers_no . ") </b>\n".
+		"            </center>\n".
+		"            </span>\n".
+		"        </td>\n".
+		"    </tr>\n".
+		"    <tr>\n".
+		"        <td width=\"100%\" class=\"tablea\">" . $activeusers . "</td>\n".
+		"    </tr>\n".
+		"</table>\n".
+		"<br>\n";
+}
 // eof active users
 
 if($CURUSER){
@@ -180,7 +182,8 @@ if($CURUSER){
 	}
 
 	// start umfragemodul
-	$polls = (new polls)->getData();
+	$polls = new polls();
+	$polls->getData();
 	$latest = $polls->data;
 
 	foreach($latest as $p){
@@ -199,7 +202,7 @@ if($CURUSER){
 	if($check){
 		echo "<center><table border=\"0\" cellspacing=\"0\" cellpadding=\"2\">\n";
 		foreach($poll['result'] as $answerid => $users){
-			if($users[0] == "")
+			if($users[0] == "-")
 				$count = 0;
 			else
 				$count = count($users);
@@ -254,84 +257,85 @@ function textbbcode_edit($text, $aktive = TRUE){
 	echo "</div>\n" .
 		"<br style=\"clear: left;\" />";
 }
-
-echo "<br>\n".
-	"<table align=\"center\" width=\"100%\">\n".
-	"    <tr>\n".
-	"        <td>\n".
-	"            <script type=\"text/javascript\" src=\"/js/shoutbox.js\"></script>\n".
-	"            <script type=\"text/javascript\" src=\"/js/ajax.js\"></script>\n".
-	"            <link rel=\"stylesheet\" href=\"css/shoutbox.css\" type=\"text/css\">\n".
-	"            <table summary=\"\" cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:97%\" class=\"tableinborder\">\n".
-	"                <tr>\n".
-	"                    <td class=\"tabletitle\" width=\"100%\" style=\"text-align: center; font-weight: bold;\" colspan=\"2\">.: Ajax-Chat v0.6 :.</td>\n".
-	"                </tr>\n".
-	"                <tr>\n".
-	"                    <td width=\"12%\" class=\"tablea\" valign=\"top\">\n".
-	"                        <center>\n".
-	"                            <table summary=\"\" cellSpacing=\"1\" cellPadding=\"3\" class=\"tableinborder\" border=\"0\">\n";
-$zeile = 0;
-reset($privatesmilies);
-while(list($code, $url) = each($privatesmilies)){
-	if ($zeile == 0)
-		echo "                                <tr>\n";
-	echo "                                    <td class=\"tablea\" style=\"padding: 3px; margin: 1px\"><center>".
-		"<img border=\"0\" src=\"" . $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "/smilies/" . $url . "\" onclick=\"javascript: em('" . $code . "')\" alt=\"\" /></center></td>\n";
-	$zeile++;
-	if($zeile == 4){
-		echo "                                </tr>\n";
-		$zeile = 0;
+if($CURUSER){
+	echo "<br>\n".
+		"<table align=\"center\" width=\"100%\">\n".
+		"    <tr>\n".
+		"        <td>\n".
+		"            <script type=\"text/javascript\" src=\"/js/shoutbox.js\"></script>\n".
+		"            <script type=\"text/javascript\" src=\"/js/ajax.js\"></script>\n".
+		"            <link rel=\"stylesheet\" href=\"css/shoutbox.css\" type=\"text/css\">\n".
+		"            <table summary=\"\" cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:97%\" class=\"tableinborder\">\n".
+		"                <tr>\n".
+		"                    <td class=\"tabletitle\" width=\"100%\" style=\"text-align: center; font-weight: bold;\" colspan=\"2\">.: Ajax-Chat v0.6 :.</td>\n".
+		"                </tr>\n".
+		"                <tr>\n".
+		"                    <td width=\"12%\" class=\"tablea\" valign=\"top\">\n".
+		"                        <center>\n".
+		"                            <table summary=\"\" cellSpacing=\"1\" cellPadding=\"3\" class=\"tableinborder\" border=\"0\">\n";
+	$zeile = 0;
+	reset($privatesmilies);
+	while(list($code, $url) = each($privatesmilies)){
+		if ($zeile == 0)
+			echo "                                <tr>\n";
+		echo "                                    <td class=\"tablea\" style=\"padding: 3px; margin: 1px\"><center>".
+			"<img border=\"0\" src=\"" . $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "/smilies/" . $url . "\" onclick=\"javascript: em('" . $code . "')\" alt=\"\" /></center></td>\n";
+		$zeile++;
+		if($zeile == 4){
+			echo "                                </tr>\n";
+			$zeile = 0;
+		}
 	}
-}
-if (($zeile != 4) && ($zeile != 0)){
-	echo "                                    <td class=\"tablea\" colspan=\"" . (4 - $zeile) . "\">&nbsp;</td>\n" .
+	if (($zeile != 4) && ($zeile != 0)){
+		echo "                                    <td class=\"tablea\" colspan=\"" . (4 - $zeile) . "\">&nbsp;</td>\n" .
+			"                                </tr>\n";
+	}
+	echo "                                <tr>\n" .
+		"                                    <td class=\"tablea\" colspan=\"4\"><center><a href=\"smilies.php\" target=\"_black\">Mehr Smilies</a></center></td>\n" .
 		"                                </tr>\n";
+
+	/*if (get_user_class() >= UC_ADMIN)
+	{
+	  print("         <tr>\n" .
+			"           <td class=\"tabletitle\" colspan=\"10\" width=\"100%\" style=\"text-align: center\"><a href=\"ajax_chat_history.php?history=1\" target=\"_blank\">[History]</a></td>\n" .
+			"         </tr>\n");
+	}*/
+
+	/*print("         <tr>\n" .
+		  "           <td class=\"tablea\" colspan=\"4\" width=\"100%\" style=\"text-align: center\">\n" .
+		  "             <a href=\"" . $BASEURL . "/shoutcast.php\">\n" .
+		  "               <img src=\"" . $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "radio_index.gif\" border=\"0\">\n" .
+		  "             </a></td>\n" .
+		  "         </tr>\n");*/
+
+	echo "                            </table>\n".
+		"                        </center>\n".
+		"                    </td>\n".
+		"                    <td class=\"tablea\">\n".
+		"                        <table summary=\"\" class=\"tableinborder\"  border=\"0\" cellspacing=\"1\" cellpadding=\"5\" width=\"100%\">\n".
+		"                            <tr>\n".
+		"                                <td class=\"tablea\">\n".
+		"                                    <div style=\"width:100%; height:330px; background: #404953;\" id=\"frame\">\n".
+		"                                        <div style=\"padding: 2px;\" id=\"rahmen\">\n".
+		"                                            <div id=\"screen\" style=\"width:100%; height:330px; overflow:auto; text-align:left; font-size:12px; font-family:Verdana;\"></div>\n".
+		"                                        </div>\n".
+		"                                    </div>\n".
+		"                                </td>\n".
+		"                            </tr>\n".
+		"                            <tr>\n".
+		"                                <td class=\"tablea\">\n";
+	textbbcode_edit("message");
+	echo "                                </td>\n".
+		"                            </tr>\n".
+		"                        </table>\n".
+		"                    </td>\n".
+		"                </tr>\n".
+		"            </table>\n".
+		"        </td>\n".
+		"    </tr>\n".
+		"</table>\n".
+		"<br>\n";
 }
-echo "                                <tr>\n" .
-	"                                    <td class=\"tablea\" colspan=\"4\"><center><a href=\"smilies.php\" target=\"_black\">Mehr Smilies</a></center></td>\n" .
-	"                                </tr>\n";
-
-/*if (get_user_class() >= UC_ADMIN)
-{
-  print("         <tr>\n" .
-        "           <td class=\"tabletitle\" colspan=\"10\" width=\"100%\" style=\"text-align: center\"><a href=\"ajax_chat_history.php?history=1\" target=\"_blank\">[History]</a></td>\n" .
-        "         </tr>\n");
-}*/
-
-/*print("         <tr>\n" .
-      "           <td class=\"tablea\" colspan=\"4\" width=\"100%\" style=\"text-align: center\">\n" .
-      "             <a href=\"" . $BASEURL . "/shoutcast.php\">\n" .
-      "               <img src=\"" . $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "radio_index.gif\" border=\"0\">\n" .
-      "             </a></td>\n" .
-      "         </tr>\n");*/
-
-echo "                            </table>\n".
-	"                        </center>\n".
-	"                    </td>\n".
-	"                    <td class=\"tablea\">\n".
-	"                        <table summary=\"\" class=\"tableinborder\"  border=\"0\" cellspacing=\"1\" cellpadding=\"5\" width=\"100%\">\n".
-	"                            <tr>\n".
-	"                                <td class=\"tablea\">\n".
-	"                                    <div style=\"width:100%; height:330px; background: #404953;\" id=\"frame\">\n".
-	"                                        <div style=\"padding: 2px;\" id=\"rahmen\">\n".
-	"                                            <div id=\"screen\" style=\"width:100%; height:330px; overflow:auto; text-align:left; font-size:12px; font-family:Verdana;\"></div>\n".
-	"                                        </div>\n".
-	"                                    </div>\n".
-	"                                </td>\n".
-	"                            </tr>\n".
-	"                            <tr>\n".
-	"                                <td class=\"tablea\">\n";
-textbbcode_edit("message");
-echo "                                </td>\n".
-	"                            </tr>\n".
-	"                        </table>\n".
-	"                    </td>\n".
-	"                </tr>\n".
-	"            </table>\n".
-	"        </td>\n".
-	"    </tr>\n".
-	"</table>\n".
-	"<br>\n";
 // ende shoutbox
 
 // start stats
@@ -426,16 +430,19 @@ echo "                </table>\n".
 	"    </tr>\n".
 	"</table>\n".// eof stats
 	"<br>\n";
+
 // start serverload
+$time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
 echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
-	"        <td colspan=\"10\" width=\"100%\">\n".
+	"        <td width=\"100%\">\n".
 	"            <span class=\"normalfont\"><center><b>Serverauslastung</b></center></span>\n".
 	"        </td>\n".
 	"    </tr>\n".
 	"    <tr>\n".
 	"        <td width=\"100%\" class=\"tablea\">\n".
-	"            <center><p>Webserver-Prozesse:</p>\n".
+	"            <center>".
+/*	"<p>Webserver-Prozesse:</p>\n".
 	"            <table class=\"tableinborder\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" width=\"402\">\n".
 	"                <tr>\n".
 	"                    <td align=\"left\" style=\"padding: 0px; background-image: url('" . $GLOBALS["PIC_BASE_URL"] . "loadbarbg.gif'); background-repeat: repeat-x\">";
@@ -453,9 +460,9 @@ echo "                        <img height=\"15\" width=\"" . $width . "\" src=\"
 	"            </table>\n".
 	"            <p>Systemauslastung (Durchschnittswerte): ";
 $loadavg = explode(" ", exec("cat /proc/loadavg"));
-$time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
+
 echo $loadavg[0]*100, "% (1min) - ", $loadavg[1]*100, "% (5min) - ", $loadavg[2]*100, "% (15min)".
-	"            </p>\n".
+	"            </p>\n".*/
 	"            <p>Diese Seite wurde in " . round($time, 4) . " Sekunden erstellt.</p>\n".
 	"            </center>\n".
 	"        </td>\n".

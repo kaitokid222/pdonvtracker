@@ -62,9 +62,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 	$array = (array) $row;
 	$_SESSION["userdata"] = $array;
 	$_SESSION["userdata"]["ip"] = $ip;
-
+	$dt = date("Y-m-d H:i:s");
 	$qry = $GLOBALS['DB']->prepare('UPDATE users SET last_access = :la, ip = :ip WHERE id = :id');
-	$qry->bindParam(':la', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+	$qry->bindParam(':la', $dt, PDO::PARAM_STR);
 	$qry->bindParam(':ip', $ip, PDO::PARAM_STR);
 	$qry->bindParam(':id', $row->id, PDO::PARAM_STR);
 	$qry->execute();

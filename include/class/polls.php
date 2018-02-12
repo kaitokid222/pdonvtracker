@@ -23,6 +23,7 @@ class polls
 	function __construct($last = true) {
 		$this->con = $GLOBALS['DB'];
 		$this->onlyLast = $last;
+		return $this;
 	}
 
 	public function getData(){
@@ -47,7 +48,6 @@ class polls
 				}
 			}
 			$this->data = $pretty_data;
-			return $this;
 		}
 	}
 
@@ -68,7 +68,6 @@ class polls
 		foreach($answers as $answer){
 			if($answer === false || $answer == "" || !isset($answer)){
 				$e = true;
-				break;
 			}
 		}
 		if($e){
@@ -104,7 +103,7 @@ class polls
 				$k = strval($k);
 			if($k !== false){
 				if($k == "0" && !isset($this->data[$poll]['result'][$question][1]))
-					$this->data[$poll]['result'][$question][$k] = "";
+					$this->data[$poll]['result'][$question][$k] = "-";
 				else
 					unset($this->data[$poll]['result'][$question][$k]);
 				break;
@@ -121,7 +120,7 @@ class polls
 	}
 
 	public function add_answer($poll,$answer,$user){
-		if($this->data[$poll]['result'][$answer][0] == "")
+		if($this->data[$poll]['result'][$answer][0] == "-")
 			$this->data[$poll]['result'][$answer][0] = strval($user);
 		else
 			$this->data[$poll]['result'][$answer][] = strval($user);
@@ -138,7 +137,7 @@ class polls
 	public function get_answer_count($poll){
 		$tc = 0;
 		foreach($this->data[$poll]['result'] as $uarr){
-			if($uarr[0] != ""){
+			if($uarr[0] != "-"){
 				$c = count($uarr);
 				$tc += $c;
 			}
@@ -155,7 +154,7 @@ class polls
 			$i++;
 		}
 		$empty_array = array_map(function($value){
-			return $value === NULL ? "" : $value;
+			return $value === NULL ? "-" : $value;
 		}, $answer_arr);
 		return $empty_array;
 	}
@@ -164,14 +163,14 @@ class polls
 		$arr = array();
 		foreach($resultsets as $q => $uarr){
 			if(is_array($uarr)){
-				if($uarr[0] != "" && isset($uarr[1]))
+				if($uarr[0] != "-" && isset($uarr[1]))
 					$arr[$q] = implode(";",$uarr);
-				elseif($uarr[0] != "" && !isset($uarr[1]))
+				elseif($uarr[0] != "-" && !isset($uarr[1]))
 					$arr[$q] = $uarr[0];
 				else
-					$arr[$q] = "";
+					$arr[$q] = "-";
 			}else
-				$arr[$q] = "";
+				$arr[$q] = "-";
 		}
 		$all = json_encode($arr, JSON_FORCE_OBJECT);
 		$qry = $this->con->prepare('UPDATE pollanswers SET answers= :a WHERE pollid= :id');
