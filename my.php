@@ -199,7 +199,8 @@ foreach($data as $ss_a){
 ksort($ss_sa);
 reset($ss_sa);
 $stylesheets = "";
-while(list($ss_name, $ss_id) = each($ss_sa)){
+//while(list($ss_name, $ss_id) = each($ss_sa)){
+foreach($ss_sa as $ss_name => $ss_id){
 	if($ss_id == $CURUSER["stylesheet"])
 		$ss = "\" selected=\"selected";
 	else

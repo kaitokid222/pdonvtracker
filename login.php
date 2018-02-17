@@ -78,7 +78,7 @@ stdhead("Login");
 unset($returnto);
 if(!empty($_GET["returnto"])){
 	$returnto = $_GET["returnto"];
-	if(!$_GET["nowarn"]){
+	if(!isset($_GET["nowarn"])){
 		echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 			"    <tr class=\"tabletitle\" width=\"100%\">\n".
 			"        <td colspan=\"10\" width=\"100%\"><span class=\"normalfont\"><center><b>Nicht angemeldet!</b></center></span></td>\n".

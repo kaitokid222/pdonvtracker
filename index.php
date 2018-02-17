@@ -128,10 +128,10 @@ echo "        </td>\n".
 
 // start active users
 if($CURUSER){
-	$dt = time() - 200;
+	$dt = (time() - 200);
 	$dt = get_date_time($dt);
 	$qry = $GLOBALS['DB']->prepare('SELECT id, username, class, donor, warned, added, enabled FROM users WHERE last_access >= :dt AND last_access <= NOW() ORDER BY class DESC,username');
-	$qry->bindParam(':dt', $dt, PDO::PARAM_INT);
+	$qry->bindParam(':dt', $dt, PDO::PARAM_STR);
 	$qry->execute();
 	if(!$qry->rowCount())
 		$activeusers_no = 0;
@@ -275,7 +275,8 @@ if($CURUSER){
 		"                            <table summary=\"\" cellSpacing=\"1\" cellPadding=\"3\" class=\"tableinborder\" border=\"0\">\n";
 	$zeile = 0;
 	reset($privatesmilies);
-	while(list($code, $url) = each($privatesmilies)){
+	//while(list($code, $url) = each($privatesmilies)){
+	foreach($privatesmilies as $code => $url){
 		if ($zeile == 0)
 			echo "                                <tr>\n";
 		echo "                                    <td class=\"tablea\" style=\"padding: 3px; margin: 1px\"><center>".
@@ -339,6 +340,7 @@ if($CURUSER){
 // ende shoutbox
 
 // start stats
+/*
 $a = $GLOBALS['DB']->query("SELECT value_u FROM avps WHERE arg='seeders'")->fetchAll()[0];
 $seeders = 0 + $a['value_u'];
 $a = $GLOBALS['DB']->query("SELECT value_u FROM avps WHERE arg='leechers'")->fetchAll()[0];
@@ -442,7 +444,7 @@ echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%
 	"    <tr>\n".
 	"        <td width=\"100%\" class=\"tablea\">\n".
 	"            <center>".
-/*	"<p>Webserver-Prozesse:</p>\n".
+	"<p>Webserver-Prozesse:</p>\n".
 	"            <table class=\"tableinborder\" border=\"0\" cellpadding=\"0\" cellspacing=\"1\" width=\"402\">\n".
 	"                <tr>\n".
 	"                    <td align=\"left\" style=\"padding: 0px; background-image: url('" . $GLOBALS["PIC_BASE_URL"] . "loadbarbg.gif'); background-repeat: repeat-x\">";
@@ -462,12 +464,12 @@ echo "                        <img height=\"15\" width=\"" . $width . "\" src=\"
 $loadavg = explode(" ", exec("cat /proc/loadavg"));
 
 echo $loadavg[0]*100, "% (1min) - ", $loadavg[1]*100, "% (5min) - ", $loadavg[2]*100, "% (15min)".
-	"            </p>\n".*/
+	"            </p>\n".
 	"            <p>Diese Seite wurde in " . round($time, 4) . " Sekunden erstellt.</p>\n".
 	"            </center>\n".
 	"        </td>\n".
 	"    </tr>\n".
-	"</table>\n";
+	"</table>\n";*/
 	
 //phpinfo();
 // eof serverload

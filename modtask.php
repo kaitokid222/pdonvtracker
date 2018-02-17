@@ -46,12 +46,12 @@ if($action == "edituser"){
 	$title = $_POST["title"];
 	$avatar = $_POST["avatar"];
 	$enabled = $_POST["enabled"];
-	$warned = $_POST["warned"];
+	$warned = ((isset($_POST["warned"])) ? $_POST["warned"] : "no");
 	$warnlength = 0 + $_POST["warnlength"];
 	$warnpm = $_POST["warnpm"];
 	$donor = $_POST["donor"];
 	$modcomment = $_POST["modcomment"];
-	$waittime = $_POST["wait"];
+	$waittime = ((isset($_POST["wait"])) ? $_POST["wait"] : array());
 	$acceptrules = $_POST["acceptrules"];
 	$baduser = $_POST["baduser"];
 	if($baduser == "yes")
@@ -285,9 +285,8 @@ if($action == "edituser"){
 	$qry->bindParam(':uid', $userid, PDO::PARAM_INT);
 	$qry->execute();
 	$returnto = $_POST["returnto"];
-	header("Location: " . $GLOBALS["BASEURL"] . "/$returnto");
+	header("Location: " . $GLOBALS["BASEURL"] . "/" . $returnto);
 	die;
-} 
-
+}
 puke();
 ?>

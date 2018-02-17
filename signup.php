@@ -106,7 +106,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 	}else
 		$stylesheet = 1;
 	$dt = get_date_time();
-	$status = "pending";
+	$status = "confirmed";
 	$res = user::addUser($wantusername,$wantpasshash,$passkey,$secret,$editsecret,$email,$status,$stylesheet,$dt);
 	if($res === false)
 		bark("db-error");

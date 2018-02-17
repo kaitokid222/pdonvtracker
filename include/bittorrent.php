@@ -1,7 +1,7 @@
 <?php
 error_reporting(E_ALL);
 //error_reporting(0);
-ini_set('display_errors', 1);  
+ini_set('display_errors', 1);
 /*
 // +--------------------------------------------------------------------------+
 // | Project:    NVTracker - NetVision BitTorrent Tracker                     |
@@ -27,12 +27,6 @@ ini_set('display_errors', 1);
 // | Obige Zeilen dürfen nicht entfernt werden!    Do not remove above lines! |
 // +--------------------------------------------------------------------------+
 */
-
-function local_user(){
-    global $_SERVER;
-    return $_SERVER["SERVER_ADDR"] == $_SERVER["REMOTE_ADDR"];
-} 
-
 if (!file_exists("include/secrets.php") || !file_exists("include/config.php"))
     die("<html><head><title>FEHLER</title></head><body><p>Der Tracker wurde noch nicht konfiguriert.</p>
         <p><a href=\"inst/install.php\">Zum Installationsscript</a></p></body></html>");
@@ -43,6 +37,7 @@ require_once("include/config.php");
 require_once("include/cleanup.php"); // neubauen class cleanup
 require_once("include/shoutcast.php"); // kein plan. scheint zu funktionieren
 require_once("include/std.php");
+$GLOBALS["SCRIPT_START_TIME"] = unique_ts();
 
 //require_once("include/global.php");
 require_once("include/pmfunctions.php");
@@ -65,6 +60,20 @@ require_once("include/class/user.php");
 require_once("include/class/rating.php");
 require_once("include/class/holidays.php");
 require_once("include/class/vouchers.php");
+
+function unique_ts(){
+	$milliseconds = microtime();
+	$timestring = explode(" ", $milliseconds);
+	$sg = $timestring[1];
+	$mlsg = substr($timestring[0], 2, 4);
+	$timestamp = $sg.$mlsg;
+	return $timestamp;
+}
+
+function local_user(){
+	global $_SERVER;
+	return $_SERVER["SERVER_ADDR"] == $_SERVER["REMOTE_ADDR"];
+}
 
 function set_last_access($id){
 	$latime = date("Y-m-d H:i:s");
@@ -157,7 +166,7 @@ function getip(){
 // die quelle des bösen
 function dbconn($autoclean = false){
     global $mysql_host, $mysql_user, $mysql_pass, $mysql_db, $_SERVER;
-	trigger_error("Veraltete Funktion dbconn wurde aufgerufen!");
+	//trigger_error("Veraltete Funktion dbconn wurde aufgerufen!");
     if (!@mysql_connect($mysql_host, $mysql_user, $mysql_pass)) {
         switch (mysql_errno()) {
             case 1040:
@@ -204,9 +213,7 @@ function userlogin(){
         print("<html><body><h1>403 Forbidden</h1>Unauthorized IP address.</body></html>\n");
         die;
     } */
-
     session_start();
-
     if (!$SITE_ONLINE || (!isset($_SESSION["userdata"]) && (empty($_COOKIE["uid"]) || empty($_COOKIE["pass"]))))
         return;
 
@@ -699,7 +706,7 @@ $linebreak = "\r\n";
 
 // Returns the current time in GMT in MySQL compatible format.
 function get_date_time($timestamp = 0){
-	if($timestamp)
+	if($timestamp != 0)
 		return date("Y-m-d H:i:s", $timestamp);
 	else
 		return date("Y-m-d H:i:s");
@@ -826,11 +833,13 @@ function format_comment($text, $strip_html = true){
 	$s = str_replace(array("  ", "&amp;acute;", "&amp;quot;","&amp;lt;","&amp;gt;", "Ä", "Ö", "Ü", "ä", "ö", "ü", "ß", "&amp;Auml;", "&amp;Ouml;", "&amp;Uuml;", "&amp;auml;", "&amp;ouml;", "&amp;uuml;", "&amp;szlig;"), array(" &nbsp;", "&acute;", "&quot;","&lt;","&gt;", "&Auml;", "&Ouml;", "&Uuml;", "&auml;", "&ouml;", "&uuml;", "&szlig;", "&Auml;", "&Ouml;", "&Uuml;", "&auml;", "&ouml;", "&uuml;", "&szlig;"),$s);  
 
 	reset($smilies);
-	while(list($code, $url) = each($smilies))
+	//while(list($code, $url) = each($smilies))
+	foreach($smilies as $code => $url)
 		$s = str_replace($code, "<img src=\"/pic/smilies/" . $url . "\" border=\"0\" alt=\"" . htmlspecialchars($code) . "\">", $s);
 
 	reset($privatesmilies);
-	while(list($code, $url) = each($privatesmilies))
+	//while(list($code, $url) = each($privatesmilies))
+	foreach($privatesmilies as $code => $url)
 		$s = str_replace($code, "<img border=\"0\" src=\"/pic/smilies/" . $url . "\" alt=\"\">", $s);
 	return $s;
 } 

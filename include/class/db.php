@@ -20,9 +20,13 @@ class db
 	function __construct($dsn = array()) {
 		if(!isset($dsn, $dsn[0], $dsn[1], $dsn[2]))
 			die("dsn fehlerhaft");
-		$this->con = new PDO($dsn[0], $dsn[1], $dsn[2]);
-		$this->con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
-		$this->con->query('SET NAMES utf8');
+		try{
+			$this->con = new PDO($dsn[0], $dsn[1], $dsn[2]);
+			$this->con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+			$this->con->query('SET NAMES utf8');
+		}catch(PDOException $e){
+			throw new Exception('Konnte nicht zur Datenbank verbinden!');
+		}
 	}
 	
 	public function getPDO(){

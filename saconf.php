@@ -13,6 +13,16 @@
 */
 require "include/bittorrent.php";
 
+// http://www.netvision-technik.de/forum/showpost.php?p=84056&postcount=5
+// stifler
+function execInBackground($cmd){
+	if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN'){
+		pclose(popen("start /B ".$cmd, "r"));
+	}else{
+		system($cmd." > /dev/null &");
+	}
+}
+
 if(isset($_GET['socket'], $_GET['operator']) && $_GET['socket'] == 1 && $_GET['operator'] == "admin"){
 	$olw = ($GLOBALS["ONLY_LEECHERS_WAIT"] === true) ? "yes" : "no";
 	$nwtos = ($GLOBALS["NOWAITTIME_ONLYSEEDS"] === true) ? "yes" : "no";
@@ -49,13 +59,33 @@ if(isset($_GET["action"]) && $_GET["action"] == "kill"){
 }
 
 if(isset($_GET["action"]) && $_GET["action"] == "start"){
-	$WshShell = new COM("WScript.Shell");
-	$WshShell->Run("C:\\xampp\\php\\php.exe -f C:/xampp/htdocs/announce/server.php", 3, false);
+	execInBackground("C:\\servers\\WinNMP\\bin\\PHP\\32bit-PHP-5.6\\php.exe -f C:/servers/WinNMP/WWW/nvtracker/announce/server.php");
 	stderr("Erfolg!", "Der Socketserver wurde gestartet!<br>Klicke <a href=\"" . $_SERVER['PHP_SELF'] . "\">hier!</a>");
 }
+/*$socket = fopen("http://" . $GLOBALS["SOCKET_IP"] . "/control?action=avgping&operator=admin", 80, $errno, $errstr, 30);
+if($socket !== false){
+	$status = true;
+	$avgping_str = fgets($socket);
+	fclose($socket);
+}else{
+	$avgping_str = false;
+	$status = false;
+}*/
 
-$status = (@file_get_contents($GLOBALS["ANNOUNCE_URLS"][0]) !== false) ? true : false;
-$avgping_str = @file_get_contents($GLOBALS["SOCKET_URL"] . "/control?action=avgping&operator=admin");
+$url = "http://" . $GLOBALS["SOCKET_IP"] . "/control?action=avgping&operator=admin";
+$ch = curl_init();
+$timeout = 5;
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+// Get URL content
+$avgping_str = curl_exec($ch);
+// close handle to release resources
+curl_close($ch);
+
+//$status = (@file_get_contents($GLOBALS["SOCKET_IP"]) !== false) ? true : false;
+$status = ($avgping_str !== false) ? true : false;
+//$avgping_str = @file_get_contents($GLOBALS["SOCKET_IP"] . "/control?action=avgping&operator=admin");
 $avgping_str = ($avgping_str !== false) ? $avgping_str : "Socketserver offline! - 0/0/0";
 $avgping_arr = explode("/", $avgping_str);
 
@@ -67,7 +97,7 @@ begin_frame("Socketkontrollcenter", true, "800px");
 begin_table(true);
 echo "    <tr>\n".
 	"        <td class=\"tablea\" style=\"width:150px\">Socket</td>\n".
-	"        <td class=\"tableb\">" . $GLOBALS["SOCKET_URL"] . "/, " . $GLOBALS["ANNOUNCE_URLS"][0] . " " . $status_img . "</td> \n".
+	"        <td class=\"tableb\">" . $GLOBALS["SOCKET_IP"] . ", " . $GLOBALS["ANNOUNCE_URLS"][0] . " " . $status_img . "</td> \n".
 	"    </tr>\n".
 	"    <tr>\n".
 	"        <td class=\"tablea\">&#216;-Antwortzeit</td>\n".

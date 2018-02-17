@@ -43,7 +43,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 	if(!isset($file) || $file["size"] < 1)
 		stderr("Upload fehlgeschlagen", "Es wurden keine Daten empfangen!");
 
-	if($_POST["is_avatar"] != "1"){
+	if(isset($_POST["is_avatar"]) && $_POST["is_avatar"] != "1"){
 		if($file["size"] > $maxfilesize)
 			stderr("Upload fehlgeschlagen", "Sorry, diese Datei ist zu gro&szlig; f&uuml;r den BitBucket.");
 
@@ -59,7 +59,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 	$filename = md5_file($file["tmp_name"]);
 
-	if(file_exists($tgtfile))
+	if(file_exists($filename))
 		stderr("Upload fehlgeschlagen", "Sorry, eine Datei mit dem Namen <b>" . htmlspecialchars($filename) . "</b> existiert bereits im BitBucket.");
 
 	$it = exif_imagetype($file["tmp_name"]);
@@ -81,7 +81,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
 	$tgtfile = $GLOBALS["BITBUCKET_DIR"]."/".$filename;
 
-	if($_POST["is_avatar"] == "1"){
+	if(isset($_POST["is_avatar"]) && $_POST["is_avatar"] == "1"){
 		$img = resize_image($file["name"], $file["tmp_name"], $tgtfile);
 
 		if(!$img)

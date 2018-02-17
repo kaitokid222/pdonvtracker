@@ -33,14 +33,6 @@ loggedinorreturn();
 
 if (get_user_class() < UC_ADMINISTRATOR)
     stderr("Error", "Permission denied.");
-?>
-<script type="text/javascript" src="js/nicEdit.js"></script>
-<script type="text/javascript">
-		bkLib.onDomLoaded(function() {
-			nicEditors.allTextAreas()
-		});
-</script>
-<?php
 
 if(isset($_GET["action"]))
 	$action = $_GET["action"];
@@ -148,6 +140,14 @@ if ($action == 'edit') {
 			stderr("Fehler", "Kein News-Eintrag mit der ID " . $newsid . " vorhanden.");
 			
 	    stdhead();
+?>
+<script type="text/javascript" src="js/nicEdit.js"></script>
+<script type="text/javascript">
+		bkLib.onDomLoaded(function() {
+			nicEditors.allTextAreas()
+		});
+</script>
+<?php
 		begin_frame("News-Beitrag bearbeiten", false, "600px;");
 			
 		if (isset($warning))
@@ -166,6 +166,14 @@ if ($action == 'edit') {
 } 
 // Other Actions and followup    ////////////////////////////////////////////
 stdhead("Site news");
+?>
+<script type="text/javascript" src="js/nicEdit.js"></script>
+<script type="text/javascript">
+		bkLib.onDomLoaded(function() {
+			nicEditors.allTextAreas()
+		});
+</script>
+<?php
 begin_frame("<img src=\"".$GLOBALS["PIC_BASE_URL"]."news_add.png\" width=\"22\" height=\"22\" alt=\"News hinzufügen\" title=\"News hinzufügen\" style=\"vertical-align: middle;border:none\"> Neuen News-Beitrag schreiben", false, "600px;");
 if (isset($warning))
 	echo "<p><font size=-3>(" . $warning . ")</font></p>";

@@ -17,7 +17,7 @@ function stdhead($title = "", $msgalert = true){
 
 	if(!$GLOBALS["SITE_ONLINE"])
 		die("Die Seite ist momentan aufgrund von Wartungsarbeiten nicht verfügbar.<br>");
-
+	
 	header("Content-Type: text/html; charset=utf-8");
 	header("Pragma: No-cache");
 	header("Expires: 300");
@@ -26,7 +26,7 @@ function stdhead($title = "", $msgalert = true){
 	if($title == "")
 		$title = $GLOBALS["SITENAME"];
 	else
-		$title = $GLOBALS["SITENAME"] . " :: " . htmlspecialchars($title);
+		$title = $GLOBALS["SITENAME"] . ".de :: pdo-nv ::" . htmlspecialchars($title);
 
 	if($CURUSER){
 		$qry = $GLOBALS['DB']->prepare('SELECT `uri` FROM `stylesheets` WHERE `id`= :id');
@@ -142,15 +142,21 @@ function stdhead($title = "", $msgalert = true){
 	if($CURUSER && $CURUSER["statbox"] == "top")
 		ratiostatbox();       
 	echo "                                <tr>\n".
-		"                                    <td class=\"tabletitle\" style=\"padding: 4px;\"><b>NetVision :.</b></td>\n".
+		"                                    <td class=\"tabletitle\" style=\"padding: 4px;\"><b>" . $GLOBALS["SITENAME"] . " :.</b></td>\n".
 		"                                </tr>\n".
 		"                                <tr>\n".
 		"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"index.php\" title=\"Neuigkeiten vom Team sowie allgemeine Tracker-Stats und Umfragen\">Tracker-News</a></td>\n".
+		"                                </tr>\n".
+		"                                <tr>\n".
+		"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"test.php\" title=\"titel\">Testseite</a></td>\n".
+		"                                </tr>\n".
+		"                                <tr>\n".
+		"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"https://github.com/kaitokid222/pdonvtracker/issues\" title=\"github issues\" target=\"_blank\">Bugs melden!</a></td>\n".
 		"                                </tr>\n";
 	if($GLOBALS["PORTAL_LINK"] != ""){
-		echo "                                <tr>\n".
-			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"" . $GLOBALS["PORTAL_LINK"] . "\" title=\"Unser Portal und Forum f&uuml;r alles M&ouml;gliche\">Portal</a></td>\n".
-			"                                </tr>\n";
+		//echo "                                <tr>\n".
+		//	"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"" . $GLOBALS["PORTAL_LINK"] . "\" title=\"Unser Portal und Forum f&uuml;r alles M&ouml;gliche\">Portal</a></td>\n".
+		//	"                                </tr>\n";
 	}
 	echo "                                <tr>\n".
 		"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"faq.php\" title=\"Oft gestellte Fragen zu diversen trackerspezifischen Themen\">FAQ</a></td>\n".
@@ -160,16 +166,16 @@ function stdhead($title = "", $msgalert = true){
 		"                                </tr>\n";
 	if($CURUSER){
 		if($GLOBALS["IRCAVAILABLE"]){
-			echo "                                <tr>\n".
-				"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"chat.php\" title=\"IRC-Serverdaten und ein einfach zu benutzendes Java-Applet\">IRC Chat</a></td>\n".
-				"                                </tr>\n";
+			//echo "                                <tr>\n".
+			//	"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"chat.php\" title=\"IRC-Serverdaten und ein einfach zu benutzendes Java-Applet\">IRC Chat</a></td>\n".
+			//	"                                </tr>\n";
 		}
 		echo "                                <tr>\n".
 			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"users.php\" title=\"Liste aller Mitglieder, inkl. Suchfunktion\">Mitglieder</a></td>\n".
 			"                                </tr>\n".
-			"                                <tr>\n".
-			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"staff.php\" title=\"Schnelle &Uuml;bersicht &uuml;ber das  Trackerteam\">Team</a></td>\n".
-			"                                </tr>\n".
+			//"                                <tr>\n".
+			//"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"staff.php\" title=\"Schnelle &Uuml;bersicht &uuml;ber das  Trackerteam\">Team</a></td>\n".
+			//"                                </tr>\n".
 			"                                <tr>\n".
 			"                                    <td class=\"tabletitle\" style=\"padding: 4px;\"><b>Torrents :.</b></td>\n".
 			"                                </tr>\n".
@@ -179,13 +185,14 @@ function stdhead($title = "", $msgalert = true){
 			"                                <tr>\n".
 			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"upload.php\" title=\"Lade einen eigenen Torrent auf den Tracker hoch\">Hochladen</a></td>\n".
 			"                                </tr>\n".
-			"                                <tr>\n".
-			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"mytorrents.php\" title=\"Hier werden alle von Dir hochgeladenen Torrents angezeigt\">Meine Torrents</a></td>\n".
-			"                                </tr>\n";
+			//"                                <tr>\n".
+			//"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"mytorrents.php\" title=\"Hier werden alle von Dir hochgeladenen Torrents angezeigt\">Meine Torrents</a></td>\n".
+			//"                                </tr>\n".
+			"";
 		if(get_user_class() >= UC_GUTEAM){
-			echo "                                <tr>\n".
-				"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"guestuploads.php\" title=\"Zeigt alle noch nicht freigeschalteten Gastuploads\">Neue Gastuploads</a></td>\n".
-				"                                </tr>\n";
+			//echo "                                <tr>\n".
+			//	"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"guestuploads.php\" title=\"Zeigt alle noch nicht freigeschalteten Gastuploads\">Neue Gastuploads</a></td>\n".
+			//	"                                </tr>\n";
 		}
 		echo "                                <tr>\n".
 			"                                    <td class=\"tabletitle\" style=\"padding: 4px;\"><b>Mein Account :.</b></td>\n".
@@ -195,11 +202,11 @@ function stdhead($title = "", $msgalert = true){
 			"                                </tr>\n".
 			"                                <tr>\n".
 			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"my.php\" title=\"Hier kannst Du Deine Einstellungen &auml;ndern\">Profil bearbeiten</a></td>\n".
-			"                                </tr>\n".
-			"                                <tr>\n".
-			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"friends.php\" title=\"Eine Liste Deiner &quot;Freunde&quot; auf dem Tracker\">Buddyliste</a></td>\n".
-			"                                </tr>\n".
-			"                                <tr>\n".
+			"                                </tr>\n"; // /!\
+			//"                                <tr>\n".
+			//"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"friends.php\" title=\"Eine Liste Deiner &quot;Freunde&quot; auf dem Tracker\">Buddyliste</a></td>\n".
+			//"                                </tr>\n".
+			/*"                                <tr>\n".
 			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"messages.php\" title=\"Pers&ouml;nliche Nachrichten lesen und beantworten\">Nachrichten";
 		if(isset($unread) || isset($unread_mod))
 			echo "&nbsp;&nbsp;";
@@ -211,8 +218,9 @@ function stdhead($title = "", $msgalert = true){
         if(isset($unread_mod)){
             echo "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "multipagemod.gif\" border=\"0\"> <b>" . $unread_mod . "</b>";
         } 
-		echo "</a></td>\n";
-		echo "                                </tr>\n".
+		echo "</a></td>\n";*/
+		echo "".
+		//	"                                </tr>\n".
 			"                                <tr>\n".
 			"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"bitbucket.php\" title=\"Hier kannst Du Avatare und andere Bilder ablegen\">BitBucket</a></td>\n".
 			"                                </tr>\n".
@@ -223,13 +231,13 @@ function stdhead($title = "", $msgalert = true){
 			echo "                                <tr>\n".
 				"                                    <td class=\"tabletitle\" style=\"padding: 4px;\"><b>Administration :.</b></td>\n".
 				"                                </tr>\n".
-				"                                <tr>\n".
-				"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"log.php\" title=\"Tracker-Logbuch anzeigen\">Site Log</a></td>\n".
-				"                                </tr>\n".
+				//"                                <tr>\n".
+				//"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"log.php\" title=\"Tracker-Logbuch anzeigen\">Site Log</a></td>\n".
+				//"                                </tr>\n".
 				"                                <tr>\n".
 				"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"polls.php\" title=\"Umfrageverwaltung\">Umfragen</a></td>\n".
 				"                                </tr>\n".
-				"                                <tr>\n".
+				/*"                                <tr>\n".
 				"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"staff.php?act=last\" title=\"Liste aller Benutzer, nach Anmeldedatum sortiert\">Neueste Benutzer</a></td>\n".
 				"                                </tr>\n".
 				"                                <tr>\n".
@@ -237,7 +245,7 @@ function stdhead($title = "", $msgalert = true){
 				"                                </tr>\n".
 				"                                <tr>\n".
 				"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"staff.php?act=upstats\" title=\"Schnelle &Uuml;bersicht &uuml;ber die Uploadaktivit&auml;ten\">Uploader-Stats</a></td>\n".
-				"                                </tr>\n".
+				"                                </tr>\n".*/
 				"                                <tr>\n".
 				"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"bitbucket-gallery.php\" title=\"Zeigt s&auml;mtliche BitBucket-Bilder an, nach Benutzern sortiert\">BitBucket Gallerie</a></td>\n".
 				"                                </tr>\n".
@@ -252,8 +260,11 @@ function stdhead($title = "", $msgalert = true){
 					"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"saconf.php\" title=\"Hier kannst Du die Announce starten und stoppen\">Socket-Announce</a></td>\n".
 					"                                </tr>\n".
 					"                                <tr>\n".
-					"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"staff.php?act=cleanaccs\" title=\"Benutzer nach Ratio- und Aktivit&auml;tskriterien suchen und deaktivieren\">Accountbereinigung</a></td>\n".
-					"                                </tr>\n";
+					"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"vouchers.php\" title=\"Hier kannst Du Gutscheine verwalten\">Gutschein-CP</a></td>\n".
+					"                                </tr>\n"; // /!\
+					//"                                <tr>\n".
+					//"                                    <td class=\"tablea\"><a style=\"display:block;padding:4px;\" href=\"staff.php?act=cleanaccs\" title=\"Benutzer nach Ratio- und Aktivit&auml;tskriterien suchen und deaktivieren\">Accountbereinigung</a></td>\n".
+					//"                                </tr>\n";
 			} 
 		} 
     }else{
@@ -367,6 +378,7 @@ function ratiostatbox(){
 }
 
 function stdfoot(){
+	$diff = unique_ts()-$GLOBALS["SCRIPT_START_TIME"];
 	if($_SERVER["SCRIPT_NAME"] == "/details.php" || $_SERVER["SCRIPT_NAME"] == "/bitbucket.php" || $_SERVER["SCRIPT_NAME"] == "/bitbucket-gallery.php")
 		echo "                        <script type=\"text/javascript\" src=\"/js/lightbox.min.js\"></script>\n";
 	echo "                        </td>\n".
@@ -375,6 +387,7 @@ function stdfoot(){
 		"            </td>\n".
 		"        </tr>\n".
 		"    </table>\n".
+		"    <p align=\"center\">PHP-Version: " . phpversion() . " || <a href=\"https://github.com/kaitokid222/pdonvtracker/issues\" title=\"github issues\" target=\"_blank\">Bugs melden!</a> || Diese Seite wurde in " . round(($diff/1000), 4) . " Sekunden erstellt.</p>\n".
 		"</body>\n".
 		"</html>\n";
 }
