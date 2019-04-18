@@ -59,7 +59,7 @@ if(isset($_GET["action"]) && $_GET["action"] == "kill"){
 }
 
 if(isset($_GET["action"]) && $_GET["action"] == "start"){
-	execInBackground("C:\\servers\\WinNMP\\bin\\PHP\\32bit-PHP-5.6\\php.exe -f C:/servers/WinNMP/WWW/nvtracker/announce/server.php");
+	execInBackground("C:\\servers\\WinNMP\\bin\\PHP\\64bit-php-7.2\\php.exe -f C:/servers/WinNMP/WWW/nvtracker/announce/server.php");
 	stderr("Erfolg!", "Der Socketserver wurde gestartet!<br>Klicke <a href=\"" . $_SERVER['PHP_SELF'] . "\">hier!</a>");
 }
 /*$socket = fopen("http://" . $GLOBALS["SOCKET_IP"] . "/control?action=avgping&operator=admin", 80, $errno, $errstr, 30);

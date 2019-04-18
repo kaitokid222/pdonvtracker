@@ -182,6 +182,7 @@ $GLOBALS["PORTAL_LINK"] = "forums.php";
 
 // Socket-base
 $GLOBALS["SOCKET_URL"] = "http://localhost:81";
+$GLOBALS["SOCKET_IP"] = "127.0.0.1:81";
 
 // Valid tracker announce URLs
 // The first entry will be displayed on the upload page
@@ -194,8 +195,8 @@ $GLOBALS["PASSKEY_ANNOUNCE_URL"] = "http://localhost:81/announce?passkey={KEY}";
 if ($_SERVER["HTTP_HOST"] == "")
     $_SERVER["HTTP_HOST"] = $_SERVER["SERVER_NAME"];
 $GLOBALS["BASEURL"] = "http://" . $_SERVER["HTTP_HOST"];
-if ($_SERVER["SERVER_PORT"] != 80)
-    $GLOBALS["BASEURL"] .= ":".$_SERVER["SERVER_PORT"];
+//if ($_SERVER["SERVER_PORT"] != 80)
+    //$GLOBALS["BASEURL"] .= ":".$_SERVER["SERVER_PORT"];
 
 // Set this to your site URL, if automatic detection won't work
 $GLOBALS["DEFAULTBASEURL"] = "http://localhost";
