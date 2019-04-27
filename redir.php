@@ -39,15 +39,15 @@ function check_domain($domain)
     return REDIR_EXTERNAL;
 }
 
-$url = '';
+$url = $_GET['url'];
 
-while (list($var,$val) = each($HTTP_GET_VARS))
+/*while (list($var,$val) = each($HTTP_GET_VARS))
     $url .= "&$var=$val";
 
 $i = strpos($url, "&url=");
 
 if ($i !== false)
-    $url = substr($url, $i + 5);
+    $url = substr($url, $i + 5);*/
 
 if (substr($url, 0, 4) == "www.")
     $url = "http://" . $url;
