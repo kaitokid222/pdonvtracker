@@ -317,8 +317,10 @@ function ratiostatbox(){
 			else
 				$seedwarn = "";
 			$tlimits["seeds"] = " / " . $tlimits["seeds"];
-		}else
+		}else{
 			$tlimits["seeds"] = "";
+			$seedwarn = "";
+		}
 
 		if($tlimits["leeches"] >= 0){
 			if($tlimits["leeches"] - $leeches < 1)
@@ -326,8 +328,10 @@ function ratiostatbox(){
 			else
 				$leechwarn = "";
 			$tlimits["leeches"] = " / " . $tlimits["leeches"];
-		}else
+		}else{
 			$tlimits["leeches"] = "";
+			$leechwarn = "";
+		}
 
 		if($tlimits["total"] >= 0){
 			if($tlimits["total"] - $leeches + $seeds < 1)
@@ -335,8 +339,10 @@ function ratiostatbox(){
 			else
 				$totalwarn = "";
 			$tlimits["total"] = " / " . $tlimits["total"];
-		}else
+		}else{
 			$tlimits["total"] = "";
+			$totalwarn = "";
+		}
 
 		echo "                                <tr>\n".
 			"                                    <td class=\"tabletitle\" style=\"padding: 4px;\"><b>" . htmlspecialchars($CURUSER["username"]) . " :.</b></td>\n".
