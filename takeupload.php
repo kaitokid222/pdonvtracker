@@ -300,7 +300,9 @@ if ($activated == "no") {
     tr_msg("Gastuploader-Team und Moderatoren benachrichtigen");
     $mod_msg = "[b]Der Benutzer [url=".$DEFAULTBASEURL."/userdetails.php?id=".$CURUSER["id"]."]".$CURUSER["username"]."[/url] hat einen Torrent hochgeladen:[/b]\n\n[url=".$DEFAULTBASEURL."/details.php?id=".$id."]".$torrent."[/url] (".$id.")\n\nBitte überprüfen und freischalten/löschen.";
 	$qry = $GLOBALS["DB"]->prepare("SELECT `id` FROM `users` WHERE `class` = :class");
-	$qry->bindParam(':class', UC_GUTEAM, PDO::PARAM_INT);
+	$classr = ".UC_GUTEAM";
+	echo $classr;
+	$qry->bindParam(':class', $classr, PDO::PARAM_INT);
 	$qry->execute();
 	if($qry->rowCount()){
 		$uids = $qry->FetchAll(PDO::FETCH_ASSOC);
