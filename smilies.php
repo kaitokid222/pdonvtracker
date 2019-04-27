@@ -27,7 +27,7 @@
  */
 
 require "include/bittorrent.php";
-dbconn(false);
+userlogin();
 loggedinorreturn();
 stdhead();
 begin_main_frame();

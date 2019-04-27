@@ -735,7 +735,8 @@ function insert_smilies_frame(){
 	$I = 0;
 	echo "    </tr>\n".
 		"    <tr>\n";
-	while(list($code, $url) = each($smilies)){
+	//while(list($code, $url) = each($smilies)){
+	foreach($smilies as $code => $url){
 		if($I && $I % 3 == 0)
 			echo "    </tr>\n".
 				"    <tr>\n";
