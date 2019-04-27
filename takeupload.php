@@ -301,7 +301,6 @@ if ($activated == "no") {
     $mod_msg = "[b]Der Benutzer [url=".$DEFAULTBASEURL."/userdetails.php?id=".$CURUSER["id"]."]".$CURUSER["username"]."[/url] hat einen Torrent hochgeladen:[/b]\n\n[url=".$DEFAULTBASEURL."/details.php?id=".$id."]".$torrent."[/url] (".$id.")\n\nBitte überprüfen und freischalten/löschen.";
 	$qry = $GLOBALS["DB"]->prepare("SELECT `id` FROM `users` WHERE `class` = :class");
 	$classr = ".UC_GUTEAM";
-	echo $classr;
 	$qry->bindParam(':class', $classr, PDO::PARAM_INT);
 	$qry->execute();
 	if($qry->rowCount()){
