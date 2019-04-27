@@ -225,7 +225,7 @@ if($CURUSER){
 		}
 		echo "<input type=\"hidden\" name=\"userid\" value=" . $CURUSER['id'] . " />\n".
 			"<input type=\"hidden\" name=\"pollid\" value=" . $poll['id'] . " />\n".
-			"<br><p align=\"center\"><input type=\"submit\" value=\"'Vote!'\" class=\"btn\"></p></center>\n";
+			"<br><p align=\"center\"><input type=\"submit\" value=\"'Vote!'\" class=\"btn\"></p></center></form>\n";
 	}
 	if ($check)
 		echo "<p align=center><a href=\"polls.php\">Alle Umfragen</a> <a href=\"polls.php?action=revoke&pollid=" . $poll['id'] . "\">Stimme zurückziehen</a></p>\n";
@@ -340,7 +340,7 @@ if($CURUSER){
 // ende shoutbox
 
 // start stats
-/*
+
 $a = $GLOBALS['DB']->query("SELECT value_u FROM avps WHERE arg='seeders'")->fetchAll()[0];
 $seeders = 0 + $a['value_u'];
 $a = $GLOBALS['DB']->query("SELECT value_u FROM avps WHERE arg='leechers'")->fetchAll()[0];
@@ -432,7 +432,7 @@ echo "                </table>\n".
 	"    </tr>\n".
 	"</table>\n".// eof stats
 	"<br>\n";
-
+/* not working with nginx / apache only!
 // start serverload
 $time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
 echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
