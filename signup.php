@@ -106,19 +106,25 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 	}else
 		$stylesheet = 1;
 	$dt = get_date_time();
+	// devmode hack
 	$status = "confirmed";
+	//$status = "pending";
+	//
 	$res = user::addUser($wantusername,$wantpasshash,$passkey,$secret,$editsecret,$email,$status,$stylesheet,$dt);
 	if($res === false)
 		bark("db-error");
-	$psecret = md5($editsecret);
-	$body = "Du oder jemand anderes hat auf " . $GLOBALS["SITENAME"] . " einen neuen Account erstellt und diese E-Mail Adresse (" . $email . ") dafür verwendet.\n\n ".
-		"Wenn Du den Account nicht erstellt hast, ignoriere diese Mail. In diesem Falle wirst Du von uns keine weiteren Nachrichten mehr erhalten. Die Person,  ".
-		"die Deine E-Mail Adresse benutzt hat, hatte die IP-Adresse " . $_SERVER["REMOTE_ADDR"] . ". Bitte antworte nicht auf diese automatisch erstellte Nachricht.\n\n ".
-		"Um die Anmeldung zu bestätigen, folge bitte dem folgenden Link: " . $DEFAULTBASEURL . "/confirm.php?id=" . $res . "&secret=" . $psecret . "\n\n".
-		"Wenn du dies getan hast, wirst Du in der Lage sein, Deinen neuen Account zu verwenden. Wenn die Aktivierung fehlschlägt, oder Du diese nicht vornimmst, wird ".
-		"Dein Account innerhalb der nächsten Tage wieder gelöscht. Wir empfehlen Dir dringlichst, die Regeln und die FAQ zu lesen, bevor Du unseren Tracker verwendest.";
-	mail($email, $GLOBALS["SITENAME"]." Anmeldebestätigung", $body, "From: ".$GLOBALS["SITEEMAIL"]);
-	header("Refresh: 0; url=ok.php?type=signup&email=" . urlencode($email));
+	if($status != "confirmed"){
+		$psecret = md5($editsecret);
+		$body = "Du oder jemand anderes hat auf " . $GLOBALS["SITENAME"] . " einen neuen Account erstellt und diese E-Mail Adresse (" . $email . ") dafür verwendet.\n\n ".
+			"Wenn Du den Account nicht erstellt hast, ignoriere diese Mail. In diesem Falle wirst Du von uns keine weiteren Nachrichten mehr erhalten. Die Person,  ".
+			"die Deine E-Mail Adresse benutzt hat, hatte die IP-Adresse " . $_SERVER["REMOTE_ADDR"] . ". Bitte antworte nicht auf diese automatisch erstellte Nachricht.\n\n ".
+			"Um die Anmeldung zu bestätigen, folge bitte dem folgenden Link: " . $DEFAULTBASEURL . "/confirm.php?id=" . $res . "&secret=" . $psecret . "\n\n".
+			"Wenn du dies getan hast, wirst Du in der Lage sein, Deinen neuen Account zu verwenden. Wenn die Aktivierung fehlschlägt, oder Du diese nicht vornimmst, wird ".
+			"Dein Account innerhalb der nächsten Tage wieder gelöscht. Wir empfehlen Dir dringlichst, die Regeln und die FAQ zu lesen, bevor Du unseren Tracker verwendest.";
+		mail($email, $GLOBALS["SITENAME"]." Anmeldebestätigung", $body, "From: ".$GLOBALS["SITEEMAIL"]);
+		header("Refresh: 0; url=ok.php?type=signup&email=" . urlencode($email));
+	}else
+		header("Refresh: 0; url=ok.php?type=confirmed");
 }
 
 stdhead("Anmeldung");

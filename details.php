@@ -423,7 +423,7 @@ if(!isset($_GET["page"])){
 echo "<a name=\"startcomments\"></a>\n";
 $commentbar = "<table class=\"tableinborder\" border=\"0\" cellpadding=\"4\" cellspacing=\"1\" width=\"100%\">\n".
 	"    <tr>\n".
-	"        <td class=\"tablea\" width=\"100%\" style=\"text-align: center\"><b><a class=\"index\" href=\"comment.php?action=add&amp;tid=" . $id . "\">"."Kommentar hinzufügen</a></b></td>\n".
+	"        <td class=\"tablea\" width=\"100%\" style=\"text-align: center\"><b><a class=\"index\" href=\"comment.php?action=add&amp;tid=" . $id . "\">Kommentar hinzufügen</a></b></td>\n".
 	"    </tr>\n".
 	"</table><br>\n";
 $count = $database->row_count('comments', 'torrent = ' . $id);
