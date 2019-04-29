@@ -337,9 +337,9 @@ function logoutcookie(){
 }
 
 function loggedinorreturn(){
-    global $CURUSER, $DEFAULTBASEURL;
+    global $CURUSER;
     if(!$CURUSER){
-        header("Location: " . $DEFAULTBASEURL . "/login.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]));
+        header("Location: " . $GLOBALS["DEFAULTBASEURL"] . "/login.php?returnto=" . urlencode($_SERVER["REQUEST_URI"]));
         exit();
     }
 }
@@ -542,7 +542,7 @@ function deletetorrent($id, $owner = 0, $comment = "")
     @unlink($GLOBALS["TORRENT_DIR"] . "/" . $id . ".torrent");
 
     if ($CURUSER && $owner > 0 && $CURUSER["id"] != $owner) {
-        $msg = "Dein Torrent '" . $torrent['name'] . "' wurde von [url=" . $DEFAULTBASEURL . "/userdetails.php?id=" . $CURUSER["id"] . "]" . $CURUSER["username"] . "[/url] gelöscht.\n\n[b]Grund:[/b]\n" . $comment;
+        $msg = "Dein Torrent '" . $torrent['name'] . "' wurde von [url=" . $GLOBALS["DEFAULTBASEURL"] . "/userdetails.php?id=" . $CURUSER["id"] . "]" . $CURUSER["username"] . "[/url] gelöscht.\n\n[b]Grund:[/b]\n" . $comment;
         sendPersonalMessage(0, $owner, "Einer Deiner Torrents wurde gelöscht", $msg, PM_FOLDERID_SYSTEM, 0);
     } 
 } 
@@ -1111,7 +1111,7 @@ function get_cur_wait_time($userid){
 
 	if($arr["class"] < UC_VIP){
 		$gigs = $arr["uploaded"] / 1073741824;
-		$regdays = floor((time() - $arr["added"]) / 86400);
+		$regdays = floor((time() - $arr["added"]) / 86400)+1;
 		$ratio = (($arr["downloaded"] > 0) ? ($arr["uploaded"] / $arr["downloaded"]) : 1);
 		$wait_times = explode("|", $GLOBALS["WAIT_TIME_RULES"]);
 		$wait = 0;
@@ -1120,7 +1120,7 @@ function get_cur_wait_time($userid){
 			// Format [#w][#d] or *
 			// eg: 1w or 1w2d or 2d or * or 0
 			preg_match("/([0-9]+w)?([0-9]+d)?|([\\*0])?/", $rule[2], $regrule);
-			$regruledays = intval($regrule[1])*7 + intval($regrule[2]);
+			$regruledays = (int)$regrule[1]*7 + $regrule[2];
 			if(($ratio < $rule[0] || $gigs < $rule[1]) && ($regruledays==0 || ($regruledays>0 && $regdays < $regruledays)))
 				$wait = max($wait, $rule[3], 0);
 		}

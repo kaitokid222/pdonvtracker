@@ -35,31 +35,22 @@ if (!mkglobal("type"))
 
 if ($type == "signup" && mkglobal("email")) {
 	stdhead("Benutzeranmeldung");
-        stdmsg("Anmeldung erfolgreich!",
-	    "Du bekommst in Kürze eine Bestätigungsmail mit dem Aktivierungslink. Folge bitte den Anweisungen in der Mail!");
+    stdmsg("Anmeldung erfolgreich!", "Du bekommst in Kürze eine Bestätigungsmail mit dem Aktivierungslink. Folge bitte den Anweisungen in der Mail!");
 	stdfoot();
-}
-elseif ($type == "confirmed") {
+}elseif ($type == "confirmed") {
 	stdhead("Account bereits aktiviert");
-	print("<h1>Account bereits aktiviert</h1>\n");
-	print("<p>Dieser Account wurde bereits aktiviert. Du kannst Dich nun auf der Seite mit Deinen Benutzerdaten <a href=\"login.php\">einloggen</a>.</p>\n");
+	stdmsg("Account bereits aktiviert", "Dieser Account wurde bereits aktiviert. Du kannst Dich nun auf der Seite mit Deinen Benutzerdaten <a href=\"login.php\">einloggen</a>.");
 	stdfoot();
-}
-elseif ($type == "confirm") {
+}elseif ($type == "confirm") {
 	if (isset($CURUSER)) {
 		stdhead("Account aktivieren");
-		print("<h1>Account erfolgreich aktiviert!</h1>\n");
-		print("<p>Dein Account wurde aktiviert! Du wurdest automatisch eingeloggt. Du kannst nun zur <a href=\"/\"><b>Startseite</b></a> gehen, und Deinen Account benutzen.</p><p>Bitte denke daran, Dich immer an die Regeln zu halten!</p>\n");
-		print("<p>Bevor Du den NetVision-Tracker verwendest, emfpehlen wir Dir dringend, Dir die <a href=\"rules.php\"><b>REGELN</b></a> und das <a href=\"faq.php\"><b>FAQ</b></a> durchzulesen.</p>\n");
+		stdmsg("Account erfolgreich aktiviert!","Dein Account wurde aktiviert! Du wurdest automatisch eingeloggt. Du kannst nun zur <a href=\"/\"><b>Startseite</b></a> gehen, und Deinen Account benutzen.</p><p>Bitte denke daran, Dich immer an die Regeln zu halten!<br><br>Bevor Du den NetVision-Tracker verwendest, emfpehlen wir Dir dringend, Dir die <a href=\"rules.php\"><b>REGELN</b></a> und das <a href=\"faq.php\"><b>FAQ</b></a> durchzulesen.");
 		stdfoot();
-	}
-	else {
+	}else {
 		stdhead("Account aktivieren");
-		print("<h1>Account erfolgreich aktiviert!</h1>\n");
-		print("<p>Dein Account wurde aktiviert! Jedoch sieht es so aus, dass Du nicht automatisch eingeloggt werden konntest. Ein möglicher Grund dafür ist, dass Du Deinem Browser das Annehmen von Cookies verboten hast. Du musst Deinen Browser zu konfigurieren, dass er Cookies von dieser Seite akzeptiert. Bitte prüfe dies nach, <a href=\"login.php\">logge Dich ein</a> und versuche es erneut.</p><p>Bitte denke auch daran, Dich immer an die Regeln zu halten!</p>\n");
+		stdmsg("Account erfolgreich aktiviert!","Dein Account wurde aktiviert! Jedoch sieht es so aus, dass Du nicht automatisch eingeloggt werden konntest. Ein möglicher Grund dafür ist, dass Du Deinem Browser das Annehmen von Cookies verboten hast. Du musst Deinen Browser zu konfigurieren, dass er Cookies von dieser Seite akzeptiert. Bitte prüfe dies nach, <a href=\"login.php\">logge Dich ein</a> und versuche es erneut.</p><p>Bitte denke auch daran, Dich immer an die Regeln zu halten!");
 		stdfoot();
 	}
-}
-else
+}else
 	die();
 ?>

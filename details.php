@@ -99,7 +99,7 @@ if(isset($_GET["activate"]) && $moderator && $row["activated"] != "yes"){
 	$qry = $GLOBALS['DB']->prepare($sql);
 	$qry->bindParam(':id', $row["id"], PDO::PARAM_INT);
 	$qry->execute();
-	sendPersonalMessage(0, $row["owner"], "Dein Torrent wurde von einem Moderator freigeschaltet!", "Dein Torrent \"[url=" . $DEFAULTBASEURL . "/details.php?id=" . $row["id"] . "]" . $row["name"] . "[/url]\" wurde von [url=" . $DEFAULTBASEURL . "/userdetails.php?id=" . $CURUSER["id"] . "]" . $CURUSER["username"] . "[/url] freigeschaltet. Du musst nun die Torrent-Datei erneut vom Tracker herunterladen, und kannst dann mit dem Seeden beginnen.\n\nBei Fragen lies bitte zuerst das [url=" . $DEFAULBASEURL . "/faq.php]FAQ[/url]!", PM_FOLDERID_SYSTEM);
+	sendPersonalMessage(0, $row["owner"], "Dein Torrent wurde von einem Moderator freigeschaltet!", "Dein Torrent \"[url=" . $GLOBALS["DEFAULTBASEURL"] . "/details.php?id=" . $row["id"] . "]" . $row["name"] . "[/url]\" wurde von [url=" . $GLOBALS["DEFAULTBASEURL"] . "/userdetails.php?id=" . $CURUSER["id"] . "]" . $CURUSER["username"] . "[/url] freigeschaltet. Du musst nun die Torrent-Datei erneut vom Tracker herunterladen, und kannst dann mit dem Seeden beginnen.\n\nBei Fragen lies bitte zuerst das [url=" . $GLOBALS["DEFAULTBASEURL"] . "/faq.php]FAQ[/url]!", PM_FOLDERID_SYSTEM);
 	if(get_cur_wait_time($row["owner"])){
 		$sql = "INSERT INTO `nowait` (user_id, torrent_id, status, grantor, msg) VALUES (:uid, :tid, 'granted', :grantor, 'Automatische Wartezeitaufhebung durch Torrent-Freischaltung')";
 		$qry = $GLOBALS['DB']->prepare($sql);
@@ -238,7 +238,7 @@ if(!isset($_GET["page"])){
 			"                    <td class=\"tableb\" width=\"99%\" style=\"text-align:left\"><a class=\"index\" href=\"" . $download_url . "\">" . htmlspecialchars($row["filename"]) . "</a></td>\n".
 			"                </tr>\n";
 		if($CURUSER["wgeturl"] == "yes"){
-			$wget_url = "wget --header='Cookie: uid=" . $CURUSER["id"] . "; pass=" . $CURUSER["passhash"] . "' '" . $BASEURL . "/" . $download_url . "' -O '" . htmlspecialchars($row["filename"]) . "'";
+			$wget_url = "wget --header='Cookie: uid=" . $CURUSER["id"] . "; pass=" . $CURUSER["passhash"] . "' '" . $GLOBALS["DEFAULTBASEURL"] . "/" . $download_url . "' -O '" . htmlspecialchars($row["filename"]) . "'";
 			echo "                <tr>\n".
 				"                    <td class=\"tableb\" width=\"1%\">wget-Kommando</td>\n".
 				"                    <td class=\"tableb\" width=\"99%\" style=\"text-align:left\"><input type=\"text\" readonly=\"readonly\" size=\"80\" value=\"" . htmlspecialchars($wget_url) . "\"></td>\n".
@@ -276,7 +276,7 @@ if(!isset($_GET["page"])){
 		if($row["numpics"] > 0){
 			$img_prev = "[center]";
 			for($I = 1; $I <= $row["numpics"]; $I++)
-				$img_prev .= "[url=" . $DEFAULTBASEURL . "/" . $GLOBALS["BITBUCKET_DIR"] . "/f-" . $id . "-" . $I . ".jpg][img=" . $DEFAULTBASEURL . "/" . $GLOBALS["BITBUCKET_DIR"] . "/t-" . $id . "-" . $I . ".jpg][/url] ";
+				$img_prev .= "[url=" . $GLOBALS["DEFAULTBASEURL"] . "/" . $GLOBALS["BITBUCKET_DIR"] . "/f-" . $id . "-" . $I . ".jpg][img=" . $GLOBALS["DEFAULTBASEURL"] . "/" . $GLOBALS["BITBUCKET_DIR"] . "/t-" . $id . "-" . $I . ".jpg][/url] ";
 			$img_prev .= "[/center]\n\n";
 			$row["descr"] = $img_prev . $row["descr"];
 		}
