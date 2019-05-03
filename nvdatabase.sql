@@ -400,7 +400,7 @@ CREATE TABLE `peers` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `torrent` int(10) unsigned NOT NULL default '0',
   `peer_id` varchar(20) binary NOT NULL default '',
-  `ip` varchar(64) NOT NULL default '',
+  `ip` varchar(45) NOT NULL default '',
   `port` smallint(5) unsigned NOT NULL default '0',
   `uploaded` bigint(20) unsigned NOT NULL default '0',
   `downloaded` bigint(20) unsigned NOT NULL default '0',
@@ -528,7 +528,7 @@ CREATE TABLE `startstoplog` (
   `event` enum('start','stop') NOT NULL default 'start',
   `datetime` datetime NOT NULL default '0000-00-00 00:00:00',
   `torrent` int(10) NOT NULL default '0',
-  `ip` varchar(15) NOT NULL default '',
+  `ip` varchar(45) NOT NULL default '',
   `peerid` varchar(20) NOT NULL default '',
   `useragent` varchar(255) NOT NULL default ''
 ) ;
@@ -703,7 +703,7 @@ CREATE TABLE `users` (
   `stylesheet` int(10) default '1',
   `info` text,
   `acceptpms` enum('yes','friends','no') NOT NULL default 'yes',
-  `ip` varchar(15) NOT NULL default '',
+  `ip` varchar(45) NOT NULL default '',
   `class` tinyint(3) unsigned NOT NULL default '0',
   `avatar` varchar(100) NOT NULL default '',
   `uploaded` bigint(20) unsigned NOT NULL default '0',

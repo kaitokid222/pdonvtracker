@@ -181,8 +181,10 @@ $GLOBALS["PIC_BASE_URL"] = "pic/";
 $GLOBALS["PORTAL_LINK"] = "forums.php";
 
 // Socket-base
-$GLOBALS["SOCKET_URL"] = "http://localhost:81";
-$GLOBALS["SOCKET_IP"] = "127.0.0.1:81";
+$GLOBALS["SOCKET_PORT"] = "81";
+$GLOBALS["SOCKET_URL"] = "http://localhost:" . $GLOBALS["SOCKET_PORT"];
+//$GLOBALS["SOCKET_IP"] = "127.0.0.1:81";
+$GLOBALS["SOCKET_IP"] = "[::1]:" . $GLOBALS["SOCKET_PORT"];
 
 // Valid tracker announce URLs
 // The first entry will be displayed on the upload page

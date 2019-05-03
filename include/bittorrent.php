@@ -1,6 +1,8 @@
 <?php
 error_reporting(E_ALL);
 //error_reporting(0);
+date_default_timezone_set('Europe/Berlin');
+ini_set('date.timezone', 'Europe/Berlin');
 ini_set('display_errors', 1);
 /*
 // +--------------------------------------------------------------------------+
