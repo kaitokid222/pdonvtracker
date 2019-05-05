@@ -47,21 +47,23 @@ userlogin();
 loggedinorreturn();
 // in PHP7
 // $action = $_GET["action"] ?? false;
-if(isset($_GET["action"]) && $_GET["action"] == "kill"){
+/*if(isset($_GET["action"]) && $_GET["action"] == "kill"){
 	if(isset($_GET['sure']) && $_GET['sure'] == 1){
-		$response = @file_get_contents($GLOBALS["SOCKET_URL"] . "/control?action=kill&operator=admin");
+		echo $GLOBALS["SOCKET_URL"];
+		$response = @file_get_contents("http://" . $GLOBALS["SOCKET_IP"] . "/control?action=kill&operator=admin");
+		echo $response;
 		if(substr($response,0,2) == "Si")
 			stderr("Erfolg!", "Der Socketserver wurde beendet!<br>Klicke <a href=\"" . $_SERVER['PHP_SELF'] . "\">hier!</a>");
 		else
 			stderr("Warnung!", "Der Socketserver hat nicht ordnungsgem&auml;ss geantwortet!<br>Klicke <a href=\"" . $_SERVER['PHP_SELF'] . "\">hier!</a>");
 	}else
 		stderr("Socketserver stoppen?", "Willst Du den Socket-Announce-Server wirklich stoppen? Klicke\n" . "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=kill&sure=1\">hier</a>, wenn Du Dir sicher bist.");
-}
+}*/
 
-if(isset($_GET["action"]) && $_GET["action"] == "start"){
-	execInBackground("C:\\servers\\WinNMP\\bin\\PHP\\64bit-php-7.2\\php.exe -f C:/servers/WinNMP/WWW/nvtracker/announce/server.php");
-	stderr("Erfolg!", "Der Socketserver wurde gestartet!<br>Klicke <a href=\"" . $_SERVER['PHP_SELF'] . "\">hier!</a>");
-}
+//if(isset($_GET["action"]) && $_GET["action"] == "start"){
+//	execInBackground("C:/servers/WinNMP/bin/PHP/64bit-php-7.3/php.exe -f C:/Users/Administrator/Desktop/socketserver/server.php");
+//	stderr("Erfolg!", "Der Socketserver wurde gestartet!<br>Klicke <a href=\"" . $_SERVER['PHP_SELF'] . "\">hier!</a>");
+//}
 /*$socket = fopen("http://" . $GLOBALS["SOCKET_IP"] . "/control?action=avgping&operator=admin", 80, $errno, $errstr, 30);
 if($socket !== false){
 	$status = true;
@@ -88,7 +90,12 @@ $status = ($avgping_str !== false) ? true : false;
 //$avgping_str = @file_get_contents($GLOBALS["SOCKET_IP"] . "/control?action=avgping&operator=admin");
 $avgping_str = ($avgping_str !== false) ? $avgping_str : "Socketserver offline! - 0/0/0";
 $avgping_arr = explode("/", $avgping_str);
-
+$avgping_arr[3] = str_replace(".",",",round($avgping_arr[3],0));
+if($avgping_arr[3] < 1)
+	$avgping_arr[3] = "< 1";
+$avgping_arr[4] = str_replace(".",",",round($avgping_arr[4],0));
+if($avgping_arr[4] < 1)
+	$avgping_arr[4] = "< 1";
 $toggle_link = ($status !== false) ? "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=kill\">Klicke hier!</a>" : "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=start\">Klicke hier!</a>";
 $flush_link = ($status !== false) ? "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=flush\">Klicke hier!</a>" : "Socketserver offline!";
 $status_img = ($status !== false) ? "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "button_online2.gif\" border=\"0\" alt=\"online\">" : "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "button_offline2.gif\" border=\"0\" alt=\"offline\">";
@@ -100,16 +107,16 @@ echo "    <tr>\n".
 	"        <td class=\"tableb\">" . $GLOBALS["SOCKET_IP"] . ", " . $GLOBALS["ANNOUNCE_URLS"][0] . " " . $status_img . "</td> \n".
 	"    </tr>\n".
 	"    <tr>\n".
-	"        <td class=\"tablea\">&#216;-Antwortzeit</td>\n".
-	"        <td class=\"tableb\">" . $avgping_arr[0] . " ms (Pingsumme: " . $avgping_arr[1] . " / Anzahl Requests: " . $avgping_arr[2] . ")</td>\n".
-	"    </tr>\n".
-	"    <tr>\n".
-	"        <td class=\"tablea\">Flush-Peers</td>\n".
-	"        <td class=\"tableb\">" . $flush_link . "</td>\n".
-	"    </tr>\n".
-	"    <tr>\n".
-	"        <td class=\"tablea\">Start/Stop Socketserver</td>\n".
-	"        <td class=\"tableb\">" . $toggle_link . " Derzeit funktioniert der Start per Webkontrolle nur unter Windows!</td>\n".
+	"        <td class=\"tablea\">Stats</td>\n".
+	"        <td class=\"tableb\">Startzeit: " . date("d.m.Y H:i:s", $avgping_arr[5]) . "<br>&#216;-Antwortzeit: " . $avgping_arr[0] . "ms<br>Anzahl Requests: " . $avgping_arr[2] . "<br>Daten empfangen: " . $avgping_arr[3] . " KiloBytes<br>Daten gesendet: " . $avgping_arr[4] . " KiloBytes</td>\n".
+//	"    </tr>\n".
+//	"    <tr>\n".
+//	"        <td class=\"tablea\">Flush-Peers</td>\n".
+//	"        <td class=\"tableb\">" . $flush_link . "</td>\n".
+//	"    </tr>\n".
+//	"    <tr>\n".
+//	"        <td class=\"tablea\">Start/Stop Socketserver</td>\n".
+//	"        <td class=\"tableb\">" . $toggle_link . " Derzeit funktioniert der Start per Webkontrolle nur unter Windows!</td>\n".
 	"    </tr>\n";
 end_table();
 end_frame();
