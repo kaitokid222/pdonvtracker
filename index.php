@@ -29,6 +29,7 @@
 require "include/bittorrent.php";
 userlogin();
 stdhead();
+
 /*echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
 	"        <td width=\"100%\"><span class=\"normalfont\"><center><b><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"> <a href=\"donate.php\">Spende, um den Tracker zu erhalten!</a> <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "star16.gif\"></b></center></span></td>\n". 
@@ -36,6 +37,7 @@ stdhead();
 	"</table>\n".
 	"<br>\n";*/
 // ende donate
+
 // start feiertagsmod
 if($CURUSER){
 	$heute = new DateTime();
@@ -53,6 +55,7 @@ if($CURUSER){
 	}
 }
 // eof feiertagsmod
+
 // Start Newsmodul
 echo "<script language=\"JavaScript\" src=\"js/expandCollapse.js\" type=\"text/javascript\"></script>".
 	"<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
@@ -60,8 +63,9 @@ echo "<script language=\"JavaScript\" src=\"js/expandCollapse.js\" type=\"text/j
 	"        <td width=\"100%\"><span class=\"normalfont\">\n".
 	"            <center>\n".
 	"            <img src=\"" . $GLOBALS["PIC_BASE_URL"] . "newsticker.png\" width=\"22\" height=\"22\" alt=\"\" style=\"vertical-align: middle;\"> <b>Neuigkeiten\n";
-if(get_user_class() >= UC_ADMINISTRATOR)
+if(get_user_class() >= UC_ADMINISTRATOR){
 	echo " <a href=\"news.php\"><img src=\"" . $GLOBALS["PIC_BASE_URL"] . "news_add.png\" width=\"22\" height=\"22\" alt=\"News hinzufügen\" title=\"News hinzufügen\" style=\"vertical-align: middle;border:none\"></a>";
+}
 echo "            </b>\n".
 	"            </center>\n".
 	"        </span></td> \n".
@@ -98,14 +102,14 @@ if($qry->rowCount() > 0){
 
 		echo "<tr>\n".
 			"    <td class=tablecat align=left>\n";
-		if ($first)
+		if($first)
 			echo "<a href=\"javascript:expandCollapse('" . $array['id'] . "');\"><img id=\"plusminus" . $array['id'] . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/minus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>\n";
 		else
 			echo "<a href=\"javascript:expandCollapse('" . $array['id'] . "');\"><img id=\"plusminus" . $array['id'] . "\" src=\"".$GLOBALS["PIC_BASE_URL"].$GLOBALS["ss_uri"]."/plus.gif\" alt=\"Auf-/Zuklappen\" border=\"0\"></a>\n";
 		echo "<b>".htmlspecialchars($array["title"])."</b> ".
 			"(Von <a class=\"altlink\" href=\"userdetails.php?id=" . $array['userid'] . "\">" . $array['pname'] . "</a>, " . $news_day . ", " . $news_date . ") ";
 		if (get_user_class() >= UC_ADMINISTRATOR){
-			echo " <font class=\"middle\"><a class=\"altlink\" href=\"news.php?action=edit&newsid=" . $array['id'] . "&returnto=" . urlencode($_SERVER['PHP_SELF']) . "\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."edit.png\" width=\"16\" height=\"16\" alt=\"Bearbeiten\" title=\"Bearbeiten\" border=\"0\" style=\"vertical-align:bottom\"></font>".
+			echo " <font class=\"middle\"><a class=\"altlink\" href=\"news.php?action=edit&newsid=" . $array['id'] . "&returnto=" . urlencode($_SERVER['PHP_SELF']) . "\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."edit.png\" width=\"16\" height=\"16\" alt=\"Bearbeiten\" title=\"Bearbeiten\" border=\"0\" style=\"vertical-align:bottom\"></a></font>".
 				" <font class=\"middle\"><a class=\"altlink\" href=\"news.php?action=delete&newsid=" . $array['id'] . "&returnto=" . urlencode($_SERVER['PHP_SELF']) . "\"><img src=\"".$GLOBALS["PIC_BASE_URL"]."editdelete.png\" width=\"16\" height=\"16\" alt=\"L&ouml;schen\" title=\"L&ouml;schen\" border=\"0\" style=\"vertical-align:bottom\"></a></font>";
 		}
 		if ($first)
@@ -147,7 +151,7 @@ if($CURUSER){
 				$activeusers .= ",\n";
 			$arr['username'] = "<font class=" . get_class_color($arr['class']) . ">" . $arr['username'] . "</font>";
 			if ($CURUSER)
-				$activeusers .= "<a href=userdetails.php?id=" . $arr['id'] . "><b>" . $arr['username'] . "</b></a>";
+				$activeusers .= "<a href=\"userdetails.php?id=" . $arr['id'] . "\"><b>" . $arr['username'] . "</b></a>";
 			else
 				$activeusers .= "<b>" . $arr['username'] . "</b>";
 			$activeusers .= "&nbsp;".get_user_icons($arr);
@@ -155,8 +159,7 @@ if($CURUSER){
 	}else
 		$activeusers = "Keine aktiven Mitglieder in den letzten 15 Minuten.";
 
-	echo "<br>\n".
-		"<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+	echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 		"    <tr class=\"tabletitle\" width=\"100%\">\n".
 		"        <td width=\"100%\">\n".
 		"            <span class=\"normalfont\">\n".
@@ -295,20 +298,19 @@ if($CURUSER){
 		"                                    <td class=\"tablea\" colspan=\"4\"><center><a href=\"smilies.php\" target=\"_black\">Mehr Smilies</a></center></td>\n" .
 		"                                </tr>\n";
 
-	/*if (get_user_class() >= UC_ADMIN)
-	{
-	  print("         <tr>\n" .
+/*
+	if(get_user_class() >= UC_ADMIN){
+		print("         <tr>\n" .
 			"           <td class=\"tabletitle\" colspan=\"10\" width=\"100%\" style=\"text-align: center\"><a href=\"ajax_chat_history.php?history=1\" target=\"_blank\">[History]</a></td>\n" .
 			"         </tr>\n");
-	}*/
-
-	/*print("         <tr>\n" .
+	}
+	print("         <tr>\n" .
 		  "           <td class=\"tablea\" colspan=\"4\" width=\"100%\" style=\"text-align: center\">\n" .
 		  "             <a href=\"" . $BASEURL . "/shoutcast.php\">\n" .
 		  "               <img src=\"" . $BASEURL . "/" . $GLOBALS["PIC_BASE_URL"] . "radio_index.gif\" border=\"0\">\n" .
 		  "             </a></td>\n" .
-		  "         </tr>\n");*/
-
+		  "         </tr>\n");
+*/
 	echo "                            </table>\n".
 		"                        </center>\n".
 		"                    </td>\n".
@@ -340,13 +342,12 @@ if($CURUSER){
 // ende shoutbox
 
 // start stats
-
 $a = $GLOBALS['DB']->query("SELECT value_u FROM avps WHERE arg='seeders'")->fetchAll()[0];
 $seeders = 0 + $a['value_u'];
 $a = $GLOBALS['DB']->query("SELECT value_u FROM avps WHERE arg='leechers'")->fetchAll()[0];
 $leechers = 0 + $a['value_u'];
 
-if ($leechers == 0)
+if($leechers == 0)
 	$ratio = 0;
 else
 	$ratio = round($seeders / $leechers * 100);
@@ -430,12 +431,12 @@ echo "                </table>\n".
 	"            </center>\n".
 	"        </td>\n".
 	"    </tr>\n".
-	"</table>\n".// eof stats
-	"<br>\n";
+	"</table>\n";// eof stats
 /* not working with nginx / apache only!
 // start serverload
 $time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
-echo "<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
+echo "<br>\n".
+	"<table cellpadding=\"4\" cellspacing=\"1\" border=\"0\" style=\"width:100%\" class=\"tableinborder\">\n".
 	"    <tr class=\"tabletitle\" width=\"100%\">\n".
 	"        <td width=\"100%\">\n".
 	"            <span class=\"normalfont\"><center><b>Serverauslastung</b></center></span>\n".
@@ -470,7 +471,6 @@ echo $loadavg[0]*100, "% (1min) - ", $loadavg[1]*100, "% (5min) - ", $loadavg[2]
 	"        </td>\n".
 	"    </tr>\n".
 	"</table>\n";*/
-	
 //phpinfo();
 // eof serverload
 stdfoot();

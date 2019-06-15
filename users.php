@@ -162,5 +162,6 @@ echo "<tr>\n".
 	"    <td class=\"tablea\" align=\"center\">" . $browsemenu . "<br>" . $pagemenu . "</td>\n".
 	"</tr>";
 end_table();
+end_frame();
 stdfoot();
 ?>

@@ -61,7 +61,7 @@ loggedinorreturn();
 }*/
 
 //if(isset($_GET["action"]) && $_GET["action"] == "start"){
-//	execInBackground("C:/servers/WinNMP/bin/PHP/64bit-php-7.3/php.exe -f C:/Users/Administrator/Desktop/socketserver/server.php");
+//	execInBackground("C:\\servers\\WinNMP\\bin\\PHP\\64bit-php-7.3\\php.exe -f C:/Users/Administrator/Desktop/socketserver/server.php");
 //	stderr("Erfolg!", "Der Socketserver wurde gestartet!<br>Klicke <a href=\"" . $_SERVER['PHP_SELF'] . "\">hier!</a>");
 //}
 /*$socket = fopen("http://" . $GLOBALS["SOCKET_IP"] . "/control?action=avgping&operator=admin", 80, $errno, $errstr, 30);
@@ -88,14 +88,39 @@ curl_close($ch);
 //$status = (@file_get_contents($GLOBALS["SOCKET_IP"]) !== false) ? true : false;
 $status = ($avgping_str !== false) ? true : false;
 //$avgping_str = @file_get_contents($GLOBALS["SOCKET_IP"] . "/control?action=avgping&operator=admin");
-$avgping_str = ($avgping_str !== false) ? $avgping_str : "Socketserver offline! - 0/0/0";
+$avgping_str = ($avgping_str !== false) ? $avgping_str : "Socketserver offline!";
 $avgping_arr = explode("/", $avgping_str);
-$avgping_arr[3] = str_replace(".",",",round($avgping_arr[3],0));
+
+if(!isset($avgping_arr[0]))
+	$avgping_arr[0] = "Socketserver offline!";
+
+if(!isset($avgping_arr[1]))
+	$avgping_arr[1] = "Socketserver offline!";
+
+if(!isset($avgping_arr[2]))
+	$avgping_arr[2] = "Socketserver offline!";
+
+if(!isset($avgping_arr[3]))
+	$avgping_arr[3] = "Socketserver offline!";
+else
+	$avgping_arr[3] = str_replace(".",",",round($avgping_arr[3],0));
+
 if($avgping_arr[3] < 1)
 	$avgping_arr[3] = "< 1";
-$avgping_arr[4] = str_replace(".",",",round($avgping_arr[4],0));
+
+if(!isset($avgping_arr[4]))
+	$avgping_arr[4] = "Socketserver offline!";
+else
+	$avgping_arr[4] = str_replace(".",",",round($avgping_arr[4],0));
+
 if($avgping_arr[4] < 1)
 	$avgping_arr[4] = "< 1";
+
+if(!isset($avgping_arr[5]) || !is_numeric($avgping_arr[5]))
+	$avgping_arr[5] = "Socketserver offline!";
+else
+	$avgping_arr[5] = date("d.m.Y H:i:s", $avgping_arr[5]);
+
 $toggle_link = ($status !== false) ? "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=kill\">Klicke hier!</a>" : "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=start\">Klicke hier!</a>";
 $flush_link = ($status !== false) ? "<a href=\"" . $_SERVER['PHP_SELF'] . "?action=flush\">Klicke hier!</a>" : "Socketserver offline!";
 $status_img = ($status !== false) ? "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "button_online2.gif\" border=\"0\" alt=\"online\">" : "<img src=\"" . $GLOBALS["PIC_BASE_URL"] . "button_offline2.gif\" border=\"0\" alt=\"offline\">";
@@ -108,7 +133,7 @@ echo "    <tr>\n".
 	"    </tr>\n".
 	"    <tr>\n".
 	"        <td class=\"tablea\">Stats</td>\n".
-	"        <td class=\"tableb\">Startzeit: " . date("d.m.Y H:i:s", $avgping_arr[5]) . "<br>&#216;-Antwortzeit: " . $avgping_arr[0] . "ms<br>Anzahl Requests: " . $avgping_arr[2] . "<br>Daten empfangen: " . $avgping_arr[3] . " KiloBytes<br>Daten gesendet: " . $avgping_arr[4] . " KiloBytes</td>\n".
+	"        <td class=\"tableb\">Startzeit: " . $avgping_arr[5] . "<br>&#216;-Antwortzeit: " . $avgping_arr[0] . "ms<br>Anzahl Requests: " . $avgping_arr[2] . "<br>Daten empfangen: " . $avgping_arr[3] . " KiloBytes<br>Daten gesendet: " . $avgping_arr[4] . " KiloBytes</td>\n".
 //	"    </tr>\n".
 //	"    <tr>\n".
 //	"        <td class=\"tablea\">Flush-Peers</td>\n".
